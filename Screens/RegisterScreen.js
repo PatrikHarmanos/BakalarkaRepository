@@ -50,9 +50,12 @@ const RegisterScreen = ({navigation}) => {
     var dataToSend = {
       email: userEmail,
       password: userPassword,
-      first_name: userFirstName,
-      last_name: userLastName,
-      phone_number: userNumber,
+      person: {
+        email: userEmail,
+        first_name: userFirstName,
+        last_name: userLastName,
+        phone_number: userNumber,
+      }
     }
 
     fetch('http://147.175.150.96/api/account/register/', {

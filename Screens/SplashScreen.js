@@ -22,7 +22,7 @@ const SplashScreen = ({navigation}) => {
                         method: "GET",
                         headers: {
                             'Authorization': 'Bearer ' + token,
-                        },
+                        }
                     })
                     .then((response) => response.json())
                     .then ((responseJson) => {

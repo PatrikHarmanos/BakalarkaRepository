@@ -11,6 +11,10 @@ import HomeScreen from './HomeScreen';
 import ProfileScreen from './ProfileScreen';
 import newOrderScreen from './NewOrderScreen';
 import EditProfileScreen from './EditProfileScreen';
+import NewOrderScreen from './NewOrderScreen';
+import OrdersScreen from './OrdersScreen';
+import NewOrderDetailsScreen from './NewOrderDetailsScreen';
+import NewOrderItemScreen from './NewOrderItemScreen';
 
 const HomeStackScreen = ({navigation}) => (
   <Stack.Navigator screenOptions={{
@@ -73,12 +77,36 @@ const newOrderScreenStack = ({navigation}) => (
     headerTitleStyle: {
     fontWeight: 'bold'
     }
-}}>
-          <Stack.Screen name="Zásielky" component={newOrderScreen} options={{
+  }}>
+          <Stack.Screen name="Zásielky" component={OrdersScreen} options={{
           headerLeft: () => (
               <Icon.Button name="ios-menu" size={25} backgroundColor="#fff" color="#000" onPress={() => navigation.openDrawer()}></Icon.Button>
+          ),
+          headerRight: () => (
+            <MaterialComunityIcons.Button name="plus" size={25} backgroundColor="#fff" color="#000" onPress={() => navigation.navigate("NewOrder")}></MaterialComunityIcons.Button>
           )
           }} />
+          <Stack.Screen 
+            name="NewOrder"
+            options= {{
+              title: "Nova zasielka"
+            }}
+            component={NewOrderScreen}
+          />
+          <Stack.Screen 
+            name="NewOrderDetails"
+            options= {{
+              title: "Nova zasielka detaily"
+            }}
+            component={NewOrderDetailsScreen}
+          />
+          <Stack.Screen 
+            name="NewOrderItem"
+            options= {{
+              title: "Nova zasielka item"
+            }}
+            component={NewOrderItemScreen}
+          />
   </Stack.Navigator>
   );
 
