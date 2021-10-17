@@ -18,6 +18,8 @@ const NewOrderDetailsScreen = ({route, navigation}) => {
   const [receiverEmail, setReceiverEmail] = useState('');
   const [receiverNumber, setReceiverNumber] = useState('');
 
+  const { pickup_place, delivery_place } = route.params;
+
   const handleButton = () => {
 
     if (!receiverFirstName) {
@@ -44,7 +46,9 @@ const NewOrderDetailsScreen = ({route, navigation}) => {
       FirstName: receiverFirstName,
       LastName: receiverLastName,
       Number: receiverNumber,
-      Email: receiverEmail
+      Email: receiverEmail,
+      pickup_place: pickup_place,
+      delivery_place: delivery_place
     })
     
   };

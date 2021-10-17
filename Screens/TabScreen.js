@@ -15,6 +15,7 @@ import NewOrderScreen from './NewOrderScreen';
 import OrdersScreen from './OrdersScreen';
 import NewOrderDetailsScreen from './NewOrderDetailsScreen';
 import NewOrderItemScreen from './NewOrderItemScreen';
+import OrderDetailsScreen from './OrderDetailsScreen';
 
 const HomeStackScreen = ({navigation}) => (
   <Stack.Navigator screenOptions={{
@@ -78,7 +79,7 @@ const newOrderScreenStack = ({navigation}) => (
     fontWeight: 'bold'
     }
   }}>
-          <Stack.Screen name="Zásielky" component={OrdersScreen} options={{
+          <Stack.Screen name="Orders" component={OrdersScreen} options={{
           headerLeft: () => (
               <Icon.Button name="ios-menu" size={25} backgroundColor="#fff" color="#000" onPress={() => navigation.openDrawer()}></Icon.Button>
           ),
@@ -106,6 +107,13 @@ const newOrderScreenStack = ({navigation}) => (
               title: "Nova zasielka item"
             }}
             component={NewOrderItemScreen}
+          />
+          <Stack.Screen 
+            name="OrderDetails"
+            options= {{
+              title: "Order details"
+            }}
+            component={OrderDetailsScreen}
           />
   </Stack.Navigator>
   );

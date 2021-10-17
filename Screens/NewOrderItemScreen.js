@@ -21,7 +21,23 @@ const NewOrderItemScreen = ({route, navigation}) => {
     const [itemWeight, setItemWeight] = useState('');
     const [itemIsFragile, setItemIsFragile] = useState('');
 
-    const { FirstName, LastName, Number, Email } = route.params;
+    // pickup place lat and long and postal code
+    const [pickupPlaceLat, setPickupPlaceLat] = useState('');
+    const [pickupPlaceLong, setPickupPlaceLong] = useState('');
+    const [pickupPlacePostalCode, setPickupPlacePostalCode] = useState('');
+    const [pickupPlaceCountry, setPickupPlaceCountry] = useState('');
+    const [pickupPlaceCity, setPickupPlaceCity] = useState('');
+    const [pickupPlaceStreetAddress, setPickupPlaceStreetAddress] = useState('');
+
+    // delivery place lat and long and postal code
+    const [deliveryPlaceLat, setDeliveryPlaceLat] = useState('');
+    const [deliveryPlaceLong, setDeliveryPlaceLong] = useState('');
+    const [deliveryPlacePostalCode, setDeliveryPlacePostalCode] = useState('');
+    const [deliveryPlaceCountry, setDeliveryPlaceCountry] = useState('');
+    const [deliveryPlaceCity, setDeliveryPlaceCity] = useState('');
+    const [deliveryPlaceStreetAddress, setDeliveryPlaceStreetAddress] = useState('');
+
+    const { FirstName, LastName, Number, Email, pickup_place, delivery_place } = route.params;
 
     const handleButton = async () => {
       if (!itemCategory) {
@@ -44,10 +60,71 @@ const NewOrderItemScreen = ({route, navigation}) => {
         return;
       }
 
-      if (!itemIsFragile) {
+      if (itemIsFragile == '') {
         alert('Prosím vyberte krehkost zasielky');
         return;
       }
+
+      // response can be length 3/4 depending if the address has also a number
+      if (pickup_place.terms.length == 3){
+        setPickupPlaceStreetAddress(pickup_place.terms[0].value);
+        setPickupPlaceCity(pickup_place.terms[1].value);
+        setPickupPlaceCountry(pickup_place.terms[2].value);
+      } else {
+        setPickupPlaceStreetAddress(pickup_place.terms[0].value);
+        setPickupPlaceCity(pickup_place.terms[2].value);
+        setPickupPlaceCountry(pickup_place.terms[3].value);
+      }
+
+      if (delivery_place.terms.length == 3){
+        setDeliveryPlaceStreetAddress(pickup_place.terms[0].value);
+        setDeliveryPlaceCity(pickup_place.terms[1].value);
+        setDeliveryPlaceCountry(pickup_place.terms[2].value);
+      } else {
+        setDeliveryPlaceStreetAddress(pickup_place.terms[0].value);
+        setDeliveryPlaceCity(pickup_place.terms[2].value);
+        setDeliveryPlaceCountry(pickup_place.terms[3].value);
+      }
+
+      // call google places API to get latitude and longtitude from place_id for pickup place
+      await fetch(`https://maps.googleapis.com/maps/api/place/details/json?placeid=${pickup_place.place_id}&key=AIzaSyD3IdOaoOc8tVpnakDzh1BLImcS-iJxoVY`, {
+                method: 'GET',
+              })
+                .then((response) => response.json())
+                .then((responseJson) => {
+                  for (let i = 0; i < responseJson.result.address_components.length; i++){
+                    if (responseJson.result.address_components[i].types[0] == "postal_code"){
+                      setPickupPlacePostalCode(responseJson.result.address_components[i].short_name);
+                    }
+                  }
+                  setPickupPlaceLat(responseJson.result.geometry.location.lat);
+                  setPickupPlaceLong(responseJson.result.geometry.location.lng);
+                  
+                })
+                .catch((error) => {
+                  console.log(error);
+                });
+
+      // call google places API to get latitude and longtitude from place_id for delivery place
+      await fetch(`https://maps.googleapis.com/maps/api/place/details/json?placeid=${delivery_place.place_id}&key=AIzaSyD3IdOaoOc8tVpnakDzh1BLImcS-iJxoVY`, {
+                method: 'GET',
+              })
+                .then((response) => response.json())
+                .then((responseJson) => {
+                  // get postal code from json response
+                  // it has to be done in the loop, because the number of elements in the array can be different due to address number (sometimes there is no address number)
+                  for (let i = 0; i < responseJson.result.address_components.length; i++){
+                    if (responseJson.result.address_components[i].types[0] == "postal_code"){
+                      setDeliveryPlacePostalCode(responseJson.result.address_components[i].short_name);
+                    }
+                  }
+                  // get lat and long from json response
+                  setDeliveryPlaceLat(responseJson.result.geometry.location.lat);
+                  setDeliveryPlaceLong(responseJson.result.geometry.location.lng);
+                })
+                .catch((error) => {
+                  console.log(error);
+                });
 
       let formData = new FormData();
 
@@ -60,7 +137,20 @@ const NewOrderItemScreen = ({route, navigation}) => {
       formData.append("receiver.last_name", LastName);
       formData.append("receiver.email", Email);
       formData.append("receiver.phone_number", Number);
-
+      formData.append("pickup_place.place_id", pickup_place.place_id);
+      formData.append("pickup_place.formatted_address", pickup_place.description);
+      formData.append("pickup_place.country", pickupPlaceCountry);
+      formData.append("pickup_place.city", pickupPlaceCity);
+      formData.append("pickup_place.street_address", pickupPlaceStreetAddress);
+      formData.append("pickup_place.postal_code", pickupPlacePostalCode);
+      formData.append("pickup_place.coordinates", `POINT(${pickupPlaceLong} ${pickupPlaceLat})`);
+      formData.append("delivery_place.place_id", delivery_place.place_id);
+      formData.append("delivery_place.formatted_address", delivery_place.description);
+      formData.append("delivery_place.country", deliveryPlaceCountry);
+      formData.append("delivery_place.city", deliveryPlaceCity);
+      formData.append("delivery_place.street_address", deliveryPlaceStreetAddress);
+      formData.append("delivery_place.postal_code", deliveryPlacePostalCode);
+      formData.append("delivery_place.coordinates", `POINT(${deliveryPlaceLong} ${deliveryPlaceLat})`);
 
       try {
         await AsyncStorage.getItem('@access_token').then((token) => {
@@ -86,9 +176,11 @@ const NewOrderItemScreen = ({route, navigation}) => {
                 navigation.navigate("Auth");
             }
         })
-    } catch(error) {
-        console.log(error);
-    }
+      } catch(error) {
+          console.log(error);
+      }
+
+      navigation.navigate("Orders");
 
     };
 

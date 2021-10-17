@@ -10,7 +10,6 @@ import {
 } from 'react-native'; 
 
 import {
-  Avatar,
   Title,
   Caption,
   Text,
@@ -21,6 +20,7 @@ import { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ScrollView } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { Avatar } from 'react-native-elements';
 
 
 
@@ -55,7 +55,7 @@ export default class ProfileScreen extends React.Component {
                   .then((response) => response.json())
                   .then ((responseJson) => {
                       console.log(responseJson);
-                      this.setState({ email: responseJson.email, first_name: responseJson.first_name, last_name: responseJson.last_name, phone_number: responseJson.phone_number })
+                      this.setState({ email: responseJson.email, first_name: responseJson.person.first_name, last_name: responseJson.person.last_name, phone_number: responseJson.person.phone_number })
                   })
                   .catch((error) => {
                       console.log(error);
@@ -76,12 +76,14 @@ export default class ProfileScreen extends React.Component {
 
           <View style={styles.userInfoSection}>
             <View style={{flexDirection: 'row', marginTop: 25}}>
-              <Avatar.Image 
-                source={{
-                  uri: 'https://api.adorable.io/avatars/80/abott@adorable.png',
-                }}
-                size={80}
-              />
+            <Avatar
+              containerStyle={{backgroundColor: '#0075db'}}
+              size="large"
+              rounded
+              title={this.state.first_name + this.state.last_name}
+              onPress={() => console.log("Works!")}
+              activeOpacity={0.7}
+            />
               <View style={{marginLeft: 20}}>
                 <Title style={[styles.title, {marginTop: 15, marginBottom: 5}]}>{this.state.first_name} {this.state.last_name}</Title>
                 <Caption style={styles.caption}>@dsdasdasdsa</Caption>

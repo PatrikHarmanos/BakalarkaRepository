@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
     View, 
     Text,
@@ -14,18 +14,19 @@ import MaterialComunityIcons from 'react-native-vector-icons/MaterialCommunityIc
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 
 const NewOrderScreen = ({navigation}) => {
+
+  const [pickupData, setPickupData] = useState('');
+  const [deliveryData, setDeliveryData] = useState('');
+
     return (
         <View style={styles.container}>
           <View style={styles.header}>
-           
-           
               <Text style={[styles.text_header, {marginTop: 20}]}>Odkial</Text>
               <View style={styles.action}>
                 <GooglePlacesAutocomplete
                   placeholder='Vyhladajte miesto vyzdvihnutia'
                   onPress={(data, details = null) => {
-                    // 'details' is provided when fetchDetails = true
-                    console.log(data["description"]);
+                    setPickupData(data);
                   }}
                   query={{
                     key: 'AIzaSyD3IdOaoOc8tVpnakDzh1BLImcS-iJxoVY',
@@ -39,8 +40,7 @@ const NewOrderScreen = ({navigation}) => {
                 <GooglePlacesAutocomplete
                   placeholder='Vyhladajte ciel'
                   onPress={(data, details = null) => {
-                    // 'details' is provided when fetchDetails = true
-                    console.log(data, details);
+                    setDeliveryData(data);
                   }}
                   query={{
                     key: 'AIzaSyD3IdOaoOc8tVpnakDzh1BLImcS-iJxoVY',
@@ -52,7 +52,7 @@ const NewOrderScreen = ({navigation}) => {
           </View>
           <View style={styles.footer}>
             <View style={styles.button}>
-              <TouchableOpacity  style={styles.signIn} onPress={() => navigation.navigate('NewOrderDetails', {value: "ahojsasa"})}>
+              <TouchableOpacity  style={styles.signIn} onPress={() => navigation.navigate('NewOrderDetails', {pickup_place: pickupData, delivery_place: deliveryData})}>
                   <Text style={styles.textSign}>Pokracovat</Text>
               </TouchableOpacity>
             </View>
