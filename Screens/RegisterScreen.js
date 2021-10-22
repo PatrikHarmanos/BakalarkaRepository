@@ -83,7 +83,7 @@ const RegisterScreen = ({navigation}) => {
         <Text style={styles.text_header}>Header</Text>
       </View>
       <View style={styles.footer}>
-        <KeyboardAvoidingView>
+        <ScrollView>
         
           <Text style={[styles.text_footer, {marginTop: 5}]}>Meno</Text>
           <View style={styles.action}>
@@ -127,7 +127,7 @@ const RegisterScreen = ({navigation}) => {
             </TouchableOpacity>
           </View>
         
-        </KeyboardAvoidingView>
+        </ScrollView>
              
       </View>
       

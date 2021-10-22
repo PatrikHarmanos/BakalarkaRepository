@@ -16,6 +16,7 @@ import OrdersScreen from './OrdersScreen';
 import NewOrderDetailsScreen from './NewOrderDetailsScreen';
 import NewOrderItemScreen from './NewOrderItemScreen';
 import OrderDetailsScreen from './OrderDetailsScreen';
+import OrderCheckoutScreen from './OrderCheckoutScreen';
 
 const HomeStackScreen = ({navigation}) => (
   <Stack.Navigator screenOptions={{
@@ -92,7 +93,7 @@ const newOrderScreenStack = ({navigation}) => (
             options= {{
               title: "Nova zasielka"
             }}
-            component={NewOrderScreen}
+            component={newOrderScreen}
           />
           <Stack.Screen 
             name="NewOrderDetails"
@@ -114,6 +115,13 @@ const newOrderScreenStack = ({navigation}) => (
               title: "Order details"
             }}
             component={OrderDetailsScreen}
+          />
+          <Stack.Screen 
+            name="OrderCheckout"
+            options= {{
+              title: "Order checkout"
+            }}
+            component={OrderCheckoutScreen}
           />
   </Stack.Navigator>
   );

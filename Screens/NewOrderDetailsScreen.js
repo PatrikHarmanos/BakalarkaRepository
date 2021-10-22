@@ -22,25 +22,25 @@ const NewOrderDetailsScreen = ({route, navigation}) => {
 
   const handleButton = () => {
 
-    if (!receiverFirstName) {
-      alert('Prosím zadajte meno');
-      return;
-    }
+    // if (!receiverFirstName) {
+    //   alert('Prosím zadajte meno');
+    //   return;
+    // }
 
-    if (!receiverLastName) {
-      alert('Prosím zadajte priezvisko');
-      return;
-    }
+    // if (!receiverLastName) {
+    //   alert('Prosím zadajte priezvisko');
+    //   return;
+    // }
 
-    if (!receiverNumber) {
-      alert('Prosím zadajte telefónne číslo');
-      return;
-    }
+    // if (!receiverNumber) {
+    //   alert('Prosím zadajte telefónne číslo');
+    //   return;
+    // }
 
-    if (!receiverEmail) {
-      alert('Prosím zadajte e-mail');
-      return;
-    }
+    // if (!receiverEmail) {
+    //   alert('Prosím zadajte e-mail');
+    //   return;
+    // }
 
     navigation.navigate('NewOrderItem', {
       FirstName: receiverFirstName,

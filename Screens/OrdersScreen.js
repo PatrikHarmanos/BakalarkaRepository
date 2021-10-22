@@ -37,6 +37,7 @@ export default class OrdersScreen extends React.Component {
               })
               .then((response) => response.json())
               .then ((responseJson) => {
+                  console.log(responseJson);
                   this.setState({ data: responseJson });
               })
               .catch((error) => {
@@ -62,15 +63,14 @@ export default class OrdersScreen extends React.Component {
           renderItem={({ item }) => 
             <TouchableOpacity onPress={() => this.props.navigation.navigate("OrderDetails", {value: item})} style={styles.item}> 
               <Text style={styles.orderTitle}>
-                {item.item.name}
+                {item.receiver.first_name} {item.receiver.last_name}
               </Text>
               <Text style={styles.orderSubTitle}>
-                {item.item.description}
+                {item.delivery_place.formatted_address}
               </Text>
             </TouchableOpacity>
           }
         />
-        <Text style={styles.textHeading}>Prijate zasielky</Text>
       </View>
     );
   }
@@ -96,10 +96,11 @@ const styles = StyleSheet.create({
         borderRadius: 18
       },
       orderTitle: {
-        fontSize: 20,
+        fontSize: 18,
+        marginBottom: 4
       },
       orderSubTitle: {
-        fontSize: 18,
+        fontSize: 14,
         color: '#777777'
       }
 });
