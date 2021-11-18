@@ -46,7 +46,10 @@
         </dict>
       </dict>
     </dict>
-
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>Aplikacia ziada o pristup k suborom</string>
+    <key>NSCameraUsageDescription</key>
+    <string>Aplikacia ziada o pristup ku fotoaparatu</string>
     <key>NSLocationWhenInUseUsageDescription</key>
     <string>Aplikácia žiada o povolenie používať polohu</string>
     <key>NSLocationAlwaysUsageDescription</key>

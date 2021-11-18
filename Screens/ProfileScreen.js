@@ -13,7 +13,8 @@ import {
   Title,
   Caption,
   Text,
-  TouchableRipple
+  TouchableRipple,
+  BottomNavigation
 } from 'react-native-paper';
 
 import { useState, useEffect } from 'react';
@@ -24,126 +25,118 @@ import { Avatar } from 'react-native-elements';
 
 
 
-export default class ProfileScreen extends React.Component {
+const ProfileScreen = ({navigation}) => {
 
-    constructor(props) {
-      super(props);
+  const [email, setEmail] = useState();
+  const [firstName, setFirstName] = useState();
+  const [lastName, setLastName] = useState();
+  const [phoneNumber, setPhoneNumber] = useState();
 
-      this.state = {
-        email: null,
-        first_name: null,
-        last_name: null,
-        phone_number: null
-      };
-    }
+  useEffect(() => {
+    try {
+      AsyncStorage.getItem('@access_token').then((token) => {
+          console.log(token);
+          if (token != null) {
+              fetch('http://147.175.150.96/api/account/my_account/', {
+                  method: "GET",
+                  headers: {
+                      'Authorization': 'Bearer ' + token,
+                  },
+              })
+              .then((response) => response.json())
+              .then ((responseJson) => {
+                  setEmail(responseJson.email);
+                  setFirstName(responseJson.person.first_name);
+                  setLastName(responseJson.person.last_name);
+                  setPhoneNumber(responseJson.person.phone_number);
+              })
+              .catch((error) => {
+                  console.log(error);
+              });
+          } else {
+              // call refresh token
+              return;
+          }
+      })
+  } catch(error) {
+      console.log(error);
+  }
+  }, [])
 
-    componentDidMount(){
-      this.callAPI();
-    }
+    return (
+      <SafeAreaView style={[styles.container, {backgroundColor: '#fff'}]}>
 
-    callAPI = async () => {
-      try {
-          await AsyncStorage.getItem('@access_token').then((token) => {
-              console.log(token);
-              if (token != null) {
-                  fetch('http://147.175.150.96/api/account/my_account/', {
-                      method: "GET",
-                      headers: {
-                          'Authorization': 'Bearer ' + token,
-                      },
-                  })
-                  .then((response) => response.json())
-                  .then ((responseJson) => {
-                      console.log(responseJson);
-                      this.setState({ email: responseJson.email, first_name: responseJson.person.first_name, last_name: responseJson.person.last_name, phone_number: responseJson.person.phone_number })
-                  })
-                  .catch((error) => {
-                      console.log(error);
-                  });
-              } else {
-                  // call refresh token
-                  return;
-              }
-          })
-      } catch(error) {
-          console.log(error);
-      }
-    }
-
-    render() {
-      return (
-        <SafeAreaView style={[styles.container, {backgroundColor: '#fff'}]}>
-
-          <View style={styles.userInfoSection}>
-            <View style={{flexDirection: 'row', marginTop: 25}}>
-            <Avatar
-              containerStyle={{backgroundColor: '#0075db'}}
-              size="large"
-              rounded
-              title={this.state.first_name + this.state.last_name}
-              onPress={() => console.log("Works!")}
-              activeOpacity={0.7}
-            />
-              <View style={{marginLeft: 20}}>
-                <Title style={[styles.title, {marginTop: 15, marginBottom: 5}]}>{this.state.first_name} {this.state.last_name}</Title>
-                <Caption style={styles.caption}>@dsdasdasdsa</Caption>
-              </View>
-            </View>
-          </View> 
-
-          <View style={styles.userInfoSection}>
-            <View style={styles.row}>
-              <Icon name="home-outline" color="#777777" size={20} />
-              <Text style={{color:"#777777", marginLeft: 20}} >Snina, Slovensko</Text>
-            </View>
-            <View style={styles.row}>
-              <Icon name="chatbubbles-outline" color="#777777" size={20} />
-              <Text style={{color:"#777777", marginLeft: 20}} >{this.state.email}</Text>
-            </View>
-            <View style={styles.row}>
-              <Icon name="call" color="#777777" size={20} />
-              <Text style={{color:"#777777", marginLeft: 20}} >{this.state.phone_number}</Text>
+        <View style={styles.userInfoSection}>
+          <View style={{flexDirection: 'row', marginTop: 25}}>
+          <Avatar
+            containerStyle={{backgroundColor: '#393485'}}
+            size="large"
+            rounded
+            title={firstName + lastName}
+            onPress={() => console.log("Works!")}
+            activeOpacity={0.7}
+          />
+            <View style={{marginLeft: 20}}>
+              <Title style={[styles.title, {marginTop: 15, marginBottom: 5}]}>{firstName} {lastName}</Title>
+              <Caption style={styles.caption}>@dsdasdasdsa</Caption>
             </View>
           </View>
+        </View> 
 
-          <View style={styles.infoBoxWrapper}>
-              <View style={[styles.infoBox, {
-                borderRightColor: '#dddddd',
-                borderRightWidth: 1
-              }]}>
-                <Title>$120</Title>
-                <Caption>Wallet</Caption>
-              </View>
-              <View style={styles.infoBox}>
-                <Title>$120</Title>
-                <Caption>Wallet</Caption>
-              </View>
-          </View> 
-
-          <View style={styles.menuWrapper}>
-            <TouchableRipple onPress={() => {}}>
-                <View style={styles.menuItem}>
-                  <Icon name="document-outline" size={25} color="#0075db" />
-                  <Text style={styles.menuItemText}>Historia zasielok</Text>
-                </View>
-            </TouchableRipple>
-            <TouchableRipple onPress={() => {}}>
-                <View style={styles.menuItem}>
-                  <Icon name="document-outline" size={25} color="#0075db" />
-                  <Text style={styles.menuItemText}>Platobne udaje</Text>
-                </View>
-            </TouchableRipple>
-            <TouchableRipple onPress={() => {}}>
-                <View style={styles.menuItem}>
-                  <Icon name="document-outline" size={25} color="#0075db" />
-                  <Text style={styles.menuItemText}>Nastavenia</Text>
-                </View>
-            </TouchableRipple>
+        <View style={styles.userInfoSection}>
+          <View style={styles.row}>
+            <Icon name="home-outline" color="#777777" size={20} />
+            <Text style={{color:"#777777", marginLeft: 20}} >Snina, Slovensko</Text>
           </View>
-        </SafeAreaView>
-    );
-    };
+          <View style={styles.row}>
+            <Icon name="chatbubbles-outline" color="#777777" size={20} />
+            <Text style={{color:"#777777", marginLeft: 20}} >{email}</Text>
+          </View>
+          <View style={styles.row}>
+            <Icon name="call" color="#777777" size={20} />
+            <Text style={{color:"#777777", marginLeft: 20}} >{phoneNumber}</Text>
+          </View>
+        </View>
+
+        <View style={styles.infoBoxWrapper}>
+            <View style={[styles.infoBox, {
+              borderRightColor: '#dddddd',
+              borderRightWidth: 1
+            }]}>
+              <Title>$120</Title>
+              <Caption>Wallet</Caption>
+            </View>
+            <View style={styles.infoBox}>
+              <Title>$120</Title>
+              <Caption>Wallet</Caption>
+            </View>
+        </View> 
+
+        <View style={styles.menuWrapper}>
+          <TouchableRipple onPress={() => navigation.navigate('Order')}>
+              <View style={styles.menuItem}>
+                <Icon name="document-outline" size={25} color="#393485" />
+                <Text style={styles.menuItemText}>Historia zasielok</Text>
+              </View>
+          </TouchableRipple>
+          <TouchableRipple onPress={() => navigation.navigate("PaymentInformation")}>
+              <View style={styles.menuItem}>
+                <Icon name="document-outline" size={25} color="#393485" />
+                <Text style={styles.menuItemText}>Platobne udaje</Text>
+              </View>
+          </TouchableRipple>
+          <TouchableRipple onPress={() => navigation.navigate('settingsScreenStack')}>
+              <View style={styles.menuItem}>
+                <Icon name="document-outline" size={25} color="#393485" />
+                <Text style={styles.menuItemText}>Nastavenia</Text>
+              </View>
+          </TouchableRipple>
+        </View>
+      </SafeAreaView>
+  );
 };
+
+export default ProfileScreen;
 
 const styles = StyleSheet.create({
     container: {

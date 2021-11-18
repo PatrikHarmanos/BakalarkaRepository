@@ -17,6 +17,7 @@ import NewOrderDetailsScreen from './NewOrderDetailsScreen';
 import NewOrderItemScreen from './NewOrderItemScreen';
 import OrderDetailsScreen from './OrderDetailsScreen';
 import OrderCheckoutScreen from './OrderCheckoutScreen';
+import PaymentInformationScreen from './PaymentInformationScreen';
 
 const HomeStackScreen = ({navigation}) => (
   <Stack.Navigator screenOptions={{
@@ -65,6 +66,14 @@ const ProfileStackScreen = ({navigation}) => (
               title: "Editovat profil"
             }}
             component={EditProfileScreen}
+          />
+
+          <Stack.Screen 
+            name="PaymentInformation"
+            options= {{
+              title: "Zadat platobne udaje"
+            }}
+            component={PaymentInformationScreen}
           />
   </Stack.Navigator>
   );
@@ -132,7 +141,7 @@ const Tab = createMaterialBottomTabNavigator();
 const TabScreen = () => (
     <Tab.Navigator
       initialRouteName="Home"
-      barStyle={{ backgroundColor: '#0075db' }}
+      barStyle={{ backgroundColor: '#393485' }}
     >
       <Tab.Screen
         name="Domov"

@@ -12,21 +12,37 @@ import {
 } from 'react-native';
 import MaterialComunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const NewOrderScreen = ({navigation}) => {
 
   const [pickupData, setPickupData] = useState('');
   const [deliveryData, setDeliveryData] = useState('');
 
+  const handleButton = () => {
+    if (!pickupData){
+      alert("Prosím vyberte miesto vyzdvihnutia");
+      return;
+    }
+
+    if (!deliveryData) {
+      alert("Prosím vyberte miesto doručenia");
+      return;
+    }
+
+    navigation.navigate('NewOrderDetails', {pickup_place: pickupData, delivery_place: deliveryData})
+  };
+
     return (
         <View style={styles.container}>
           <View style={styles.header}>
-              <Text style={[styles.text_header, {marginTop: 20}]}>Odkial</Text>
+              <Text style={[styles.text_header, {marginTop: 20}]}>Odkiaľ</Text>
               <View style={styles.action}>
                 <GooglePlacesAutocomplete
-                  placeholder='Vyhladajte miesto vyzdvihnutia'
+                  placeholder='Vyhľadajte miesto vyzdvihnutia'
                   onPress={(data, details = null) => {
                     setPickupData(data);
+                    console.log(data);
                   }}
                   query={{
                     key: 'AIzaSyD3IdOaoOc8tVpnakDzh1BLImcS-iJxoVY',
@@ -38,9 +54,10 @@ const NewOrderScreen = ({navigation}) => {
               <Text style={[styles.text_header, {marginTop: 20}]}>Kde</Text>
               <View style={styles.action}>
                 <GooglePlacesAutocomplete
-                  placeholder='Vyhladajte ciel'
+                  placeholder='Vzhľadajte miesto doručenia'
                   onPress={(data, details = null) => {
                     setDeliveryData(data);
+                    console.log(data);
                   }}
                   query={{
                     key: 'AIzaSyD3IdOaoOc8tVpnakDzh1BLImcS-iJxoVY',
@@ -52,8 +69,8 @@ const NewOrderScreen = ({navigation}) => {
           </View>
           <View style={styles.footer}>
             <View style={styles.button}>
-              <TouchableOpacity  style={styles.signIn} onPress={() => navigation.navigate('NewOrderDetails', {pickup_place: pickupData, delivery_place: deliveryData})}>
-                  <Text style={styles.textSign}>Pokracovat</Text>
+              <TouchableOpacity  style={styles.signIn} onPress={handleButton}>
+                  <Text style={styles.textSign}>Pokračovať</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -69,17 +86,17 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff'
       },
       header: {
-        justifyContent: 'flex-end',
+        flex: 4,
+        justifyContent: 'flex-start',
         paddingHorizontal: 20,
-        borderBottomColor: '#dddddd',
-        borderBottomWidth: 2
+        paddingTop: 30
       },
       footer: {
+        flex: 1,
         backgroundColor: '#fff',
-        borderTopLeftRadius: 30,
-        borderTopRightRadius: 30,
         paddingHorizontal: 20,
-        
+        justifyContent: 'flex-end',
+        paddingBottom: 50
       },
       text_header: {
         color: '#05375a',
@@ -108,7 +125,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 10,
-        backgroundColor: '#0075db'
+        backgroundColor: '#393485'
       },
       textSign: {
         fontSize: 18,

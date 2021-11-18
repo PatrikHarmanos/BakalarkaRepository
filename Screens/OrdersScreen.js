@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {
     View, 
     Text,
@@ -10,23 +10,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
 
-export default class OrdersScreen extends React.Component {
+const OrdersScreen = ({navigation}) => {
 
-  constructor(props) {
-    super(props);
+  const [data, setData] = useState();
 
-    this.state = {
-      data: []
-    };
-  }
-
-  componentDidMount() {
-    this.fetchData();
-  }
-
-  fetchData = async () => {
+  useEffect(() => {
     try {
-      await AsyncStorage.getItem('@access_token').then((token) => {
+      AsyncStorage.getItem('@access_token').then((token) => {
           console.log(token);
           if (token != null) {
               fetch('http://147.175.150.96/api/core/my_deliveries/', {
@@ -38,7 +28,7 @@ export default class OrdersScreen extends React.Component {
               .then((response) => response.json())
               .then ((responseJson) => {
                   console.log(responseJson);
-                  this.setState({ data: responseJson });
+                  setData(responseJson);
               })
               .catch((error) => {
                   console.log(error);
@@ -51,35 +41,40 @@ export default class OrdersScreen extends React.Component {
     } catch(error) {
         console.log(error);
     }
-  };
-
-  render() {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.textHeading}>Odoslane zasielky</Text>
-        <FlatList
-          data={this.state.data}
-          keyExtractor={item => item.id}
-          renderItem={({ item }) => 
-            <TouchableOpacity onPress={() => this.props.navigation.navigate("OrderDetails", {value: item})} style={styles.item}> 
-              <Text style={styles.orderTitle}>
-                {item.receiver.first_name} {item.receiver.last_name}
-              </Text>
-              <Text style={styles.orderSubTitle}>
-                {item.delivery_place.formatted_address}
-              </Text>
-            </TouchableOpacity>
-          }
-        />
-      </View>
-    );
-  }
+  }, [])
+  
+  return (
+    <View style={styles.container}>
+      <Text style={styles.textHeading}>Odoslane zasielky</Text>
+      <FlatList
+        data={data}
+        keyExtractor={item => item.id}
+        renderItem={({ item }) => 
+          <TouchableOpacity onPress={() => navigation.navigate("OrderDetails", {value: item})} style={styles.item}> 
+            <Text style={styles.orderTitle}>
+              {item.receiver.first_name} {item.receiver.last_name}
+            </Text>
+            <Text style={styles.orderSubTitle}>
+              {item.delivery_place.formatted_address}
+            </Text>
+          </TouchableOpacity>
+        }
+      />
+    </View>
+  );
 };
+
+export default OrdersScreen;
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#fff'
+      },
+      image: {
+        flex: 1,
+        resizeMode: 'cover',
+        justifyContent: 'center',
       },
       textHeading: {
         fontSize: 20,
@@ -89,18 +84,20 @@ const styles = StyleSheet.create({
         color: '#777777'
       },
       item: {
-        backgroundColor: '#dddddd',
-        padding: 20,
+        backgroundColor: '#393485',
+        padding: 20,  
         marginVertical: 8,
         marginHorizontal: 16,
         borderRadius: 18
       },
       orderTitle: {
-        fontSize: 18,
-        marginBottom: 4
+        fontSize: 21,
+        marginBottom: 4,
+        color: '#fff',
+        fontWeight: 'bold'
       },
       orderSubTitle: {
-        fontSize: 14,
-        color: '#777777'
+        fontSize: 16,
+        color: '#cdc8de'
       }
 });

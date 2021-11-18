@@ -23,9 +23,14 @@ const LoginScreen = ({navigation}) => {
   const [errorText, setErrorText] = useState('');
   const [isRegistrationSuccess, setIsRegistrationSuccess] = useState(false);
 
-  const storeToken = async (value) => {
+  const storeToken = async (access, refresh) => {
     try {
-      await AsyncStorage.setItem('@access_token', value)
+      await AsyncStorage.setItem('@access_token', access)
+    } catch(error) {
+      console.log(error);
+    }
+    try {
+      await AsyncStorage.setItem('@refresh_token', refresh)
     } catch(error) {
       console.log(error);
     }
@@ -59,7 +64,7 @@ const LoginScreen = ({navigation}) => {
         // if login was successfull, go to HomeScreen and save access token
         if (responseJson.detail != "No active account found with the given credentials") {
           console.log(responseJson.access);
-          storeToken(responseJson.access);
+          storeToken(responseJson.access, responseJson.refresh);
           navigation.navigate("DrawerNavigation");
 
         }
@@ -116,7 +121,7 @@ export default LoginScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0075db'
+    backgroundColor: '#393485'
   },
   header: {
     flex: 1,
@@ -164,7 +169,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 10,
-    backgroundColor: '#0075db'
+    backgroundColor: '#393485'
   },
   textSign: {
     fontSize: 18,

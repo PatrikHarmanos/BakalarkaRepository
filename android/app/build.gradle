@@ -131,6 +131,9 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    compileSdkVersion 27
+    buildToolsVersion "27.0.3"
+
     defaultConfig {
         applicationId 'expo.android'
         minSdkVersion rootProject.ext.minSdkVersion
@@ -138,6 +141,7 @@ android {
         versionCode 1
         versionName "1.0.0"
         vectorDrawables.useSupportLibrary = true
+        missingDimensionStrategy 'react-native-camera', 'general'
     }
     splits {
         abi {

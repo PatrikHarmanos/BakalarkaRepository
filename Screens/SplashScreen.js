@@ -59,7 +59,7 @@ const SplashScreen = ({navigation}) => {
                     </TouchableOpacity>
                 </View>
                 <View style={styles.buttonSecond}>
-                    <TouchableOpacity style={styles.signIn}>
+                    <TouchableOpacity style={styles.signIn} onPress={() => navigation.navigate("Auth", {screen: "CheckOrderStatusScreen"})}>
                         <Text style={styles.textSign}>Stav zásielky</Text>
                         <MaterialIcons name="navigate-next" color="#fff" size={20} />
                     </TouchableOpacity>
@@ -74,7 +74,7 @@ export default SplashScreen;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#0075db'
+        backgroundColor: '#393485'
     },
     header: {
         flex: 2,
@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         borderRadius: 50,
         flexDirection: 'row',
-        backgroundColor: '#0075db'
+        backgroundColor: '#393485'
     },
     textSign: {
         color: 'white',

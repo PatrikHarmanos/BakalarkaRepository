@@ -139,7 +139,7 @@ export default RegisterScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0075db'
+    backgroundColor: '#393485'
   },
   header: {
     flex: 1,
@@ -187,7 +187,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 10,
-    backgroundColor: '#0075db'
+    backgroundColor: '#393485'
   },
   textSign: {
     fontSize: 18,

@@ -10,6 +10,7 @@ import {
     KeyboardAvoidingView,
     TextInput
 } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 import MaterialComunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const NewOrderDetailsScreen = ({route, navigation}) => {
@@ -22,25 +23,25 @@ const NewOrderDetailsScreen = ({route, navigation}) => {
 
   const handleButton = () => {
 
-    // if (!receiverFirstName) {
-    //   alert('Prosím zadajte meno');
-    //   return;
-    // }
+    if (!receiverFirstName) {
+      alert('Prosím zadajte meno príjimateľa');
+      return;
+    }
 
-    // if (!receiverLastName) {
-    //   alert('Prosím zadajte priezvisko');
-    //   return;
-    // }
+    if (!receiverLastName) {
+      alert('Prosím zadajte priezvisko príjimateľa');
+      return;
+    }
 
-    // if (!receiverNumber) {
-    //   alert('Prosím zadajte telefónne číslo');
-    //   return;
-    // }
+    if (!receiverNumber) {
+      alert('Prosím zadajte telefónne číslo');
+      return;
+    }
 
-    // if (!receiverEmail) {
-    //   alert('Prosím zadajte e-mail');
-    //   return;
-    // }
+    if (!receiverEmail) {
+      alert('Prosím zadajte e-mail');
+      return;
+    }
 
     navigation.navigate('NewOrderItem', {
       FirstName: receiverFirstName,
@@ -50,72 +51,68 @@ const NewOrderDetailsScreen = ({route, navigation}) => {
       pickup_place: pickup_place,
       delivery_place: delivery_place
     })
-    
   };
 
-    return (
-        <View style={styles.container}>
-          <View style={styles.header}>
-            <KeyboardAvoidingView>
-              <Text style={[styles.text_header, {marginTop: 20}]}>Meno prijemcu</Text>
-              <View style={styles.action}>
-                <TextInput style={styles.textInput} onChangeText={(FirstName) => setReceiverFirstName(FirstName)}
-                    placeholder="Zadajte meno"
-                /> 
-              </View>
-              <Text style={[styles.text_header, {marginTop: 20}]}>Priezvisko prijemcu</Text>
-              <View style={styles.action}>
-                <TextInput style={styles.textInput} onChangeText={(LastName) => setReceiverLastName(LastName)}
-                    placeholder="Zadajte priezvisko"
-                /> 
-              </View>
-              <Text style={[styles.text_header, {marginTop: 20}]}>E-mail prijemcu</Text>
-              <View style={styles.action}>
-                <TextInput style={styles.textInput} onChangeText={(Email) => setReceiverEmail(Email)}
-                    placeholder="Zadajte e-mail"
-                /> 
-              </View>
-              <Text style={[styles.text_header, {marginTop: 20}]}>Telefonne cislo prijemcu</Text>
-              <View style={styles.action}>
-                <TextInput style={styles.textInput} onChangeText={(Number) => setReceiverNumber(Number)}
-                    placeholder="Zadajte telefonne cislo"
-                /> 
-              </View>
-            </KeyboardAvoidingView>
-          </View>
-          <View style={styles.footer}>
-            <View style={styles.button}>
-              <TouchableOpacity  style={styles.signIn} onPress={handleButton}>
-                  <Text style={styles.textSign}>Pokracovat</Text>
-              </TouchableOpacity>
+  return (
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <ScrollView>
+            <Text style={[styles.text_header, {marginTop: 20}]}>Meno príjemcu</Text>
+            <View style={styles.action}>
+              <TextInput style={styles.textInput} onChangeText={(FirstName) => setReceiverFirstName(FirstName)}
+                  placeholder="Zadajte meno"
+              /> 
             </View>
+            <Text style={[styles.text_header, {marginTop: 20}]}>Priezvisko príjemcu</Text>
+            <View style={styles.action}>
+              <TextInput style={styles.textInput} onChangeText={(LastName) => setReceiverLastName(LastName)}
+                  placeholder="Zadajte priezvisko"
+              /> 
+            </View>
+            <Text style={[styles.text_header, {marginTop: 20}]}>E-mail</Text>
+            <View style={styles.action}>
+              <TextInput style={styles.textInput} onChangeText={(Email) => setReceiverEmail(Email)}
+                  placeholder="Zadajte e-mail"
+              /> 
+            </View>
+            <Text style={[styles.text_header, {marginTop: 20}]}>Telefónne číslo</Text>
+            <View style={styles.action}>
+              <TextInput style={styles.textInput} onChangeText={(Number) => setReceiverNumber(Number)}
+                  placeholder="Zadajte telefónne číslo"
+              /> 
+            </View>
+          </ScrollView>
+        </View>
+        <View style={styles.footer}>
+          <View style={styles.button}>
+            <TouchableOpacity  style={styles.signIn} onPress={handleButton}>
+                <Text style={styles.textSign}>Pokračovať</Text>
+            </TouchableOpacity>
           </View>
         </View>
-    );
+      </View>
+  );
 };
 
 export default NewOrderDetailsScreen;
 
 const styles = StyleSheet.create({
     container: {
-        flex: 2,
+        flex: 1,
         backgroundColor: '#fff'
       },
       header: {
-        flex: 3,
-        justifyContent: 'flex-end',
+        flex: 4,
+        justifyContent: 'flex-start',
         paddingHorizontal: 20,
-        paddingBottom: 40,
-        borderBottomColor: '#dddddd',
-        borderBottomWidth: 2
+        paddingTop: 30
       },
       footer: {
-        flex: 2,
+        flex: 1,
         backgroundColor: '#fff',
-        borderTopLeftRadius: 30,
-        borderTopRightRadius: 30,
         paddingHorizontal: 20,
-        paddingVertical: 30,
+        justifyContent: 'flex-end',
+        paddingBottom: 50
       },
       text_header: {
         color: '#05375a',
@@ -123,16 +120,17 @@ const styles = StyleSheet.create({
       },
       action: {
         flexDirection: 'row',
-        marginTop: 6,
+        marginTop: 15,
         borderBottomWidth: 1,
         borderBottomColor: '#f2f2f2',
         paddingBottom: 5
       },
       textInput: {
         flex: 1,
-        marginTop: 0,
+        marginBottom: 10,
         paddingLeft: 10,
-        color: '#05375a'
+        color: '#05375a',
+        fontSize: 15
       },
       button: {
         alignItems: 'center',
@@ -144,7 +142,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 10,
-        backgroundColor: '#0075db'
+        backgroundColor: '#393485'
       },
       textSign: {
         fontSize: 18,

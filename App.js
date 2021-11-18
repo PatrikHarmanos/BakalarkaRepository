@@ -5,7 +5,8 @@ import LoginScreen from './Screens/LoginScreen';
 import RegisterScreen from './Screens/RegisterScreen';
 import SplashScreen from './Screens/SplashScreen';
 import DrawerNavigation from './Screens/DrawerNavigation';
-import TabScreen from './Screens/TabScreen';
+import CheckOrderStatusScreen from './Screens/CheckOrderStatusScreen';
+import OrderDetailsScreen from './Screens/OrderDetailsScreen';
 
 const Stack = createStackNavigator();
 
@@ -14,6 +15,14 @@ const Auth = () => {
     <Stack.Navigator>
       <Stack.Screen name="LoginScreen" component={LoginScreen} options={{headerShown: false}}/>
       <Stack.Screen name="RegisterScreen" component={RegisterScreen} options={{headerShown: false}}/>
+      <Stack.Screen name="CheckOrderStatusScreen" component={CheckOrderStatusScreen} options={{headerShown: false}}/>
+      <Stack.Screen 
+            name="OrderDetails"
+            options= {{
+              title: "Order details"
+            }}
+            component={OrderDetailsScreen}
+          />
     </Stack.Navigator>
   );
 };

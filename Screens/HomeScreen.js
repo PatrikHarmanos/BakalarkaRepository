@@ -3,19 +3,39 @@ import React from 'react';
 import {
     View, 
     Text,
-    Button,
     StyleSheet,
-    Dimensions,
     TouchableOpacity
 } from 'react-native';
-
+import { Avatar, Button, Card, Title, Paragraph } from 'react-native-paper';
 
 const HomeScreen = ({navigation}) => {
     
     return (
-        <View style={styles.container}>
-            
-        </View>
+      <View style={styles.container}>
+          <Card style={styles.item}>
+            <Card.Cover source={require('../images/becomeACourier.jpg')} />
+            <Card.Content>
+              <Title style={styles.cardTitle}>Staň sa aj ty kuriérom!</Title>
+              <Paragraph style={styles.cardSubtitle}>Poď medzi nás a objav všetky výhody.</Paragraph>
+            </Card.Content>
+            <Card.Actions>
+              <View style={styles.button}>
+                <TouchableOpacity onPress={() => {navigation.navigate('courierScreenStack')}} style={styles.signIn}>
+                    <Text style={styles.textSign}>Preskúmať</Text>
+                </TouchableOpacity>
+              </View>
+            </Card.Actions>
+          </Card>
+
+          <View style={styles.createOrderCard}>
+            <Text style={styles.createOrderCardText}>Vitajte, Patrik</Text>
+            <View style={styles.button}>
+                <TouchableOpacity onPress={() => {navigation.navigate('Order', {screen: 'NewOrder'})}} style={styles.signIn}>
+                    <Text style={styles.textSign}>Poslať zásielku</Text>
+                </TouchableOpacity>
+            </View>
+          </View>
+      </View>
     );
 };
 
@@ -25,38 +45,56 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#fff'
-      },
-      button: {
-        alignItems: 'center',
-        marginTop: 0,
-        borderColor: '#444'
-      },
-      signIn: {
-        width: 60,
-        height: 60,
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderRadius: 50,
-        flexDirection: 'row',
-        backgroundColor: '#f7ab31'
+    },
+    item: {
+      backgroundColor: '#f7f7f7',
+      marginVertical: 8,
+      marginHorizontal: 16,
+      borderRadius: 18
+    },
+    cardTitle: {
+      color: '#393485',
+      fontSize: 30,
+      fontWeight: 'bold',
+      marginTop: 12
+    },
+    cardSubtitle: {
+      color: '#e8a438',
+      fontWeight: 'bold',
+      fontSize: 16
+    }, 
+    button: {
+      alignItems: 'center',
+      marginLeft: 8
+    },
+    signIn: {
+      width: '100%',
+      height: 50,
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderRadius: 10,
+      backgroundColor: '#393485'
     },
     textSign: {
-        color: 'white',
-        fontWeight: 'bold',
-        fontSize: 30
+      fontSize: 18,
+      fontWeight: 'bold',
+      color: '#fff',
+      paddingHorizontal: 15
     },
-      header: {
-        flex: 2,
-        justifyContent: 'flex-end',
-        paddingHorizontal: 20,
-        paddingBottom: 50
-      },
-      footer: {
-        flex: 1,
-        backgroundColor: '#fff',
-        borderTopLeftRadius: 30,
-        borderTopRightRadius: 30,
-        paddingHorizontal: 20,
-        paddingVertical: 30,
-      }
+    createOrderCard: {
+      backgroundColor: '#e8a438', 
+      marginVertical: 8,
+      marginHorizontal: 16,
+      borderRadius: 18,
+      display: 'flex',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      padding: 12
+    },
+    createOrderCardText: {
+      fontSize: 22,
+      color: '#fff',
+      fontWeight: 'bold'
+    }
 });

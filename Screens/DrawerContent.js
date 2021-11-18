@@ -20,6 +20,44 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export function DrawerContent(props) {
 
+    const [isSwitchOn, setIsSwitchOn] = React.useState(false);
+    const [isCourier, setIsCourier] = React.useState(true);
+
+    const onToggleSwitch = () => {
+        setIsSwitchOn(!isSwitchOn);
+        // If the switch turns on -> go to main courier part of the application
+        if (!isSwitchOn){
+            props.navigation.navigate("courierScreenStack", {screen: 'CourierMainScreen'});
+        // if the switch turns off -> go back to user application (home screen)
+        } else {
+            props.navigation.navigate("TabScreen");
+        }
+    }
+
+    // if courier is true -> then display switch component, otherwise return null
+    const com = isCourier ? (
+        <View style={styles.changeToCourier}>
+                <Text style={styles.changeToCourierText}>Kuriérska časť</Text>
+                <Switch value={isSwitchOn} onValueChange={onToggleSwitch} color="#393485"/>
+        </View>
+    ) : null;
+
+    const becomeACourierOption = !isCourier ? (
+        <DrawerItem 
+            icon={({color, size}) => (
+                <Icon 
+                    name='progress-wrench'
+                    color={color}
+                    size={size}
+                />
+            )}
+            label="Stat sa kurierom"
+            onPress={() => {props.navigation.navigate("courierScreenStack")}}
+        />
+    ) : null;
+
+    // function for log out, we need to delete access token
+    // !!! also delete refresh token
     const deleteToken = async () => {
         try {
           await AsyncStorage.setItem('@access_token', '');
@@ -71,9 +109,11 @@ export function DrawerContent(props) {
                         label="Nastavenia"
                         onPress={() => {props.navigation.navigate("settingsScreenStack")}}
                         />
+                        {becomeACourierOption}
                     </Drawer.Section>
                 </View>
             </DrawerContentScrollView>
+            {com}
             <Drawer.Section style={styles.bottomDrawerSection}>
                 <DrawerItem 
                     icon={({color, size}) => (
@@ -135,4 +175,17 @@ const styles = StyleSheet.create({
       paddingVertical: 12,
       paddingHorizontal: 16,
     },
+    changeToCourier: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 20,
+        marginHorizontal: 20
+    },
+    changeToCourierText: {
+        fontSize: 18,
+        color: '#b5b5b5',
+        fontWeight: 'bold'
+    }
   });
