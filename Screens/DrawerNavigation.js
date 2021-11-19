@@ -18,6 +18,7 @@ const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 
 import { DrawerContent } from './DrawerContent';
+import CourierDeliveryScreen from './CourierDeliveryScreen';
 
 const settingsScreenStack = ({navigation}) => (
     <Stack.Navigator screenOptions={{
@@ -60,6 +61,7 @@ const courierScreenStack = ({navigation}) => (
                 <Icon.Button name="ios-menu" size={25} backgroundColor="#fff" color="#000" onPress={() => navigation.openDrawer()}></Icon.Button>
             )
             }} />
+            <Stack.Screen name="CourierDeliveryScreen" component={CourierDeliveryScreen} />
     </Stack.Navigator>
 );
 
