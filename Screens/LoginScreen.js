@@ -14,6 +14,7 @@ import {
   Platform
 } from 'react-native';
 
+import * as SecureStore from 'expo-secure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LoginScreen = ({navigation}) => {
@@ -23,17 +24,21 @@ const LoginScreen = ({navigation}) => {
   const [errorText, setErrorText] = useState('');
   const [isRegistrationSuccess, setIsRegistrationSuccess] = useState(false);
 
-  const storeToken = async (access, refresh) => {
+  const storeToAsyncStorage = async (key, value) => {
     try {
-      await AsyncStorage.setItem('@access_token', access)
+      await AsyncStorage.setItem(key, value);
     } catch(error) {
       console.log(error);
     }
-    try {
-      await AsyncStorage.setItem('@refresh_token', refresh)
-    } catch(error) {
-      console.log(error);
-    }
+  }
+
+  async function save(key, value) {
+    await SecureStore.setItemAsync(key, value);
+  }
+
+  async function getValueFor(key) {
+    let result = await SecureStore.getItemAsync(key);
+    return result;
   }
 
   const handleSubmitButton = () => {
@@ -63,10 +68,32 @@ const LoginScreen = ({navigation}) => {
       .then((responseJson) => {
         // if login was successfull, go to HomeScreen and save access token
         if (responseJson.detail != "No active account found with the given credentials") {
-          console.log(responseJson.access);
-          storeToken(responseJson.access, responseJson.refresh);
-          navigation.navigate("DrawerNavigation");
+          // save access and refresh token to secure storage
+          save('access' , responseJson.access);
+          save('refresh', responseJson.refresh);
 
+          // get user info from server
+          fetch('http://147.175.150.96/api/account/my_account/', {
+                        method: "GET",
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ' + responseJson.access,
+                        }
+                    })
+                    .then((r) => r.json())
+                    .then ((rJson) => {
+                        // store user info to async storage
+                        storeToAsyncStorage('@email', rJson.email);
+                        storeToAsyncStorage('@first_name', rJson.person.first_name);
+                        storeToAsyncStorage('@last_name', rJson.person.last_name);
+                        storeToAsyncStorage('@phone_number', rJson.person.phone_number);
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    });
+
+          // navigate to the app
+          navigation.navigate("DrawerNavigation");
         }
         // else show an error
       })

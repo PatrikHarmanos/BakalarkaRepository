@@ -19,108 +19,25 @@ import * as Location from 'expo-location';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
-const CourierMainScreen = ({navigation}) => {
-
-    const [currentLocationLat, setCurrentLocationLat] = React.useState();
-    const [currentLocationLon, setCurrentLocationLon] = React.useState();
-    const [data, setData] = useState();
+const CourierMainScreen = ({route, navigation}) => {
     const [distance, setDistance] = useState();
-    
-    const [pickupPlacePostalCode, setPickupPlacePostalCode] = useState();
-    const [pickupPlaceLat, setPickupPlaceLat] = useState();
-    const [pickupPlaceLong, setPickupPlaceLong] = useState();
-    const [deliveryPlacePostalCode, setDeliveryPlacePostalCode] = useState();
-    const [deliveryPlaceLat, setDeliveryPlaceLat] = useState();
-    const [deliveryPlaceLong, setDeliveryPlaceLong] = useState();
 
-    useEffect(() => {
-        getLocation();
-    })
-
-    const getLocation = async () => {
-        try {
-            let { status } = await Location.requestForegroundPermissionsAsync();
-            if (status !== 'granted') {
-              return;
-            }
-            let location = await Location.getCurrentPositionAsync({});
-            setCurrentLocationLat(location["coords"]["latitude"]);
-            setCurrentLocationLon(location["coords"]["longitude"]);
-        } catch (error) {
-            console.log(error);
-        }
-
-        try {
-            await AsyncStorage.getItem('@access_token').then((token) => {
-                console.log(token);
-                if (token != null) {
-                    fetch(`http://147.175.150.96/api/couriers/closest_deliveries/?lon=${currentLocationLon}&lat=${currentLocationLat}`, {
-                        method: "GET",
-                        headers: {
-                            'Authorization': 'Bearer ' + token,
-                        }
-                    })
-                    .then((response) => response.json())
-                    .then ((responseJson) => {
-                        setData(responseJson);
-                    })
-                    .catch((error) => {
-                        console.log(error);
-                    });
-                } else {
-                    navigation.navigate("Auth");
-                }
-            })
-        } catch(error) {
-            console.log(error);
-        }
-
-        // call google places API to get latitude and longtitude from place_id for pickup place
-        fetch(`https://maps.googleapis.com/maps/api/place/details/json?placeid=${data[0]["pickup_place"]["place_id"]}&key=AIzaSyD3IdOaoOc8tVpnakDzh1BLImcS-iJxoVY`, {
-            method: 'GET',
-        })
-            .then((response) => response.json())
-            .then((responseJson) => {
-            for (let i = 0; i < responseJson.result.address_components.length; i++){
-                if (responseJson.result.address_components[i].types[0] == "postal_code"){
-                setPickupPlacePostalCode(responseJson.result.address_components[i].short_name);
-                }
-            }
-            setPickupPlaceLat(responseJson.result.geometry.location.lat);
-            setPickupPlaceLong(responseJson.result.geometry.location.lng);
-            
-            })
-            .catch((error) => {
-            console.log(error);
-            });
-
-        // call google places API to get latitude and longtitude from place_id for delivery place
-        fetch(`https://maps.googleapis.com/maps/api/place/details/json?placeid=${data[0]["delivery_place"]["place_id"]}&key=AIzaSyD3IdOaoOc8tVpnakDzh1BLImcS-iJxoVY`, {
-                method: 'GET',
-        })
-            .then((response) => response.json())
-            .then((responseJson) => {
-            // get postal code from json response
-            // it has to be done in the loop, because the number of elements in the array can be different due to address number (sometimes there is no address number)
-            for (let i = 0; i < responseJson.result.address_components.length; i++){
-                if (responseJson.result.address_components[i].types[0] == "postal_code"){
-                setDeliveryPlacePostalCode(responseJson.result.address_components[i].short_name);
-                }
-            }
-            // get lat and long from json response
-            setDeliveryPlaceLat(responseJson.result.geometry.location.lat);
-            setDeliveryPlaceLong(responseJson.result.geometry.location.lng);
-            })
-            .catch((error) => {
-            console.log(error);
-            });
-
-    }
+    const {
+        data,
+        pickupPlacePostalCode,
+        pickupPlaceLat,
+        pickupPlaceLong,
+        deliveryPlacePostalCode,
+        deliveryPlaceLat,
+        deliveryPlaceLong
+    } = route.params;
 
     const handleButton = () => {
   
         navigation.navigate("CourierDeliveryScreen", {
+        itemName: data[0]["item"]["name"],
           itemDescription: data[0]["item"]["description"],
+          itemPhoto: data[0]["item"]["photo"],
           itemSize: data[0]["item"]["size"],
           itemWeight: data[0]["item"]["weight"],
           itemIsFragile: data[0]["item"]["fragile"],
@@ -139,7 +56,8 @@ const CourierMainScreen = ({navigation}) => {
           deliveryPlaceCity: data[0]["delivery_place"]["city"],
           deliveryPlaceStreetAddress: data[0]["delivery_place"]["street_address"],
           deliveryID: data[0]["delivery_place"]["place_id"],
-          deliveryPlaceDescription: data[0]["delivery_place"]["formatted_address"]
+          deliveryPlaceDescription: data[0]["delivery_place"]["formatted_address"],
+          safeID: data[0]["safe_id"]
         });
     };
 

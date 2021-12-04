@@ -6,23 +6,24 @@ import {
     StyleSheet,
     FlatList
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
 
-const OrdersScreen = ({navigation}) => {
+const OrdersScreen = ({route, navigation}) => {
 
   const [data, setData] = useState();
 
   useEffect(() => {
     try {
-      AsyncStorage.getItem('@access_token').then((token) => {
+      SecureStore.getItemAsync('access').then((token) => {
           console.log(token);
           if (token != null) {
               fetch('http://147.175.150.96/api/core/my_deliveries/', {
                   method: "GET",
                   headers: {
-                      'Authorization': 'Bearer ' + token,
+                    'content-type': 'application/json',
+                    'Authorization': 'Bearer ' + token,
                   },
               })
               .then((response) => response.json())

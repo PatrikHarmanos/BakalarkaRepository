@@ -14,7 +14,7 @@ import {
   Platform
 } from 'react-native';
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 
 const EditProfileScreen = () =>{
 
@@ -25,7 +25,7 @@ const EditProfileScreen = () =>{
 
   useEffect(() => {
     try {
-      AsyncStorage.getItem('@access_token').then((token) => {
+      SecureStore.getItemAsync('access').then((token) => {
           console.log(token);
           if (token != null) {
               fetch('http://147.175.150.96/api/account/my_account/', {

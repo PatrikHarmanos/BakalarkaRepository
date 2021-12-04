@@ -16,7 +16,7 @@ import {
 } from 'react-native-paper';
 
 import RNPickerSelect from 'react-native-picker-select';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 
 const BecomeACourierMoreInfoScreen = ({navigation}) => {
     const [address, setAddress] = useState('');
@@ -44,7 +44,7 @@ const BecomeACourierMoreInfoScreen = ({navigation}) => {
     formData.append("home_address", home_address);
 
     try {
-      await AsyncStorage.getItem('@access_token').then((token) => {
+      await SecureStore.getItemAsync('access').then((token) => {
           console.log(token);
           if (token != null) {
               fetch('http://147.175.150.96/api/couriers/become_courier/', {

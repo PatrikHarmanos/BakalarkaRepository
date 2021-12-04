@@ -53,9 +53,6 @@ const OrderDetailsScreen = ({route, navigation}) => {
           <Text>Stav zasielky</Text>
         </View>
 
-        
-        
-        
         <Text>{value.item.size}</Text>
         <Text>{value.item.weight}</Text>
         <Text>{value.item.fragile}</Text>

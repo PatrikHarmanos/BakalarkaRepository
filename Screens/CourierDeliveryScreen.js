@@ -15,11 +15,13 @@ import {
 import MapView, { Marker } from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
 import { getPreciseDistance } from 'geolib';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 
 const CourierDeliveryScreen = ({route, navigation}) => {
     const { 
+        itemName,
         itemDescription,
+        itemPhoto,
         itemSize,
         itemWeight,
         itemIsFragile,
@@ -38,7 +40,8 @@ const CourierDeliveryScreen = ({route, navigation}) => {
         deliveryPlaceCity,
         deliveryPlaceStreetAddress,
         deliveryID,
-        deliveryPlaceDescription
+        deliveryPlaceDescription,
+        safeID
     } = route.params;
 
     const [distance, setDistance] = useState(0);
@@ -72,12 +75,11 @@ const CourierDeliveryScreen = ({route, navigation}) => {
     const handleButton = async () => {
 
         try {
-            await AsyncStorage.getItem('@access_token').then((token) => {
+            await SecureStore.getItemAsync('access').then((token) => {
                 console.log(token);
                 if (token != null) {
-                fetch('http://147.175.150.96/api/core/create_delivery/', {
-                    method: 'POST',
-                    body: formData,
+                fetch(`http://147.175.150.96/api/couriers/accept_delivery/?id=${safeID}`, {
+                    method: 'PATCH',
                     headers: {
                     'Authorization': 'Bearer ' + token,
                     }
@@ -99,7 +101,6 @@ const CourierDeliveryScreen = ({route, navigation}) => {
             console.log(error);
         }
 
-        navigation.navigate("Orders");
     };
         
     return (

@@ -18,11 +18,11 @@ import {
 } from 'react-native-paper';
 
 import { useState, useEffect } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 import { ScrollView } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Avatar } from 'react-native-elements';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const ProfileScreen = ({navigation}) => {
@@ -33,35 +33,15 @@ const ProfileScreen = ({navigation}) => {
   const [phoneNumber, setPhoneNumber] = useState();
 
   useEffect(() => {
-    try {
-      AsyncStorage.getItem('@access_token').then((token) => {
-          console.log(token);
-          if (token != null) {
-              fetch('http://147.175.150.96/api/account/my_account/', {
-                  method: "GET",
-                  headers: {
-                      'Authorization': 'Bearer ' + token,
-                  },
-              })
-              .then((response) => response.json())
-              .then ((responseJson) => {
-                  setEmail(responseJson.email);
-                  setFirstName(responseJson.person.first_name);
-                  setLastName(responseJson.person.last_name);
-                  setPhoneNumber(responseJson.person.phone_number);
-              })
-              .catch((error) => {
-                  console.log(error);
-              });
-          } else {
-              // call refresh token
-              return;
-          }
-      })
-  } catch(error) {
-      console.log(error);
-  }
+    getUserInfo();
   }, [])
+
+  const getUserInfo = async () => {
+    setEmail(await AsyncStorage.getItem('@email'));
+    setFirstName(await AsyncStorage.getItem('@first_name'));
+    setLastName(await AsyncStorage.getItem('@last_name'));
+    setPhoneNumber(await AsyncStorage.getItem('@phone_number'));
+  }
 
     return (
       <SafeAreaView style={[styles.container, {backgroundColor: '#fff'}]}>

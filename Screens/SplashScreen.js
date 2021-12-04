@@ -9,24 +9,31 @@ import {
     Image
 } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
+
+async function getValueFor(key) {
+    let result = await SecureStore.getItemAsync(key);
+    return result;
+}
 
 const SplashScreen = ({navigation}) => {
 
     const handleEnterAppButton = async () => {
+
         try {
-            await AsyncStorage.getItem('@access_token').then((token) => {
+            await SecureStore.getItemAsync('access').then((token) => {
                 console.log(token);
                 if (token != null) {
                     fetch('http://147.175.150.96/api/account/my_account/', {
                         method: "GET",
                         headers: {
+                            'Content-Type': 'application/json',
                             'Authorization': 'Bearer ' + token,
                         }
                     })
                     .then((response) => response.json())
                     .then ((responseJson) => {
-                        if (responseJson.code == "token_not_valid"){
+                        if (responseJson.code == "token_not_valid" || responseJson.code == "bad_authorization_header"){
                             navigation.navigate("Auth");
                         } else {
                             navigation.navigate("DrawerNavigation");

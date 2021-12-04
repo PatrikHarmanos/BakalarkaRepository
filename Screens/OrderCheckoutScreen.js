@@ -15,7 +15,7 @@ import {
 import MapView, { Marker } from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
 import { getPreciseDistance } from 'geolib';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 
 const OrderCheckoutScreen = ({route, navigation}) => {
     const { 
@@ -103,7 +103,7 @@ const OrderCheckoutScreen = ({route, navigation}) => {
         formData.append("delivery_place.coordinates", `POINT(${deliveryPlaceLong} ${deliveryPlaceLat})`);
 
         try {
-            await AsyncStorage.getItem('@access_token').then((token) => {
+            await SecureStore.getItemAsync('access').then((token) => {
                 console.log(token);
                 if (token != null) {
                 fetch('http://147.175.150.96/api/core/create_delivery/', {
