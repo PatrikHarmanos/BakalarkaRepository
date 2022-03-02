@@ -17,14 +17,11 @@ import MapViewDirections from 'react-native-maps-directions';
 import { getPreciseDistance } from 'geolib';
 import * as SecureStore from 'expo-secure-store';
 
-const OrderCheckoutScreen = ({route, navigation}) => {
+const CourierActiveDeliveryScreen = ({route, navigation}) => {
     const { 
-        FirstName,
-        LastName, 
-        Number, 
-        Email, 
-        itemCategory,
+        itemName,
         itemDescription,
+        itemPhoto,
         itemSize,
         itemWeight,
         itemIsFragile,
@@ -43,12 +40,15 @@ const OrderCheckoutScreen = ({route, navigation}) => {
         deliveryPlaceCity,
         deliveryPlaceStreetAddress,
         deliveryID,
-        deliveryPlaceDescription
+        deliveryPlaceDescription,
+        safeID
     } = route.params;
 
     const [distance, setDistance] = useState(0);
     const [finalPrice, setFinalPrice] = useState(0);
     const [finalTime, setFinalTime] = useState(0);
+
+    const [isLoading, setLoading] = useState(true);
 
     const mapRef = useRef();
 
@@ -72,65 +72,10 @@ const OrderCheckoutScreen = ({route, navigation}) => {
         calculatePreciseDistance();
         calculateFinalPrice();
         calculateFinalTime();
-    });
+    }, []);
 
-    const handleButton = async () => {
-
-        let formData = new FormData();
-
-        formData.append("item.name", itemCategory);
-        formData.append("item.description", itemDescription);
-        formData.append("item.size", itemSize);
-        formData.append("item.weight", itemWeight);
-        formData.append("item.fragile", itemIsFragile);
-        formData.append("receiver.first_name", FirstName);
-        formData.append("receiver.last_name", LastName);
-        formData.append("receiver.email", Email);
-        formData.append("receiver.phone_number", Number);
-        formData.append("pickup_place.place_id", pickupID);
-        formData.append("pickup_place.formatted_address", pickupPlaceDescription);
-        formData.append("pickup_place.country", pickupPlaceCountry);
-        formData.append("pickup_place.city", pickupPlaceCity);
-        formData.append("pickup_place.street_address", pickupPlaceStreetAddress);
-        formData.append("pickup_place.postal_code", pickupPlacePostalCode);
-        formData.append("pickup_place.coordinates", `POINT(${pickupPlaceLong} ${pickupPlaceLat})`);
-        formData.append("delivery_place.place_id", deliveryID);
-        formData.append("delivery_place.formatted_address", deliveryPlaceDescription);
-        formData.append("delivery_place.country", deliveryPlaceCountry);
-        formData.append("delivery_place.city", deliveryPlaceCity);
-        formData.append("delivery_place.street_address", deliveryPlaceStreetAddress);
-        formData.append("delivery_place.postal_code", deliveryPlacePostalCode);
-        formData.append("delivery_place.coordinates", `POINT(${deliveryPlaceLong} ${deliveryPlaceLat})`);
-
-        try {
-            await SecureStore.getItemAsync('access').then((token) => {
-                console.log(token);
-                if (token != null) {
-                fetch('http://147.175.150.96/api/core/create_delivery/', {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                    'Authorization': 'Bearer ' + token,
-                    }
-                })
-                    .then((response) => response.json())
-                    .then((responseJson) => {
-                    
-                    console.log(responseJson);
-                    
-                    })
-                    .catch((error) => {
-                    console.log(error);
-                    });
-                } else {
-                    navigation.navigate("Auth");
-                }
-            })
-        } catch(error) {
-            console.log(error);
-        }
-
-        navigation.navigate("Orders", {update: deliveryPlaceLong});
+    const handleButton = () => {
+        navigation.navigate("CourierMainScreen", {update: deliveryPlaceLong});
     };
         
     return (
@@ -193,52 +138,42 @@ const OrderCheckoutScreen = ({route, navigation}) => {
                 </MapView>
             </View>
             <View style={styles.footer}>
-                
-                    <View style={styles.footer_section}>
-                        <Text style={styles.footer_section_text}>Cena</Text>
-                        <Text style={styles.footer_section_value}>{finalPrice} €</Text>
-                    </View>
-                    <View style={styles.footer_section}>
-                        <Text style={styles.footer_section_text}>Vydialenosť</Text>
-                        <Text style={styles.footer_section_value}>{distance} km</Text>
-                    </View>
-                    <View style={styles.footer_section}>
-                        <Text style={styles.footer_section_text}>Doba doručenia</Text>
-                        <Text style={styles.footer_section_value}>{finalTime} minút</Text>
-                    </View>
-                    
-                    <View style={styles.button}>
+                <View style={styles.footer_section}>
+                    <Text style={styles.footer_section_text}>Miesto doručenia</Text>
+                    <Text style={styles.footer_section_value}>{deliveryPlaceDescription}</Text>
+                </View>
+                <View style={styles.button}>
                         <TouchableOpacity style={styles.signIn} onPress={handleButton}>
-                            <Text style={styles.textSign}>Potvrdiť objednávku</Text>
+                            <Text style={styles.textSign}>Zasielka bola odvzdana</Text>
                         </TouchableOpacity>
-                    </View>
-                
+                </View>
             </View>
         </View>
     ); 
 }
 
-export default OrderCheckoutScreen;
+export default CourierActiveDeliveryScreen;
 
 const styles = StyleSheet.create({
     container: {
         flex: 1
     },
     header: {
-        flex: 3
+        flex: 4
     },
     footer: {
-        flex: 2,
+        flex: 1,
         backgroundColor: '#fff',
         paddingHorizontal: 20,
         justifyContent: 'flex-end',
         paddingBottom: 50,
+        paddingTop: 20,
         borderTopLeftRadius: 30,
         borderTopRightRadius: 30
     },
     button: {
         alignItems: 'center',
-        marginTop: 50
+        marginTop: 20
     },
     signIn: {
         width: '100%',
@@ -254,7 +189,7 @@ const styles = StyleSheet.create({
         color: '#fff'
     },
     footer_section: {
-        flexDirection: 'row',
+        flexDirection: 'column',
         justifyContent: 'space-between',
         paddingHorizontal: 20,
         paddingVertical: 10
@@ -264,6 +199,8 @@ const styles = StyleSheet.create({
         fontWeight: 'bold'
     },
     footer_section_text: {
-        fontSize: 16
+        fontSize: 15,
+        color: '#777',
+        marginBottom: 5
     }
 });

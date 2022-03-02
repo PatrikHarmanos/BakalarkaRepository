@@ -31,7 +31,7 @@ const HomeStackScreen = ({navigation}) => (
     }
 }}>
           <Stack.Screen name="Domovv" component={HomeScreen} options={{
-          title:'Domov',
+          title:'',
           headerLeft: () => (
               <Icon.Button name="ios-menu" size={25} backgroundColor="#fff" color="#000" onPress={() => navigation.openDrawer()}></Icon.Button>
           )
@@ -51,7 +51,7 @@ const ProfileStackScreen = ({navigation}) => (
           }
       }}>
           <Stack.Screen name="Môj profil" component={ProfileScreen} options={{
-            title: 'Moj profil',
+            title: 'Môj profil',
           headerLeft: () => (
               <Icon.Button name="ios-menu" size={25} color="#000" backgroundColor="#fff" onPress={() => navigation.openDrawer()}></Icon.Button>
           ),
@@ -63,7 +63,7 @@ const ProfileStackScreen = ({navigation}) => (
           <Stack.Screen 
             name="EditProfile"
             options= {{
-              title: "Editovat profil"
+              title: "Editovať profil"
             }}
             component={EditProfileScreen}
           />
@@ -95,40 +95,41 @@ const newOrderScreenStack = ({navigation}) => (
           ),
           headerRight: () => (
             <MaterialComunityIcons.Button name="plus" size={25} backgroundColor="#fff" color="#000" onPress={() => navigation.navigate("NewOrder")}></MaterialComunityIcons.Button>
-          )
+          ),
+          title: ""
           }} />
           <Stack.Screen 
             name="NewOrder"
             options= {{
-              title: "Nova zasielka"
+              title: "Nová zásielka"
             }}
             component={newOrderScreen}
           />
           <Stack.Screen 
             name="NewOrderDetails"
             options= {{
-              title: "Nova zasielka detaily"
+              title: "Príjemca"
             }}
             component={NewOrderDetailsScreen}
           />
           <Stack.Screen 
             name="NewOrderItem"
             options= {{
-              title: "Nova zasielka item"
+              title: "Položka"
             }}
             component={NewOrderItemScreen}
           />
           <Stack.Screen 
             name="OrderDetails"
             options= {{
-              title: "Order details"
+              title: "Detail zásielky"
             }}
             component={OrderDetailsScreen}
           />
           <Stack.Screen 
             name="OrderCheckout"
             options= {{
-              title: "Order checkout"
+              title: "Detail zásielky"
             }}
             component={OrderCheckoutScreen}
           />

@@ -1,5 +1,5 @@
 import { NavigationContainer } from '@react-navigation/native';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     View, 
     Text,
@@ -7,8 +7,19 @@ import {
     TouchableOpacity
 } from 'react-native';
 import { Avatar, Button, Card, Title, Paragraph } from 'react-native-paper';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const HomeScreen = ({navigation}) => {
+const HomeScreen = ({ navigation, route }) => {
+  
+  const [firstName, setFirstName] = useState();
+  
+  useEffect(() => {
+    getUserInfo();
+  })
+    
+  const getUserInfo = async () => {
+    setFirstName(await AsyncStorage.getItem('@first_name'));
+  }
     
     return (
       <View style={styles.container}>
@@ -28,7 +39,7 @@ const HomeScreen = ({navigation}) => {
           </Card>
 
           <View style={styles.createOrderCard}>
-            <Text style={styles.createOrderCardText}>Vitajte, Patrik</Text>
+          <Text style={styles.createOrderCardText}>Vitajte, { firstName }</Text>
             <View style={styles.button}>
                 <TouchableOpacity onPress={() => {navigation.navigate('Order', {screen: 'NewOrder'})}} style={styles.signIn}>
                     <Text style={styles.textSign}>Poslať zásielku</Text>

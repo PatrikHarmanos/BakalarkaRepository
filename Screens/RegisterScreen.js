@@ -80,7 +80,7 @@ const RegisterScreen = ({navigation}) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.text_header}>Header</Text>
+        <Text style={styles.text_header}>Registrácia</Text>
       </View>
       <View style={styles.footer}>
         <ScrollView>
@@ -103,7 +103,7 @@ const RegisterScreen = ({navigation}) => {
           <View style={styles.action}>
             <TextInput style={styles.textInput}
                 onChangeText={(Email) => setUserEmail(Email)}
-                placeholder="Zadajte Email"
+                placeholder="Zadajte email"
             /> 
           </View>
           <Text style={[styles.text_footer, {marginTop: 35}]}>Telefónne číslo</Text>
@@ -118,12 +118,13 @@ const RegisterScreen = ({navigation}) => {
             <TextInput style={styles.textInput}
                 onChangeText={(password) => setUserPassword(password)}
                 placeholder="Zadajte heslo"
+                secureTextEntry={true}
             /> 
           </View>
 
           <View style={styles.button}>
             <TouchableOpacity onPress={handleRegisterButton} style={styles.signIn}>
-                <Text style={styles.textSign}>Zaregistrovať sa</Text>
+                <Text style={styles.textSign}>Vytvoriť účet</Text>
             </TouchableOpacity>
           </View>
         

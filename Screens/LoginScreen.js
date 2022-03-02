@@ -41,14 +41,15 @@ const LoginScreen = ({navigation}) => {
     return result;
   }
 
-  const handleSubmitButton = () => {
+  const handleSubmitButton = async () => {
 
-    if (!userPassword) {
-      alert('Please fill Password');
+    if (!userEmail) {
+      alert('Prosím zadajte email');
       return;
     }
-    if (!userEmail) {
-      alert('Please fill Email');
+
+    if (!userPassword) {
+      alert('Prosím zadajte heslo');
       return;
     }
 
@@ -57,7 +58,7 @@ const LoginScreen = ({navigation}) => {
       password: userPassword,
     }
 
-    fetch('http://147.175.150.96/api/account/token/', {
+    await fetch('http://147.175.150.96/api/account/token/', {
       method: 'POST',
       body: JSON.stringify(dataToSend),
       headers: {
@@ -74,28 +75,31 @@ const LoginScreen = ({navigation}) => {
 
           // get user info from server
           fetch('http://147.175.150.96/api/account/my_account/', {
-                        method: "GET",
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': 'Bearer ' + responseJson.access,
-                        }
-                    })
-                    .then((r) => r.json())
-                    .then ((rJson) => {
-                        // store user info to async storage
-                        storeToAsyncStorage('@email', rJson.email);
-                        storeToAsyncStorage('@first_name', rJson.person.first_name);
-                        storeToAsyncStorage('@last_name', rJson.person.last_name);
-                        storeToAsyncStorage('@phone_number', rJson.person.phone_number);
-                    })
-                    .catch((error) => {
-                        console.log(error);
-                    });
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + responseJson.access,
+            }
+          })
+            .then((r) => r.json())
+            .then ((rJson) => {
+                // store user info to async storage
+                storeToAsyncStorage('@email', rJson.email);
+                storeToAsyncStorage('@first_name', rJson.person.first_name);
+                storeToAsyncStorage('@last_name', rJson.person.last_name);
+                storeToAsyncStorage('@phone_number', rJson.person.phone_number);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
 
           // navigate to the app
           navigation.navigate("DrawerNavigation");
+        } else {
+          // else show an error
+          alert('Nesprávny email alebo heslo. Skúste znovu.');
+          return;
         }
-        // else show an error
       })
       .catch((error) => {
         console.log(error);
@@ -105,7 +109,7 @@ const LoginScreen = ({navigation}) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.text_header}>Prihlasenie</Text>
+        <Text style={styles.text_header}>Prihlásenie</Text>
       </View>
       <View style={styles.footer}>
         <KeyboardAvoidingView>
@@ -120,19 +124,20 @@ const LoginScreen = ({navigation}) => {
           <View style={styles.action}>
             <TextInput style={styles.textInput}
                 onChangeText={(password) => setUserPassword(password)}
-                placeholder="Zadajte heslo"
+                placeholder="Zadajte Heslo"
+                secureTextEntry={true}
             /> 
           </View>
 
           <View style={styles.button}>
             <TouchableOpacity onPress={handleSubmitButton} style={styles.signIn}>
-                <Text style={styles.textSign}>Prihlasit sa</Text>
+                <Text style={styles.textSign}>Prihlásiť sa</Text>
             </TouchableOpacity>
           </View>
 
           <View style={styles.button}>
             <TouchableOpacity onPress={() => navigation.navigate('RegisterScreen')} style={styles.signIn}>
-                <Text style={styles.textSign}>Vytvorit ucet</Text>
+                <Text style={styles.textSign}>Vytvoriť ucet</Text>
             </TouchableOpacity>
           </View>
         

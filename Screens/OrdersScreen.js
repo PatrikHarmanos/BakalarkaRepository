@@ -8,11 +8,17 @@ import {
 } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { NavigationContainer } from '@react-navigation/native';
+import Moment from 'moment';
 
 const OrdersScreen = ({route, navigation}) => {
 
   const [data, setData] = useState();
+  const update = route.params;
+  Moment.locale('en');
+
+  const [expanded, setExpanded] = useState(true);
+
+  const handlePress = () => setExpanded(!expanded);
 
   useEffect(() => {
     try {
@@ -28,7 +34,6 @@ const OrdersScreen = ({route, navigation}) => {
               })
               .then((response) => response.json())
               .then ((responseJson) => {
-                  console.log(responseJson);
                   setData(responseJson);
               })
               .catch((error) => {
@@ -42,16 +47,19 @@ const OrdersScreen = ({route, navigation}) => {
     } catch(error) {
         console.log(error);
     }
-  }, [])
+  }, [update])
   
   return (
     <View style={styles.container}>
-      <Text style={styles.textHeading}>Odoslane zasielky</Text>
+      <Text style={styles.textHeading}>Odoslané zásielky</Text>
       <FlatList
         data={data}
         keyExtractor={item => item.id}
         renderItem={({ item }) => 
           <TouchableOpacity onPress={() => navigation.navigate("OrderDetails", {value: item})} style={styles.item}> 
+            <Text style={{ color: '#e8a438', fontSize: 12, fontWeight: 'bold', marginBottom: 2}}>
+              { Moment(item.created_at).format('DD.MM.YYYY') }
+            </Text>
             <Text style={styles.orderTitle}>
               {item.receiver.first_name} {item.receiver.last_name}
             </Text>
@@ -79,26 +87,29 @@ const styles = StyleSheet.create({
       },
       textHeading: {
         fontSize: 20,
+        fontWeight: 'bold',
         marginLeft: 15,
         marginBottom: 10,
         marginTop: 10,
-        color: '#777777'
+        color: '#000'
       },
       item: {
-        backgroundColor: '#393485',
-        padding: 20,  
+        backgroundColor: '#fff',
+        padding: 15,  
         marginVertical: 8,
-        marginHorizontal: 16,
-        borderRadius: 18
+        marginHorizontal: 8,
+        borderBottomColor: '#dddddd',
+        borderBottomWidth: 1
       },
       orderTitle: {
         fontSize: 21,
         marginBottom: 4,
-        color: '#fff',
+        color: '#000',
         fontWeight: 'bold'
       },
       orderSubTitle: {
         fontSize: 16,
-        color: '#cdc8de'
+        color: '#393485',
+        fontWeight: 'bold'
       }
 });

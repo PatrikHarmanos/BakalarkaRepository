@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
     View, 
     Text,
@@ -13,58 +13,98 @@ import {
 import { ScrollView } from 'react-native-gesture-handler';
 import { Avatar } from 'react-native-paper';
 import MaterialComunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Moment from 'moment';
 
-const OrderDetailsScreen = ({route, navigation}) => {
+const OrderDetailsScreen = ({ route, navigation }) => {
+  
+  const { value } = route.params;
+  Moment.locale('en');
 
-  const {value} = route.params;
+  let s = '';
+  
+  if (value.state == 'ready') {
+    s = 'Zásielka čaká na priradenie kuriérovi';
+  } else if (value.state == 'assigned') {
+    s = 'Zásielka bola priradená kuriérovi';
+  } else if (value.state == 'delivering') {
+    s = 'Zásielka sa doručuje';
+  } else {
+    s = 'Zásielka bola doručená';
+  }
+
+  const callCourier = (number) => {
+    
+  }
+ 
+  const courierInfo = value.courier ? (
+        <View style={[styles.courierInfoBox, {display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}]}>
+          <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'center',}}>
+            <Avatar.Image 
+                source={require('../images/courier_avatar.png')}
+                size={50}
+            />
+            <View style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', marginLeft: 20}}>
+              <Text style={{fontSize: 16, fontWeight: 'bold'}}>Kuriér</Text>
+              <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#393485'}}>{ value.courier.person.first_name }</Text>
+            </View>
+          </View>
+          <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'center',}}>
+            <TouchableOpacity onPress={() => callCourier(value.courier.person.phone_number)}>
+              <MaterialComunityIcons name="phone" size={30} style={{marginLeft: 50}}/> 
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <MaterialComunityIcons name="message-processing" size={30} style={{marginLeft: 15}}/> 
+            </TouchableOpacity>
+          </View>
+        </View>
+    ) : (<View style={[styles.courierInfoBox, {display: 'flex', flexDirection: 'row', alignItems: 'center'}]}>
+            <Text style={{fontSize: 14, fontWeight: 'bold', color: '#393485'}}>Kuriér ešte nebol pridelený</Text>
+        </View>);
 
   return (
       <View style={styles.container}>
         <ScrollView>
+          
         <View style={styles.mainInfoBox}>
-          <Text style={styles.mainInfoBoxTextDescription}>Od</Text>
+          <Text style={styles.mainInfoBoxTextDescription}>Odosielateľ</Text>
           <Text style={styles.mainInfoBoxTextMain}>{value.sender.first_name} {value.sender.last_name}</Text>
           <Text style={[styles.mainInfoBoxTextSecond, {marginBottom: 8}]}>{value.pickup_place.formatted_address}</Text>
-          <Text style={[styles.mainInfoBoxTextDescription]}>Komu</Text>
+          <Text style={[styles.mainInfoBoxTextDescription]}>Prijímateľ</Text>
           <Text style={styles.mainInfoBoxTextMain}>{value.receiver.first_name} {value.receiver.last_name}</Text>
           <Text style={[styles.mainInfoBoxTextSecond, {marginBottom: 8}]}>{value.delivery_place.formatted_address}</Text>
-          <Text style={styles.mainInfoBoxTextDescription}>Obsah</Text>
+          <Text style={styles.mainInfoBoxTextDescription}>Položka</Text>
           <Text style={styles.mainInfoBoxTextMain}>{value.item.name}</Text>
           <Text style={[styles.mainInfoBoxTextSecond, {marginBottom: 8}]}>{value.item.description}</Text>
-          <Text style={styles.mainInfoBoxTextDescription}>Dátum a čas doručenia</Text>
-          <Text style={styles.mainInfoBoxTextMain}>21.10.2021</Text>
-          <Text style={styles.mainInfoBoxTextSecond}>11:35</Text>
+          <Text style={styles.mainInfoBoxTextDescription}>Dátum a čas odoslania</Text>
+          <Text style={styles.mainInfoBoxTextMain}>{ Moment(value.created_at).format('DD.MM.YYYY') }</Text>
+          <Text style={styles.mainInfoBoxTextSecond}>{ Moment(value.created_at).format('hh:mm:ss') }</Text>
         </View>
 
-        <View style={[styles.courierInfoBox, {display: 'flex', flexDirection: 'row', alignItems: 'center'}]}>
-          <Avatar.Image 
-              source={require('../images/courier_avatar.png')}
-              size={50}
-          />
-          <View style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', marginLeft: 20}}>
-            <Text style={{fontSize: 14}}>Váš kuriér</Text>
-            <Text style={{fontSize: 20, fontWeight: 'bold'}}>Peter Jahoda</Text>
+        <View style={[styles.deliveryStatus, {display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center'}]}>
+          <Text style={{ fontSize: 16, color: '#000', fontWeight: 'bold'}}>Stav: </Text>
+          <Text style={{ fontSize: 16, fontWeight: 'bold', color: 'green'}}>{ s }</Text>
+        </View>
+
+        {courierInfo}
+
+        <View style={styles.mainItemBox}>
+          <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', marginBottom: 5}}>
+          <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#000' }}>Typ zásielky: </Text>
+          <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#393485' }}>{value.item.name}</Text>
           </View>
-          <MaterialComunityIcons name="phone" size={30} style={{marginLeft: 50}}/> 
-          <MaterialComunityIcons name="message-processing" size={30} style={{marginLeft: 15}}/> 
+          <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', marginBottom: 5}}>
+          <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#000' }}>Popis: </Text>
+          <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#393485' }}>{value.item.description}</Text>
+          </View>
+          <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', marginBottom: 5}}>
+          <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#000' }}>Veľkosť: </Text>
+          <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#393485' }}>{value.item.size}</Text>
+          </View>
+          <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', marginBottom: 5}}>
+          <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#000' }}>Hmotnosť: </Text>
+          <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#393485' }}>{value.item.weight}</Text>
+          </View>
         </View>
-
-        <View style={styles.deliveryStatus}>
-          <Text>Stav zasielky</Text>
-        </View>
-
-        <Text>{value.item.size}</Text>
-        <Text>{value.item.weight}</Text>
-        <Text>{value.item.fragile}</Text>
-        <Text style={styles.mainText}>Odosielatel</Text>
-        
-        <Text>{value.sender.email}</Text>
-        <Text>{value.sender.phone_number}</Text>
-        
-        <Text style={styles.mainText}>Prijimatel</Text>
-        
-        <Text>{value.receiver.email}</Text>
-        <Text>{value.receiver.phone_number}</Text>
         </ScrollView>
       </View>
   );
@@ -81,21 +121,34 @@ const styles = StyleSheet.create({
       fontSize: 20,
     },
     mainInfoBox: {
-      backgroundColor: '#393485',
-      padding: 20,  
-      marginVertical: 8,
+      backgroundColor: '#fff',
+      paddingHorizontal: 20,
+      paddingBottom: 20,
+      marginHorizontal: 8,
+      marginTop: 10,
+      borderRadius: 10,
+      borderBottomColor: '#dddddd',
+      borderBottomWidth: 1
+    },
+    mainItemBox: {
+      backgroundColor: '#fff',
+      padding: 10,  
       marginHorizontal: 16,
-      borderRadius: 10
+      borderBottomColor: '#dddddd',
+      borderBottomWidth: 1,
+      borderTopColor: '#dddddd',
+      borderTopWidth: 1
     },
     mainInfoBoxTextDescription: {
       fontSize: 18,
-      color: '#cdc8de'
+      color: '#000',
+      fontWeight: 'bold'
     },
     mainInfoBoxTextMain: {
-      color: '#fff',
+      color: '#393485',
       fontSize: 22,
       fontWeight: 'bold',
-      marginLeft: 20,
+      marginLeft: 10,
       marginTop: 8,
       marginBottom: 2
     },
@@ -103,20 +156,20 @@ const styles = StyleSheet.create({
       color: '#e8a438',
       fontSize: 15,
       fontWeight: 'bold',
-      marginLeft: 20
+      marginLeft: 10
     },
     courierInfoBox: {
-      backgroundColor: '#f2f2f0',
+      backgroundColor: '#ddd',
       padding: 20,  
-      marginVertical: 8,
+      marginVertical: 12,
       marginHorizontal: 16,
-      borderRadius: 10
+      borderRadius: 8
     }, 
     deliveryStatus: {
-      backgroundColor: '#f2f2f0',
+      backgroundColor: '#fff',
       padding: 20,  
-      marginVertical: 8,
-      marginHorizontal: 16,
-      borderRadius: 10
+      marginHorizontal: 8,
+      borderBottomColor: '#dddddd',
+      borderBottomWidth: 1
     }
 });

@@ -6,7 +6,8 @@ import {
     Dimensions,
     TouchableOpacity,
     route,
-    SafeAreaView
+    SafeAreaView,
+    ActivityIndicator
 } from 'react-native'; 
 
 import {
@@ -26,7 +27,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const ProfileScreen = ({navigation}) => {
-
+  const [isLoading, setLoading] = useState(true);
   const [email, setEmail] = useState();
   const [firstName, setFirstName] = useState();
   const [lastName, setLastName] = useState();
@@ -37,81 +38,83 @@ const ProfileScreen = ({navigation}) => {
   }, [])
 
   const getUserInfo = async () => {
-    setEmail(await AsyncStorage.getItem('@email'));
-    setFirstName(await AsyncStorage.getItem('@first_name'));
-    setLastName(await AsyncStorage.getItem('@last_name'));
-    setPhoneNumber(await AsyncStorage.getItem('@phone_number'));
+    try {
+      setEmail(await AsyncStorage.getItem('@email'));
+      setFirstName(await AsyncStorage.getItem('@first_name'));
+      setLastName(await AsyncStorage.getItem('@last_name'));
+      setPhoneNumber(await AsyncStorage.getItem('@phone_number'));
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setLoading(false)
+    }
   }
 
     return (
       <SafeAreaView style={[styles.container, {backgroundColor: '#fff'}]}>
+        { isLoading ? <ActivityIndicator/> : (
+          <View>
+            <View style={styles.userInfoSection}>
+              <View style={{flexDirection: 'row', marginTop: 25}}>
+              <Avatar
+                containerStyle={{backgroundColor: '#393485'}}
+                size="large"
+                rounded
+                title={firstName.charAt(0) + lastName.charAt(0)}
+                onPress={() => console.log("Works!")}
+                activeOpacity={0.7}
+              />
+                <View style={{marginLeft: 20}}>
+                  <Title style={[styles.title, {marginTop: 15, marginBottom: 5}]}>{firstName} {lastName}</Title>
+                  <Caption style={styles.caption}>@ax134kj7a</Caption>
+                </View>
+              </View>
+            </View> 
 
-        <View style={styles.userInfoSection}>
-          <View style={{flexDirection: 'row', marginTop: 25}}>
-          <Avatar
-            containerStyle={{backgroundColor: '#393485'}}
-            size="large"
-            rounded
-            title={firstName + lastName}
-            onPress={() => console.log("Works!")}
-            activeOpacity={0.7}
-          />
-            <View style={{marginLeft: 20}}>
-              <Title style={[styles.title, {marginTop: 15, marginBottom: 5}]}>{firstName} {lastName}</Title>
-              <Caption style={styles.caption}>@dsdasdasdsa</Caption>
+            <View style={styles.userInfoSection}>
+              <View style={styles.row}>
+                <Icon name="home-outline" color="#777777" size={20} />
+                <Text style={{color:"#777777", marginLeft: 20, fontWeight: 'bold'}} >Snina, Slovensko</Text>
+              </View>
+              <View style={styles.row}>
+                <Icon name="chatbubbles-outline" color="#777777" size={20} />
+                <Text style={{color:"#777777", marginLeft: 20, fontWeight: 'bold'}} >{email}</Text>
+              </View>
+              <View style={styles.row}>
+                <Icon name="call" color="#777777" size={20} />
+                <Text style={{color:"#777777", marginLeft: 20, fontWeight: 'bold'}} >{phoneNumber}</Text>
+              </View>
+            </View>
+
+            <View style={styles.infoBoxWrapper}>
+                <View style={styles.infoBox}>
+                  <Title>0.00 €</Title>
+                  <Caption style={{ fontWeight: 'bold' }}>Kredit</Caption>
+                </View>
+            </View> 
+
+            <View style={styles.menuWrapper}>
+              <TouchableRipple onPress={() => navigation.navigate('Order')}>
+                  <View style={styles.menuItem}>
+                    <Icon name="md-archive-sharp" size={25} color="#393485" />
+                    <Text style={styles.menuItemText}>Moje zásielky</Text>
+                  </View>
+              </TouchableRipple>
+              <TouchableRipple onPress={() => navigation.navigate("PaymentInformation")}>
+                  <View style={styles.menuItem}>
+                    <Icon name="md-logo-usd" size={25} color="#393485" />
+                    <Text style={styles.menuItemText}>Platobné údaje</Text>
+                  </View>
+              </TouchableRipple>
+              <TouchableRipple onPress={() => navigation.navigate('settingsScreenStack')}>
+                  <View style={styles.menuItem}>
+                    <Icon name="md-construct" size={25} color="#393485" />
+                    <Text style={styles.menuItemText}>Nastavenia</Text>
+                  </View>
+              </TouchableRipple>
             </View>
           </View>
-        </View> 
-
-        <View style={styles.userInfoSection}>
-          <View style={styles.row}>
-            <Icon name="home-outline" color="#777777" size={20} />
-            <Text style={{color:"#777777", marginLeft: 20}} >Snina, Slovensko</Text>
-          </View>
-          <View style={styles.row}>
-            <Icon name="chatbubbles-outline" color="#777777" size={20} />
-            <Text style={{color:"#777777", marginLeft: 20}} >{email}</Text>
-          </View>
-          <View style={styles.row}>
-            <Icon name="call" color="#777777" size={20} />
-            <Text style={{color:"#777777", marginLeft: 20}} >{phoneNumber}</Text>
-          </View>
-        </View>
-
-        <View style={styles.infoBoxWrapper}>
-            <View style={[styles.infoBox, {
-              borderRightColor: '#dddddd',
-              borderRightWidth: 1
-            }]}>
-              <Title>$120</Title>
-              <Caption>Wallet</Caption>
-            </View>
-            <View style={styles.infoBox}>
-              <Title>$120</Title>
-              <Caption>Wallet</Caption>
-            </View>
-        </View> 
-
-        <View style={styles.menuWrapper}>
-          <TouchableRipple onPress={() => navigation.navigate('Order')}>
-              <View style={styles.menuItem}>
-                <Icon name="document-outline" size={25} color="#393485" />
-                <Text style={styles.menuItemText}>Historia zasielok</Text>
-              </View>
-          </TouchableRipple>
-          <TouchableRipple onPress={() => navigation.navigate("PaymentInformation")}>
-              <View style={styles.menuItem}>
-                <Icon name="document-outline" size={25} color="#393485" />
-                <Text style={styles.menuItemText}>Platobne udaje</Text>
-              </View>
-          </TouchableRipple>
-          <TouchableRipple onPress={() => navigation.navigate('settingsScreenStack')}>
-              <View style={styles.menuItem}>
-                <Icon name="document-outline" size={25} color="#393485" />
-                <Text style={styles.menuItemText}>Nastavenia</Text>
-              </View>
-          </TouchableRipple>
-        </View>
+        )}
       </SafeAreaView>
   );
 };
@@ -148,7 +151,7 @@ const styles = StyleSheet.create({
       height: 100
     },
     infoBox: {
-      width: '50%',
+      width: '100%',
       alignItems: 'center',
       justifyContent: 'center'
     },

@@ -48,6 +48,8 @@ const CourierDeliveryScreen = ({route, navigation}) => {
     const [finalPrice, setFinalPrice] = useState(0);
     const [finalTime, setFinalTime] = useState(0);
 
+    const [isLoading, setLoading] = useState(true);
+
     const mapRef = useRef();
 
     const calculatePreciseDistance = () => {
@@ -70,7 +72,7 @@ const CourierDeliveryScreen = ({route, navigation}) => {
         calculatePreciseDistance();
         calculateFinalPrice();
         calculateFinalTime();
-    });
+    }, []);
 
     const handleButton = async () => {
 
@@ -87,11 +89,35 @@ const CourierDeliveryScreen = ({route, navigation}) => {
                     .then((response) => response.json())
                     .then((responseJson) => {
                     
-                    console.log(responseJson);
-                    
+                        navigation.navigate("CourierActiveDeliveryScreen", {
+                            itemName: itemName,
+                            itemDescription: itemDescription,
+                            itemPhoto: itemPhoto,
+                            itemSize: itemSize,
+                            itemWeight: itemWeight,
+                            itemIsFragile: itemIsFragile,
+                            pickupPlaceLat: pickupPlaceLat,
+                            pickupPlaceLong: pickupPlaceLong,
+                            pickupPlacePostalCode: pickupPlacePostalCode,
+                            pickupPlaceCountry: pickupPlaceCountry,
+                            pickupPlaceCity: pickupPlaceCity,
+                            pickupPlaceStreetAddress: pickupPlaceStreetAddress,
+                            pickupID: pickupID,
+                            pickupPlaceDescription: pickupPlaceDescription,
+                            deliveryPlaceLat: deliveryPlaceLat,
+                            deliveryPlaceLong: deliveryPlaceLong,
+                            deliveryPlacePostalCode: deliveryPlacePostalCode,
+                            deliveryPlaceCountry: deliveryPlaceCountry,
+                            deliveryPlaceCity: deliveryPlaceCity,
+                            deliveryPlaceStreetAddress: deliveryPlaceStreetAddress,
+                            deliveryID: deliveryID,
+                            deliveryPlaceDescription: deliveryPlaceDescription,
+                            safeID: safeID,
+                          });
+                        
                     })
                     .catch((error) => {
-                    console.log(error);
+                        console.log(error);
                     });
                 } else {
                     navigation.navigate("Auth");
@@ -179,7 +205,7 @@ const CourierDeliveryScreen = ({route, navigation}) => {
                 </ScrollView>
                 <View style={styles.button}>
                         <TouchableOpacity style={styles.signIn} onPress={handleButton}>
-                            <Text style={styles.textSign}>Akceptovat objednávku</Text>
+                            <Text style={styles.textSign}>Akceptovať objednávku</Text>
                         </TouchableOpacity>
                 </View>
             </View>
