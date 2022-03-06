@@ -74,8 +74,33 @@ const CourierActiveDeliveryScreen = ({route, navigation}) => {
         calculateFinalTime();
     }, []);
 
-    const handleButton = () => {
-        navigation.navigate("CourierMainScreen", {update: deliveryPlaceLong});
+    const handleButton = async () => {
+        try {
+            await SecureStore.getItemAsync('access').then((token) => {
+                if (token != null) {
+                    fetch(`http://147.175.150.96/api/core/deliveries/${safeID}/state`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Authorization': 'Bearer ' + token,
+                        },
+                        body: JSON.stringify({
+                            "state": "delivered"
+                        })
+                    })
+                    .then((response) => response.json())
+                    .then((responseJson) => {
+                        navigation.navigate("CourierMainScreen")
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    });
+                } else {
+                    navigation.navigate("Auth");
+                }
+            })
+        } catch(error) {
+            console.log(error);
+        }
     };
         
     return (

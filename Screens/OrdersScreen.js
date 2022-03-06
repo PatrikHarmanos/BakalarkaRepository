@@ -13,7 +13,8 @@ import Moment from 'moment';
 const OrdersScreen = ({route, navigation}) => {
 
   const [data, setData] = useState();
-  const update = route.params;
+  // const update = route.params;
+  const [update, setUpdate] = useState(false);
   Moment.locale('en');
 
   const [expanded, setExpanded] = useState(true);
@@ -21,6 +22,8 @@ const OrdersScreen = ({route, navigation}) => {
   const handlePress = () => setExpanded(!expanded);
 
   useEffect(() => {
+    console.log(update)
+    setUpdate(false)
     try {
       SecureStore.getItemAsync('access').then((token) => {
           console.log(token);

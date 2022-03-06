@@ -17,7 +17,7 @@ import MapViewDirections from 'react-native-maps-directions';
 import { getPreciseDistance } from 'geolib';
 import * as SecureStore from 'expo-secure-store';
 
-const CourierDeliveryScreen = ({route, navigation}) => {
+const CourierPickupDeliveryScreen = ({route, navigation}) => {
     const { 
         itemName,
         itemDescription,
@@ -52,30 +52,7 @@ const CourierDeliveryScreen = ({route, navigation}) => {
 
     const mapRef = useRef();
 
-    const calculatePreciseDistance = () => {
-        var pdis = getPreciseDistance(
-          { latitude: pickupPlaceLat, longitude: pickupPlaceLong },
-          { latitude: deliveryPlaceLat, longitude: deliveryPlaceLong }
-        );
-       setDistance((pdis/1000).toFixed(2));
-    };
-
-    const calculateFinalPrice = () => {
-        setFinalPrice((distance*0.4).toFixed(2));
-    };
-
-    const calculateFinalTime = () => {
-        setFinalTime((distance*1.5).toFixed(0));
-    };
-
-    useEffect(() => {
-        calculatePreciseDistance();
-        calculateFinalPrice();
-        calculateFinalTime();
-    }, []);
-
     const handleButton = async () => {
-    
         try {
             await SecureStore.getItemAsync('access').then((token) => {
                 if (token != null) {
@@ -85,13 +62,13 @@ const CourierDeliveryScreen = ({route, navigation}) => {
                             'Authorization': 'Bearer ' + token,
                         },
                         body: JSON.stringify({
-                            "state": "assigned"
+                            "state": "delivering"
                         })
                     })
                     .then((response) => response.json())
                     .then((responseJson) => {
-                    
-                        navigation.navigate("CourierPickupDeliveryScreen", {
+
+                        navigation.navigate("CourierActiveDeliveryScreen", {
                             itemName: itemName,
                             itemDescription: itemDescription,
                             itemPhoto: itemPhoto,
@@ -128,21 +105,14 @@ const CourierDeliveryScreen = ({route, navigation}) => {
         } catch(error) {
             console.log(error);
         }
-
     };
         
     return (
         <View style={styles.container}>
             <View style={styles.header}>
                 <MapView
-                ref={mapRef}
-                style={styles.container}
-                initialRegion={{
-                    latitude: parseFloat(pickupPlaceLat),
-                    longitude: parseFloat(pickupPlaceLong),
-                    latitudeDelta: 0.0922,
-                    longitudeDelta: 0.0922
-                }}
+                    ref={mapRef}
+                    style={styles.container}
                 >
                     <Marker 
                         coordinate={{
@@ -152,62 +122,16 @@ const CourierDeliveryScreen = ({route, navigation}) => {
                             longitudeDelta: 0.0922
                         }}
                     />
-                    <Marker 
-                        coordinate={{
-                            latitude: parseFloat(deliveryPlaceLat),
-                            longitude: parseFloat(deliveryPlaceLong),
-                            latitudeDelta: 0.0922,
-                            longitudeDelta: 0.0922
-                        }}
-                    />
-                    <MapViewDirections
-                        origin={{
-                            latitude: parseFloat(pickupPlaceLat),
-                            longitude: parseFloat(pickupPlaceLong),
-                            latitudeDelta: 0.0922,
-                            longitudeDelta: 0.0922
-                        }}
-                        destination={{
-                            latitude: parseFloat(deliveryPlaceLat),
-                            longitude: parseFloat(deliveryPlaceLong),
-                            latitudeDelta: 0.0922,
-                            longitudeDelta: 0.0922
-                        }}
-                        apikey={"AIzaSyD3IdOaoOc8tVpnakDzh1BLImcS-iJxoVY"}
-                        strokeWidth={3}
-                        strokeColor="red"
-                        optimizeWaypoints={true}
-                        onReady={ result => {
-                            mapRef.current.fitToCoordinates(result.coordinates, {
-                                edgePadding: {
-                                    right: 30,
-                                    bottom: 150,
-                                    left: 30,
-                                    top: 100
-                                }
-                            })
-                        }}
-                    />  
                 </MapView>
             </View>
             <View style={styles.footer}>
-                <ScrollView>
-                    <View style={styles.footer_section}>
-                        <Text style={styles.footer_section_text}>Miesto vyzdvihnutia</Text>
-                        <Text style={styles.footer_section_value}>{pickupPlaceDescription} </Text>
-                    </View>
-                    <View style={styles.footer_section}>
-                        <Text style={styles.footer_section_text}>Miesto doručenia</Text>
-                        <Text style={styles.footer_section_value}>{deliveryPlaceDescription}</Text>
-                    </View>
-                    <View style={styles.footer_section}>
-                        <Text style={styles.footer_section_text}>Vzdialenosť</Text>
-                        <Text style={styles.footer_section_value}>{distance} km</Text>
-                    </View>
-                </ScrollView>
+                <View style={styles.footer_section}>
+                    <Text style={styles.footer_section_text}>Miesto vyzdvihnutia</Text>
+                    <Text style={styles.footer_section_value}>{pickupPlaceDescription}</Text>
+                </View>
                 <View style={styles.button}>
                         <TouchableOpacity style={styles.signIn} onPress={handleButton}>
-                            <Text style={styles.textSign}>Akceptovať objednávku</Text>
+                            <Text style={styles.textSign}>Zasielka bola vyzdvihnuta</Text>
                         </TouchableOpacity>
                 </View>
             </View>
@@ -215,17 +139,17 @@ const CourierDeliveryScreen = ({route, navigation}) => {
     ); 
 }
 
-export default CourierDeliveryScreen;
+export default CourierPickupDeliveryScreen;
 
 const styles = StyleSheet.create({
     container: {
         flex: 1
     },
     header: {
-        flex: 3
+        flex: 4
     },
     footer: {
-        flex: 2,
+        flex: 1,
         backgroundColor: '#fff',
         paddingHorizontal: 20,
         justifyContent: 'flex-end',

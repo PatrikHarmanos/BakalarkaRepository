@@ -19,6 +19,7 @@ const Drawer = createDrawerNavigator();
 
 import { DrawerContent } from './DrawerContent';
 import CourierDeliveryScreen from './CourierDeliveryScreen';
+import CourierPickupDeliveryScreen from './CourierPickupDeliveryScreen';
 import CourierActiveDeliveryScreen from './CourierActiveDeliveryScreen';
 
 const settingsScreenStack = ({navigation}) => (
@@ -65,6 +66,9 @@ const courierScreenStack = ({navigation}) => (
             }} />
             <Stack.Screen name="CourierDeliveryScreen" component={CourierDeliveryScreen} options={{
                 title: 'Detail zásielky'
+            }}/>
+            <Stack.Screen name="CourierPickupDeliveryScreen" component={CourierPickupDeliveryScreen} options={{
+                title: 'Vyzdvihnutie zasielky'
             }}/>
             <Stack.Screen name="CourierActiveDeliveryScreen" component={CourierActiveDeliveryScreen} options={{
                 title: 'Aktivna zasielka'

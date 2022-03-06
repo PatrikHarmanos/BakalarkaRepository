@@ -5,7 +5,6 @@ import {
     DrawerItem
 } from '@react-navigation/drawer';
 import {
-    Avatar,
     Title,
     Caption,
     Paragraph,
@@ -20,6 +19,7 @@ import * as SecureStore from 'expo-secure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Location from 'expo-location';
 import CourierMainScreen from './CourierMainScreen';
+import { Avatar } from 'react-native-elements';
 
 export function DrawerContent(props) {
 
@@ -120,12 +120,14 @@ export function DrawerContent(props) {
                 <View style={styles.drawerContent}>
                     <View style={styles.userInfoSection}>
                         <View style={{flexDirection:'row', marginTop: 15}}>
-                            <Avatar.Image 
-                                    source={{
-                                        uri: 'https://api.adorable.io/avatars/50/abott@adorable.png'
-                                    }}
-                                    size={50}
-                                />
+                            <Avatar
+                                containerStyle={{backgroundColor: '#393485'}}
+                                size="medium"
+                                rounded
+                                title="PH"
+                                onPress={() => console.log("Works!")}
+                                activeOpacity={0.7}
+                            />
                             <View style={{marginLeft:15, flexDirection:'column'}}>
                                 <Title style={styles.title}>{firstName + ' ' + lastName}</Title>
                                 <Caption style={styles.caption}>{email}</Caption>

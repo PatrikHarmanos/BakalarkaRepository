@@ -55,7 +55,7 @@ const NewOrderScreen = ({navigation}) => {
               <Text style={[styles.text_header, {marginTop: 20}]}>Kde</Text>
               <View style={styles.action}>
                 <GooglePlacesAutocomplete
-                  placeholder='Vzhľadajte miesto doručenia'
+                  placeholder='Vyhľadajte miesto doručenia'
                   onPress={(data, details = null) => {
                     setDeliveryData(data);
                     console.log(data);
