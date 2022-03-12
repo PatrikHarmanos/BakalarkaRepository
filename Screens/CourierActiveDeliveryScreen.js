@@ -102,7 +102,36 @@ const CourierActiveDeliveryScreen = ({route, navigation}) => {
             console.log(error);
         }
     };
-        
+
+    const rejectOrderHandleButton = async () => {
+        try {
+            await SecureStore.getItemAsync('access').then((token) => {
+                if (token != null) {
+                    fetch(`http://147.175.150.96/api/core/deliveries/${safeID}/state`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Authorization': 'Bearer ' + token,
+                        },
+                        body: JSON.stringify({
+                            "state": "undeliverable"
+                        })
+                    })
+                    .then((response) => response.json())
+                    .then((responseJson) => {
+                        navigation.navigate("CourierMainScreen")
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    });
+                } else {
+                    navigation.navigate("Auth");
+                }
+            })
+        } catch(error) {
+            console.log(error);
+        }
+    };
+    
     return (
         <View style={styles.container}>
             <View style={styles.header}>
@@ -169,7 +198,12 @@ const CourierActiveDeliveryScreen = ({route, navigation}) => {
                 </View>
                 <View style={styles.button}>
                         <TouchableOpacity style={styles.signIn} onPress={handleButton}>
-                            <Text style={styles.textSign}>Zasielka bola odvzdana</Text>
+                            <Text style={styles.textSign}>Zásielka bola doručená</Text>
+                        </TouchableOpacity>
+                </View>
+                <View style={styles.button}>
+                        <TouchableOpacity style={styles.rejectOrder} onPress={rejectOrderHandleButton}>
+                            <Text style={styles.textSign}>Zásielku sa nepodarilo doručiť</Text>
                         </TouchableOpacity>
                 </View>
             </View>
@@ -181,13 +215,13 @@ export default CourierActiveDeliveryScreen;
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1
+        flex: 2
     },
     header: {
-        flex: 4
+        flex: 5
     },
     footer: {
-        flex: 1,
+        flex: 2,
         backgroundColor: '#fff',
         paddingHorizontal: 20,
         justifyContent: 'flex-end',
@@ -207,6 +241,14 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         borderRadius: 10,
         backgroundColor: '#393485'
+    },
+    rejectOrder: {
+        width: '100%',
+        height: 50,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 10,
+        backgroundColor: '#bd0909'
     },
     textSign: {
         fontSize: 18,

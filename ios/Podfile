@@ -23,7 +23,4 @@ target 'Bakalarka' do
   #   end
   # end
 
- 
-
-  pod 'RNImageCropPicker', :path => '../node_modules/react-native-image-crop-picker'
-end
+ end

@@ -88,6 +88,7 @@ const LoginScreen = ({navigation}) => {
                 storeToAsyncStorage('@first_name', rJson.person.first_name);
                 storeToAsyncStorage('@last_name', rJson.person.last_name);
                 storeToAsyncStorage('@phone_number', rJson.person.phone_number);
+                storeToAsyncStorage('@is_courier', rJson.is_courier);
             })
             .catch((error) => {
                 console.log(error);

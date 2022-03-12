@@ -71,66 +71,6 @@ const CourierMainScreen = ({ route, navigation }) => {
       setLoading(false)
     }
   }
- 
-  const requestOne = async (index) => {
-    // call google places API to get latitude and longtitude from place_id for pickup place
-    await fetch(
-      `https://maps.googleapis.com/maps/api/place/details/json?placeid=${data[index]["pickup_place"]["place_id"]}&key=AIzaSyD3IdOaoOc8tVpnakDzh1BLImcS-iJxoVY`,
-      {
-        method: "GET",
-      }
-    )
-      .then((response) => response.json())
-      .then((responseJson) => {
-        for (
-          let i = 0;
-          i < responseJson.result.address_components.length;
-          i++
-        ) {
-          if (
-            responseJson.result.address_components[i].types[0] == "postal_code"
-          ) {
-            setPickupPlacePostalCode(
-              responseJson.result.address_components[i].short_name
-            );
-          }
-        }
-
-        setPickupPlaceLat(responseJson.result.geometry.location.lat);
-        setPickupPlaceLong(responseJson.result.geometry.location.lng);
-      });
-  };
-
-  const requestTwo = async (index) => {
-    await fetch(
-      `https://maps.googleapis.com/maps/api/place/details/json?placeid=${data[index]["delivery_place"]["place_id"]}&key=AIzaSyD3IdOaoOc8tVpnakDzh1BLImcS-iJxoVY`,
-      {
-        method: "GET",
-      }
-    )
-      .then((response) => response.json())
-      .then((responseJson) => {
-        // get postal code from json response
-        // it has to be done in thge loop, because the number of elements in the array can be different due to address number (sometimes there is no address number)
-        for (
-          let i = 0;
-          i < responseJson.result.address_components.length;
-          i++
-        ) {
-          if (
-            responseJson.result.address_components[i].types[0] == "postal_code"
-          ) {
-            setDeliveryPlacePostalCode(
-              responseJson.result.address_components[i].short_name
-            );
-          }
-        }
-
-        // get lat and long from json response
-        setDeliveryPlaceLat(responseJson.result.geometry.location.lat);
-        setDeliveryPlaceLong(responseJson.result.geometry.location.lng);
-      });
-  };
 
   const handleButton = async (index) => {
     let p, p1, p2, d, d1, d2
@@ -222,7 +162,13 @@ const CourierMainScreen = ({ route, navigation }) => {
       <Text style={styles.textHeading}>Aktívne zásielky</Text>
       { isLoading ? <ActivityIndicator/> : (
         <View>
-          <FlatList
+          { data.length === 0 ? 
+            <View style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+              <Text style={styles.noData}>
+                Žiadne zásielky na doručenie
+              </Text>
+            </View> : (
+            <FlatList
             data={data}
             keyExtractor={(item) => item.safe_id}
             renderItem={({ item, index }) => (
@@ -242,6 +188,7 @@ const CourierMainScreen = ({ route, navigation }) => {
               </TouchableOpacity>
             )}
           />
+          )}
         </View>
       )}
     </View>
@@ -285,4 +232,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#393485",
   },
+  noData: {
+    fontSize: 14,
+    color: '#777',
+    marginTop: 10
+  }
 });

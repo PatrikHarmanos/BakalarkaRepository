@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
     View, 
     Button,
@@ -6,7 +6,9 @@ import {
     Dimensions,
     TouchableOpacity,
     route,
-    SafeAreaView
+    SafeAreaView,
+    ScrollView,
+    TextInput
   } from 'react-native'; 
 
 import {
@@ -19,17 +21,65 @@ import {
 
 const BecomeACourierScreen = ({navigation}) => {
 
+  const [numberOP, setNumberOP] = useState(''); 
+  const [validOP, setValidOP] = useState('');
+  const [numberVP, setNumberVP] = useState('');
+  const [validVP, setValidVP] = useState('');
+
   const handleButton = () => {
-    navigation.navigate("BecomeACourierMoreInfo");
+    if (!numberOP) {
+      alert('Prosím zadajte číslo OP');
+      return;
+    }
+    if (!validOP) {
+      alert('Prosím zadajte dátum platnosti OP');
+      return;
+    }
+    if (!numberVP) {
+      alert('Prosím zadajte číslo VP');
+      return;
+    }
+    if (!validVP) {
+      alert('Prosím zadajte dátum platnosti VP');
+      return;
+    }
+    navigation.navigate("BecomeACourierMoreInfo", {
+      numberOP: numberOP,
+      validOP: validOP,
+      numberVP: numberVP,
+      validVP: validVP
+    });
   }
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text>id front</Text>
-        <Text>id back</Text>
-        <Text>dl front</Text>
-        <Text>dl back</Text>
+      <ScrollView>
+        <Text style={[styles.text_header, {marginTop: 20}]}>Číslo občianského preukazu</Text>
+        <View style={styles.action}>
+        <TextInput style={styles.textInput} onChangeText={(value) => setNumberOP(value)}
+            placeholder="Zadajte číslo OP"
+        /> 
+        </View>
+        <Text style={[styles.text_header, {marginTop: 20}]}>Dátum platnosti OP</Text>
+        <View style={styles.action}>
+        <TextInput style={styles.textInput} onChangeText={(value) => setValidOP(value)}
+            placeholder="Zadajte dátum platnosti OP"
+        /> 
+        </View>
+        <Text style={[styles.text_header, {marginTop: 20}]}>Číslo vodičského preukazu</Text>
+        <View style={styles.action}>
+        <TextInput style={styles.textInput} onChangeText={(value) => setNumberVP(value)}
+            placeholder="Zadajte číslo VP"
+        /> 
+        </View>
+        <Text style={[styles.text_header, {marginTop: 20}]}>Dátum platnosti VP</Text>
+        <View style={styles.action}>
+        <TextInput style={styles.textInput} onChangeText={(value) => setValidVP(value)}
+            placeholder="Zadajte dátum platnosti VP"
+        /> 
+        </View>
+    </ScrollView>
       </View>
       <View style={styles.footer}>
         <View style={styles.button}>

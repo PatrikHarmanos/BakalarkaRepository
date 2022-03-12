@@ -17,12 +17,30 @@ import {
 
 import RNPickerSelect from 'react-native-picker-select';
 import * as SecureStore from 'expo-secure-store';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const BecomeACourierMoreInfoScreen = ({navigation}) => {
-    const [address, setAddress] = useState('');
-    const [city, setCity] = useState('');
-    const [psc, setPsc] = useState('');
-    const [vehicle, setVehicle] = useState('');
+const BecomeACourierMoreInfoScreen = ({navigation, route}) => {
+
+  const { 
+    numberOP,
+    validOP,
+    numberVP,
+    validVP
+  } = route.params;
+
+  const [address, setAddress] = useState('');
+  const [city, setCity] = useState('');
+  const [psc, setPsc] = useState('');
+  const [vehicle, setVehicle] = useState('');
+
+  const updateAsyncStorage = async (key, value) => {
+    try {
+      await AsyncStorage.removeItem(key);
+      await AsyncStorage.setItem(key, value);
+    } catch(error) {
+      console.log(error);
+    }
+  }
 
   const handleButton = async () => {
     if (!address) {
@@ -56,7 +74,8 @@ const BecomeACourierMoreInfoScreen = ({navigation}) => {
               })
               .then((response) => response.json())
               .then ((responseJson) => {
-                  console.log(responseJson);
+                updateAsyncStorage('@is_courier', true);
+                navigation.navigate("CourierMainScreen");
               })
               .catch((error) => {
                   console.log(error);
@@ -68,7 +87,7 @@ const BecomeACourierMoreInfoScreen = ({navigation}) => {
     } catch(error) {
         console.log(error);
     }
-}
+  }
 
   return (
     <View style={styles.container}>

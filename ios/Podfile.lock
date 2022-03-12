@@ -336,15 +336,6 @@ PODS:
     - React-Core
   - RNGestureHandler (1.10.3):
     - React-Core
-  - RNImageCropPicker (0.36.4):
-    - React-Core
-    - React-RCTImage
-    - RNImageCropPicker/QBImagePickerController (= 0.36.4)
-    - TOCropViewController
-  - RNImageCropPicker/QBImagePickerController (0.36.4):
-    - React-Core
-    - React-RCTImage
-    - TOCropViewController
   - RNReanimated (2.2.2):
     - DoubleConversion
     - FBLazyVector
@@ -438,7 +429,6 @@ DEPENDENCIES:
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - "RNCPicker (from `../node_modules/@react-native-picker/picker`)"
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
-  - RNImageCropPicker (from `../node_modules/react-native-image-crop-picker`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - RNSslPinning (from `../node_modules/react-native-ssl-pinning/ios`)
@@ -545,8 +535,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-picker/picker"
   RNGestureHandler:
     :path: "../node_modules/react-native-gesture-handler"
-  RNImageCropPicker:
-    :path: "../node_modules/react-native-image-crop-picker"
   RNReanimated:
     :path: "../node_modules/react-native-reanimated"
   RNScreens:
@@ -613,7 +601,6 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: d599364c12b1ddb042cc2d7ab6f8258962b83097
   RNCPicker: f7a40b21b915b7a187624d52f52b7bc2f73ea413
   RNGestureHandler: a479ebd5ed4221a810967000735517df0d2db211
-  RNImageCropPicker: 73891a709e6fd8a47d32104d942757971f220aee
   RNReanimated: 6ec2460b9c6c8f3b1403bd0eaa12d359a98650e3
   RNScreens: 21b73c94c9117e1110a79ee0ee80c93ccefed8ce
   RNSslPinning: ff07fbbcb047c672cf9cb846e3c075eaafed3609

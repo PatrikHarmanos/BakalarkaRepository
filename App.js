@@ -30,23 +30,23 @@ const Auth = () => {
 const App = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen 
-          name="SplashScreen"
-          component={SplashScreen}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen
-          name="Auth" 
-          component={Auth}
-          options={{headerShown: false}} 
-        />
-        <Stack.Screen 
-          name="DrawerNavigation" 
-          component={DrawerNavigation}
-          options={{headerShown: false}}
-        />
-      </Stack.Navigator>
+    <Stack.Navigator>
+      <Stack.Screen 
+        name="SplashScreen"
+        component={SplashScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="Auth" 
+        component={Auth}
+        options={{headerShown: false}} 
+      />
+      <Stack.Screen 
+        name="DrawerNavigation" 
+        component={DrawerNavigation}
+        options={{headerShown: false}}
+      />
+    </Stack.Navigator>
     </NavigationContainer>
   );
 };

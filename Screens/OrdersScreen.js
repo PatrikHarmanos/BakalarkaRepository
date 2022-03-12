@@ -12,7 +12,7 @@ import Moment from 'moment';
 
 const OrdersScreen = ({route, navigation}) => {
 
-  const [data, setData] = useState();
+  const [data, setData] = useState([]);
   // const update = route.params;
   const [update, setUpdate] = useState(false);
   Moment.locale('en');
@@ -55,23 +55,29 @@ const OrdersScreen = ({route, navigation}) => {
   return (
     <View style={styles.container}>
       <Text style={styles.textHeading}>Odoslané zásielky</Text>
-      <FlatList
-        data={data}
-        keyExtractor={item => item.id}
-        renderItem={({ item }) => 
-          <TouchableOpacity onPress={() => navigation.navigate("OrderDetails", {value: item})} style={styles.item}> 
-            <Text style={{ color: '#e8a438', fontSize: 12, fontWeight: 'bold', marginBottom: 2}}>
-              { Moment(item.created_at).format('DD.MM.YYYY') }
-            </Text>
-            <Text style={styles.orderTitle}>
-              {item.receiver.first_name} {item.receiver.last_name}
-            </Text>
-            <Text style={styles.orderSubTitle}>
-              {item.delivery_place.formatted_address}
-            </Text>
-          </TouchableOpacity>
-        }
-      />
+      { data.length === 0 ? 
+        <View style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+          <Text style={styles.noData}>
+            Žiadne odoslané zásielky
+          </Text>
+        </View> : (
+          <FlatList
+            data={data}
+            keyExtractor={item => item.id}
+            renderItem={({ item }) => 
+              <TouchableOpacity onPress={() => navigation.navigate("OrderDetails", {value: item})} style={styles.item}> 
+                <Text style={{ color: '#e8a438', fontSize: 12, fontWeight: 'bold', marginBottom: 2}}>
+                  { Moment(item.created_at).format('DD.MM.YYYY') }
+                </Text>
+                <Text style={styles.orderTitle}>
+                  {item.receiver.first_name} {item.receiver.last_name}
+                </Text>
+                <Text style={styles.orderSubTitle}>
+                  {item.delivery_place.formatted_address}
+                </Text>
+              </TouchableOpacity>
+            }
+          /> )}
     </View>
   );
 };
@@ -114,5 +120,10 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#393485',
         fontWeight: 'bold'
+      },
+      noData: {
+        fontSize: 14,
+        color: '#777',
+        marginTop: 10
       }
 });

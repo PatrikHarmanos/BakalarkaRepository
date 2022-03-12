@@ -11,7 +11,8 @@ import {
     Drawer,
     Text,
     TouchableRipple,
-    Switch
+    Switch,
+    ActivityIndicator
 } from 'react-native-paper';
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -24,7 +25,7 @@ import { Avatar } from 'react-native-elements';
 export function DrawerContent(props) {
 
     const [isSwitchOn, setIsSwitchOn] = useState(false);
-    const [isCourier, setIsCourier] = useState(true);
+    const [isCourier, setIsCourier] = useState(false);
 
     const [email, setEmail] = useState();
     const [firstName, setFirstName] = useState();
@@ -32,12 +33,13 @@ export function DrawerContent(props) {
 
     useEffect(() => {
         getUserInfo();
-    })
+    }, [])
     
     const getUserInfo = async () => {
         setEmail(await AsyncStorage.getItem('@email'));
         setFirstName(await AsyncStorage.getItem('@first_name'));
         setLastName(await AsyncStorage.getItem('@last_name'));
+        setIsCourier(await AsyncStorage.getItem('@is_courier'));
     }
 
     const [currentLocationLat, setCurrentLocationLat] = React.useState();
@@ -89,7 +91,7 @@ export function DrawerContent(props) {
                     size={size}
                 />
             )}
-            label="Stat sa kurierom"
+            label="Stať sa kuriérom"
             onPress={() => props.navigation.navigate("courierScreenStack")}
         />
     ) : null;
@@ -113,7 +115,7 @@ export function DrawerContent(props) {
           console.log(error);
         }
     }
-
+    
     return (
         <View style={{flex: 1}}>
             <DrawerContentScrollView {...props} >
@@ -124,7 +126,7 @@ export function DrawerContent(props) {
                                 containerStyle={{backgroundColor: '#393485'}}
                                 size="medium"
                                 rounded
-                                title="PH"
+                                icon={{ name: 'person' }}
                                 onPress={() => console.log("Works!")}
                                 activeOpacity={0.7}
                             />
