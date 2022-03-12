@@ -106,7 +106,7 @@ const ProfileScreen = ({navigation}) => {
                     <Text style={styles.menuItemText}>Platobné údaje</Text>
                   </View>
               </TouchableRipple>
-              <TouchableRipple onPress={() => navigation.navigate('settingsScreenStack')}>
+              <TouchableRipple onPress={() => navigation.navigate('SettingsScreenStack')}>
                   <View style={styles.menuItem}>
                     <Icon name="md-construct" size={25} color="#393485" />
                     <Text style={styles.menuItemText}>Nastavenia</Text>

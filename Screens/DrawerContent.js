@@ -64,7 +64,7 @@ export function DrawerContent(props) {
         // If the switch turns on -> go to main courier part of the application
         if (!isSwitchOn){
             //getLocation();
-            props.navigation.navigate("courierScreenStack", { screen: 'CourierMainScreen' , params: {
+            props.navigation.navigate("CourierScreenStack", { screen: 'CourierMainScreen' , params: {
                 currentLocationLat: currentLocationLat,
                 currentLocationLon: currentLocationLon
             }});
@@ -92,7 +92,7 @@ export function DrawerContent(props) {
                 />
             )}
             label="Stať sa kuriérom"
-            onPress={() => props.navigation.navigate("courierScreenStack")}
+            onPress={() => props.navigation.navigate("CourierScreenStack")}
         />
     ) : null;
 
@@ -158,7 +158,7 @@ export function DrawerContent(props) {
                             />
                         )}
                         label="Nastavenia"
-                        onPress={() => {props.navigation.navigate("settingsScreenStack")}}
+                        onPress={() => {props.navigation.navigate("SettingsScreenStack")}}
                         />
                         {becomeACourierOption}
                     </Drawer.Section>

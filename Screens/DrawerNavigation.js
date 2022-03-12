@@ -22,7 +22,7 @@ import CourierDeliveryScreen from './CourierDeliveryScreen';
 import CourierPickupDeliveryScreen from './CourierPickupDeliveryScreen';
 import CourierActiveDeliveryScreen from './CourierActiveDeliveryScreen';
 
-const settingsScreenStack = ({navigation}) => (
+const SettingsScreenStack = ({navigation}) => (
     <Stack.Navigator screenOptions={{
         headerStyle: {
         backgroundColor: '#fff',
@@ -41,7 +41,7 @@ const settingsScreenStack = ({navigation}) => (
     </Stack.Navigator>
 );
 
-const courierScreenStack = ({navigation}) => (
+const CourierScreenStack = ({navigation}) => (
     <Stack.Navigator screenOptions={{
         headerStyle: {
         backgroundColor: '#fff',
@@ -86,12 +86,12 @@ const DrawerNavigation = (props) => {
                     title: 'Domov',
                     headerShown: false,
                 }}/>
-            <Drawer.Screen name="settingsScreenStack" component={settingsScreenStack} 
+            <Drawer.Screen name="SettingsScreenStack" component={SettingsScreenStack} 
                 options={{
                     title: 'Nastavenia',
                     headerShown: false,
                 }}/>
-            <Drawer.Screen name="courierScreenStack" component={courierScreenStack} 
+            <Drawer.Screen name="CourierScreenStack" component={CourierScreenStack} 
                 options={{
                     title: 'Courier',
                     headerShown: false,

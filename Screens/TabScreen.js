@@ -9,7 +9,6 @@ const Stack = createStackNavigator();
 
 import HomeScreen from './HomeScreen';
 import ProfileScreen from './ProfileScreen';
-import newOrderScreen from './NewOrderScreen';
 import EditProfileScreen from './EditProfileScreen';
 import NewOrderScreen from './NewOrderScreen';
 import OrdersScreen from './OrdersScreen';
@@ -78,7 +77,7 @@ const ProfileStackScreen = ({navigation}) => (
   </Stack.Navigator>
   );
 
-const newOrderScreenStack = ({navigation}) => (
+const NewOrderScreenStack = ({navigation}) => (
   <Stack.Navigator screenOptions={{
     headerStyle: {
     backgroundColor: '#fff',
@@ -103,7 +102,7 @@ const newOrderScreenStack = ({navigation}) => (
             options= {{
               title: "Nová zásielka"
             }}
-            component={newOrderScreen}
+            component={NewOrderScreen}
           />
           <Stack.Screen 
             name="NewOrderDetails"
@@ -157,7 +156,7 @@ const TabScreen = () => (
 
     <Tab.Screen
         name="Order"
-        component={newOrderScreenStack}
+        component={NewOrderScreenStack}
         options={{
           tabBarLabel: 'Zásielky',
           tabBarIcon: ({ color }) => (

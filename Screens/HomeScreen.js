@@ -31,7 +31,7 @@ const HomeScreen = ({ navigation, route }) => {
             </Card.Content>
             <Card.Actions>
               <View style={styles.button}>
-                <TouchableOpacity onPress={() => {navigation.navigate('courierScreenStack')}} style={styles.signIn}>
+                <TouchableOpacity onPress={() => {navigation.navigate('CourierScreenStack')}} style={styles.signIn}>
                     <Text style={styles.textSign}>Preskúmať</Text>
                 </TouchableOpacity>
               </View>
