@@ -84,7 +84,6 @@ const RegisterScreen = ({navigation}) => {
       </View>
       <View style={styles.footer}>
         <ScrollView>
-        
           <Text style={[styles.text_footer, {marginTop: 5}]}>Meno</Text>
           <View style={styles.action}>
             <TextInput style={styles.textInput}
@@ -121,15 +120,12 @@ const RegisterScreen = ({navigation}) => {
                 secureTextEntry={true}
             /> 
           </View>
-
+        </ScrollView>
           <View style={styles.button}>
             <TouchableOpacity onPress={handleRegisterButton} style={styles.signIn}>
                 <Text style={styles.textSign}>Vytvoriť účet</Text>
             </TouchableOpacity>
           </View>
-        
-        </ScrollView>
-             
       </View>
       
     </View>

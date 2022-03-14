@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useContext} from "react";
 import {
   StyleSheet,
   TextInput,
@@ -17,7 +17,12 @@ import {
 import * as SecureStore from 'expo-secure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const LoginScreen = ({navigation}) => {
+import Context from "../store/context";
+
+const LoginScreen = ({ navigation }) => {
+
+  const {state, actions} = useContext(Context);
+
   const [userEmail, setUserEmail] = useState('');
   const [userPassword, setUserPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -83,19 +88,20 @@ const LoginScreen = ({navigation}) => {
           })
             .then((r) => r.json())
             .then ((rJson) => {
-                // store user info to async storage
-                storeToAsyncStorage('@email', rJson.email);
-                storeToAsyncStorage('@first_name', rJson.person.first_name);
-                storeToAsyncStorage('@last_name', rJson.person.last_name);
-                storeToAsyncStorage('@phone_number', rJson.person.phone_number);
-                storeToAsyncStorage('@is_courier', rJson.is_courier);
+                actions({type: 'setState', payload: {...state, 
+                  first_name: rJson.person.first_name,
+                  last_name: rJson.person.last_name,
+                  email: rJson.email,
+                  phone_number: rJson.person.phone_number,
+                  is_courier: rJson.is_courier
+                }});
             })
             .catch((error) => {
                 console.log(error);
             });
 
           // navigate to the app
-          navigation.navigate("DrawerNavigation");
+          navigation.navigate("DrawerNavigation", { macka: 'macka112'});
         } else {
           // else show an error
           alert('Nesprávny email alebo heslo. Skúste znovu.');

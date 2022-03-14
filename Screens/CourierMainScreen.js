@@ -13,6 +13,7 @@ import * as Location from "expo-location";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import * as SecureStore from "expo-secure-store";
+import { useIsFocused } from '@react-navigation/native';
 
 const CourierMainScreen = ({ route, navigation }) => {
   const [data, setData] = useState([]);
@@ -28,11 +29,11 @@ const CourierMainScreen = ({ route, navigation }) => {
   const [currentLocationLat, setCurrentLocationLat] = useState();
   const [currentLocationLon, setCurrentLocationLon] = useState();
 
-  const update = route.params;
+  const isFocused = useIsFocused();
 
   useEffect(() => {
     getDeliveries();
-  }, [update]);
+  }, [isFocused]);
 
   const getDeliveries = async () => {
     try {

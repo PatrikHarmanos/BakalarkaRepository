@@ -130,7 +130,7 @@ const OrderCheckoutScreen = ({route, navigation}) => {
             console.log(error);
         }
 
-        navigation.navigate("Orders", {update: deliveryPlaceLong});
+        navigation.navigate("Orders");
     };
         
     return (

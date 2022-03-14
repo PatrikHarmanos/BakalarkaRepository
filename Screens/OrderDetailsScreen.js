@@ -28,6 +28,8 @@ const OrderDetailsScreen = ({ route, navigation }) => {
     s = 'Zásielka bola priradená kuriérovi';
   } else if (value.state == 'delivering') {
     s = 'Zásielka sa doručuje';
+  } else if ( value.state = 'undeliverable') {
+    s = 'Zásielku nebolo možné doručiť';
   } else {
     s = 'Zásielka bola doručená';
   }

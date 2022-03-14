@@ -1,4 +1,4 @@
-import React, {useState, useRef, useEffect} from 'react';
+import React, {useState, useContext, useEffect} from 'react';
 import { View, StyleSheet } from 'react-native';
 import {
     DrawerContentScrollView,
@@ -22,25 +22,19 @@ import * as Location from 'expo-location';
 import CourierMainScreen from './CourierMainScreen';
 import { Avatar } from 'react-native-elements';
 
-export function DrawerContent(props) {
+import Context from '../store/context';
+
+export function DrawerContent(props, route) {
 
     const [isSwitchOn, setIsSwitchOn] = useState(false);
-    const [isCourier, setIsCourier] = useState(false);
 
     const [email, setEmail] = useState();
     const [firstName, setFirstName] = useState();
     const [lastName, setLastName] = useState();
 
-    useEffect(() => {
-        getUserInfo();
-    }, [])
-    
-    const getUserInfo = async () => {
-        setEmail(await AsyncStorage.getItem('@email'));
-        setFirstName(await AsyncStorage.getItem('@first_name'));
-        setLastName(await AsyncStorage.getItem('@last_name'));
-        setIsCourier(await AsyncStorage.getItem('@is_courier'));
-    }
+    const {state} = useContext(Context)
+
+    const m = route.params;
 
     const [currentLocationLat, setCurrentLocationLat] = React.useState();
     const [currentLocationLon, setCurrentLocationLon] = React.useState();
@@ -75,14 +69,14 @@ export function DrawerContent(props) {
     }
 
     // if courier is true -> then display switch component, otherwise return null
-    const com = isCourier ? (
+    const com = state.is_courier ? (
         <View style={styles.changeToCourier}>
                 <Text style={styles.changeToCourierText}>Kuriérska časť</Text>
                 <Switch value={isSwitchOn} onValueChange={onToggleSwitch} color="#393485"/>
         </View>
     ) : null;
 
-    const becomeACourierOption = !isCourier ? (
+    const becomeACourierOption = !state.is_courier ? (
         <DrawerItem 
             icon={({color, size}) => (
                 <Icon 
@@ -131,8 +125,8 @@ export function DrawerContent(props) {
                                 activeOpacity={0.7}
                             />
                             <View style={{marginLeft:15, flexDirection:'column'}}>
-                                <Title style={styles.title}>{firstName + ' ' + lastName}</Title>
-                                <Caption style={styles.caption}>{email}</Caption>
+                                <Title style={styles.title}>{state.first_name + ' ' + state.last_name}</Title>
+                                <Caption style={styles.caption}>{state.email}</Caption>
                             </View>
                         </View>
                     </View>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {
     View, 
     Text,
@@ -11,12 +11,16 @@ import {
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import * as SecureStore from 'expo-secure-store';
 
+import Context from '../store/context';
+
 async function getValueFor(key) {
     let result = await SecureStore.getItemAsync(key);
     return result;
 }
 
 const SplashScreen = ({navigation}) => {
+
+    const {state, actions} = useContext(Context);
 
     const handleEnterAppButton = async () => {
 
@@ -33,9 +37,17 @@ const SplashScreen = ({navigation}) => {
                     })
                     .then((response) => response.json())
                     .then ((responseJson) => {
+                        actions({type: 'setState', payload: {...state, 
+                            first_name: responseJson.person.first_name,
+                            last_name: responseJson.person.last_name,
+                            email: responseJson.email,
+                            phone_number: responseJson.person.phone_number,
+                            is_courier: responseJson.is_courier
+                          }});
                         if (responseJson.code == "token_not_valid" || responseJson.code == "bad_authorization_header"){
                             navigation.navigate("Auth");
                         } else {
+                            global.is_courier = responseJson.is_courier;
                             navigation.navigate("DrawerNavigation");
                         }
                     })

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useContext} from 'react';
 import {
     View, 
     ScrollView,
@@ -18,8 +18,11 @@ import {
 import RNPickerSelect from 'react-native-picker-select';
 import * as SecureStore from 'expo-secure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Context from '../store/context';
 
 const BecomeACourierMoreInfoScreen = ({navigation, route}) => {
+
+  const {state, actions} = useContext(Context);
 
   const { 
     numberOP,
@@ -32,15 +35,6 @@ const BecomeACourierMoreInfoScreen = ({navigation, route}) => {
   const [city, setCity] = useState('');
   const [psc, setPsc] = useState('');
   const [vehicle, setVehicle] = useState('');
-
-  const updateAsyncStorage = async (key, value) => {
-    try {
-      await AsyncStorage.removeItem(key);
-      await AsyncStorage.setItem(key, value);
-    } catch(error) {
-      console.log(error);
-    }
-  }
 
   const handleButton = async () => {
     if (!address) {
@@ -74,7 +68,9 @@ const BecomeACourierMoreInfoScreen = ({navigation, route}) => {
               })
               .then((response) => response.json())
               .then ((responseJson) => {
-                updateAsyncStorage('@is_courier', true);
+                actions({type: 'setState', payload: {...state, 
+                  is_courier: true
+                }});
                 navigation.navigate("CourierMainScreen");
               })
               .catch((error) => {

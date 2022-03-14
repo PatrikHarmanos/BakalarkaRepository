@@ -9,21 +9,20 @@ import {
 import * as SecureStore from 'expo-secure-store';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Moment from 'moment';
+import { useIsFocused } from '@react-navigation/native';
 
 const OrdersScreen = ({route, navigation}) => {
 
   const [data, setData] = useState([]);
-  // const update = route.params;
-  const [update, setUpdate] = useState(false);
   Moment.locale('en');
 
   const [expanded, setExpanded] = useState(true);
 
+  const isFocused = useIsFocused();
+
   const handlePress = () => setExpanded(!expanded);
 
   useEffect(() => {
-    console.log(update)
-    setUpdate(false)
     try {
       SecureStore.getItemAsync('access').then((token) => {
           console.log(token);
@@ -37,6 +36,7 @@ const OrdersScreen = ({route, navigation}) => {
               })
               .then((response) => response.json())
               .then ((responseJson) => {
+                  console.log(responseJson);
                   setData(responseJson);
               })
               .catch((error) => {
@@ -50,7 +50,7 @@ const OrdersScreen = ({route, navigation}) => {
     } catch(error) {
         console.log(error);
     }
-  }, [update])
+  }, [isFocused])
   
   return (
     <View style={styles.container}>
