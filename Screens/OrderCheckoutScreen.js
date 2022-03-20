@@ -93,20 +93,22 @@ const OrderCheckoutScreen = ({route, navigation}) => {
         formData.append("pickup_place.city", pickupPlaceCity);
         formData.append("pickup_place.street_address", pickupPlaceStreetAddress);
         formData.append("pickup_place.postal_code", pickupPlacePostalCode);
-        formData.append("pickup_place.coordinates", `POINT(${pickupPlaceLong} ${pickupPlaceLat})`);
+        formData.append("pickup_place.latitude", pickupPlaceLat);
+        formData.append("pickup_place.longitude", pickupPlaceLong);
         formData.append("delivery_place.place_id", deliveryID);
         formData.append("delivery_place.formatted_address", deliveryPlaceDescription);
         formData.append("delivery_place.country", deliveryPlaceCountry);
         formData.append("delivery_place.city", deliveryPlaceCity);
         formData.append("delivery_place.street_address", deliveryPlaceStreetAddress);
         formData.append("delivery_place.postal_code", deliveryPlacePostalCode);
-        formData.append("delivery_place.coordinates", `POINT(${deliveryPlaceLong} ${deliveryPlaceLat})`);
+        formData.append("delivery_place.latitude", deliveryPlaceLat);
+        formData.append("delivery_place.longitude", deliveryPlaceLong);
 
         try {
             await SecureStore.getItemAsync('access').then((token) => {
                 console.log(token);
                 if (token != null) {
-                fetch('http://147.175.150.96/api/core/create_delivery/', {
+                fetch('http://147.175.150.96/api/deliveries/', {
                     method: 'POST',
                     body: formData,
                     headers: {
@@ -193,26 +195,24 @@ const OrderCheckoutScreen = ({route, navigation}) => {
                 </MapView>
             </View>
             <View style={styles.footer}>
+                <View style={styles.footer_section}>
+                    <Text style={styles.footer_section_text}>Cena</Text>
+                    <Text style={styles.footer_section_value}>{finalPrice} €</Text>
+                </View>
+                <View style={styles.footer_section}>
+                    <Text style={styles.footer_section_text}>Vydialenosť</Text>
+                    <Text style={styles.footer_section_value}>{distance} km</Text>
+                </View>
+                <View style={styles.footer_section}>
+                    <Text style={styles.footer_section_text}>Doba doručenia</Text>
+                    <Text style={styles.footer_section_value}>{finalTime} minút</Text>
+                </View>
                 
-                    <View style={styles.footer_section}>
-                        <Text style={styles.footer_section_text}>Cena</Text>
-                        <Text style={styles.footer_section_value}>{finalPrice} €</Text>
-                    </View>
-                    <View style={styles.footer_section}>
-                        <Text style={styles.footer_section_text}>Vydialenosť</Text>
-                        <Text style={styles.footer_section_value}>{distance} km</Text>
-                    </View>
-                    <View style={styles.footer_section}>
-                        <Text style={styles.footer_section_text}>Doba doručenia</Text>
-                        <Text style={styles.footer_section_value}>{finalTime} minút</Text>
-                    </View>
-                    
-                    <View style={styles.button}>
-                        <TouchableOpacity style={styles.signIn} onPress={handleButton}>
-                            <Text style={styles.textSign}>Potvrdiť objednávku</Text>
-                        </TouchableOpacity>
-                    </View>
-                
+                <View style={styles.button}>
+                    <TouchableOpacity style={styles.signIn} onPress={handleButton}>
+                        <Text style={styles.textSign}>Potvrdiť objednávku</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
         </View>
     ); 
@@ -231,14 +231,14 @@ const styles = StyleSheet.create({
         flex: 2,
         backgroundColor: '#fff',
         paddingHorizontal: 20,
-        justifyContent: 'flex-end',
-        paddingBottom: 50,
+        justifyContent: 'flex-start',
+        paddingTop: 10,
         borderTopLeftRadius: 30,
         borderTopRightRadius: 30
     },
     button: {
         alignItems: 'center',
-        marginTop: 50
+        marginTop: 10
     },
     signIn: {
         width: '100%',

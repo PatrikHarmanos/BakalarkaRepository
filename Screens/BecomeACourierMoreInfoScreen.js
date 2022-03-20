@@ -50,26 +50,40 @@ const BecomeACourierMoreInfoScreen = ({navigation, route}) => {
       return;
     }
 
-    let home_address = address + ", " + city + ", " + psc;
-    let formData = new FormData();
-    // formData.append("vehicle_type", vehicle);
-    formData.append("home_address", home_address);
+    var dataToSend = {
+      id_number: "432432432",
+      id_expiration_date: "2022-03-18",
+      dl_number: "4234234",
+      dl_expiration_date: "2022-03-18",
+      vehicle_type: "small",
+      home_address: "4343243"
+    }
 
     try {
       await SecureStore.getItemAsync('access').then((token) => {
           console.log(token);
           if (token != null) {
-              fetch('http://147.175.150.96/api/couriers/become_courier/', {
-                  method: "POST",
-                  headers: {
-                      'Authorization': 'Bearer ' + token,
-                  },
-                  body: formData
+            console.log(JSON.stringify(dataToSend))
+            fetch('http://147.175.150.96/api/couriers', {
+              method: 'POST',
+              headers: {
+                'Authorization': 'Bearer ' + token,
+              },
+              body: JSON.stringify({
+                "id_number": "432432432",
+                "id_expiration_date": "2022-03-18",
+                "dl_number": "4234234",
+                "dl_expiration_date": "2022-03-18",
+                "vehicle_type": "small",
+                "home_address": "4343243"
               })
-              .then((response) => response.json())
+            })
+              .then((response) => response.text())
               .then ((responseJson) => {
+                console.log(responseJson)
                 actions({type: 'setState', payload: {...state, 
-                  is_courier: true
+                  is_courier: true,
+                  courier_mode_on: true
                 }});
                 navigation.navigate("CourierMainScreen");
               })

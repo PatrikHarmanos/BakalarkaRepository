@@ -63,7 +63,7 @@ const LoginScreen = ({ navigation }) => {
       password: userPassword,
     }
 
-    await fetch('http://147.175.150.96/api/account/token/', {
+    await fetch('http://147.175.150.96/api/accounts/token/', {
       method: 'POST',
       body: JSON.stringify(dataToSend),
       headers: {
@@ -79,7 +79,7 @@ const LoginScreen = ({ navigation }) => {
           save('refresh', responseJson.refresh);
 
           // get user info from server
-          fetch('http://147.175.150.96/api/account/my_account/', {
+          fetch('http://147.175.150.96/api/accounts/me', {
             method: "GET",
             headers: {
                 'Content-Type': 'application/json',
@@ -88,20 +88,21 @@ const LoginScreen = ({ navigation }) => {
           })
             .then((r) => r.json())
             .then ((rJson) => {
-                actions({type: 'setState', payload: {...state, 
-                  first_name: rJson.person.first_name,
-                  last_name: rJson.person.last_name,
-                  email: rJson.email,
-                  phone_number: rJson.person.phone_number,
-                  is_courier: rJson.is_courier
-                }});
+              actions({type: 'setState', payload: {...state, 
+                first_name: rJson.first_name,
+                last_name: rJson.last_name,
+                email: rJson.email,
+                phone_number: rJson.phone_number,
+                is_courier: responseJson.courier !== null ? true : false,
+                courier_mode_on: false
+              }});
             })
             .catch((error) => {
                 console.log(error);
             });
 
           // navigate to the app
-          navigation.navigate("DrawerNavigation", { macka: 'macka112'});
+          navigation.navigate("DrawerNavigation");
         } else {
           // else show an error
           alert('Nesprávny email alebo heslo. Skúste znovu.');

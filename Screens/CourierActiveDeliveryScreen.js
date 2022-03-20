@@ -78,7 +78,7 @@ const CourierActiveDeliveryScreen = ({route, navigation}) => {
         try {
             await SecureStore.getItemAsync('access').then((token) => {
                 if (token != null) {
-                    fetch(`http://147.175.150.96/api/core/deliveries/${safeID}/state`, {
+                    fetch(`http://147.175.150.96/api/deliveries/${safeID}/state`, {
                         method: 'PATCH',
                         headers: {
                             'Authorization': 'Bearer ' + token,
@@ -107,7 +107,7 @@ const CourierActiveDeliveryScreen = ({route, navigation}) => {
         try {
             await SecureStore.getItemAsync('access').then((token) => {
                 if (token != null) {
-                    fetch(`http://147.175.150.96/api/core/deliveries/${safeID}/state`, {
+                    fetch(`http://147.175.150.96/api/deliveries/${safeID}/state`, {
                         method: 'PATCH',
                         headers: {
                             'Authorization': 'Bearer ' + token,
@@ -218,7 +218,7 @@ const styles = StyleSheet.create({
         flex: 2
     },
     header: {
-        flex: 5
+        flex: 3
     },
     footer: {
         flex: 2,

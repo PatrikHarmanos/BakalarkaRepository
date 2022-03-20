@@ -114,7 +114,7 @@ const NewOrderScreenStack = ({navigation}) => (
           <Stack.Screen 
             name="NewOrderItem"
             options= {{
-              title: "Položka"
+              title: "Zásielka"
             }}
             component={NewOrderItemScreen}
           />

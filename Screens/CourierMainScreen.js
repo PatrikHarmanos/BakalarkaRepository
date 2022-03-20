@@ -30,10 +30,16 @@ const CourierMainScreen = ({ route, navigation }) => {
   const [currentLocationLon, setCurrentLocationLon] = useState();
 
   const isFocused = useIsFocused();
+  const [isFetching, setIsFetching] = useState(false);
 
   useEffect(() => {
     getDeliveries();
-  }, [isFocused]);
+    setIsFetching(false);
+  }, [isFetching, isFocused]);
+
+  const onRefresh = () => {
+    setIsFetching(true);
+  }
 
   const getDeliveries = async () => {
     try {
@@ -172,6 +178,8 @@ const CourierMainScreen = ({ route, navigation }) => {
             <FlatList
             data={data}
             keyExtractor={(item) => item.safe_id}
+            onRefresh={() => onRefresh()}
+            refreshing={isFetching}
             renderItem={({ item, index }) => (
               <TouchableOpacity
                 onPress={() => handleButton(index)}

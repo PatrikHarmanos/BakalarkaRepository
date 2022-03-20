@@ -12,7 +12,8 @@ import {
     Text,
     TouchableRipple,
     Switch,
-    ActivityIndicator
+    ActivityIndicator,
+    Image
 } from 'react-native-paper';
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -39,19 +40,9 @@ export function DrawerContent(props, route) {
     const [currentLocationLat, setCurrentLocationLat] = React.useState();
     const [currentLocationLon, setCurrentLocationLon] = React.useState();
 
-    const getLocation = async () => {
-        try {
-            let { status } = await Location.requestForegroundPermissionsAsync();
-            if (status !== 'granted') {
-              return;
-            }
-            let location = await Location.getCurrentPositionAsync({});
-            setCurrentLocationLat(location["coords"]["latitude"]);
-            setCurrentLocationLon(location["coords"]["longitude"]);
-        } catch (error) {
-            console.log(error);
-        }
-    }
+    useEffect(() => {
+        setIsSwitchOn(state.courier_mode_on)
+    }, [state.courier_mode_on])
 
     const onToggleSwitch = () => {
         setIsSwitchOn(!isSwitchOn);
@@ -80,7 +71,7 @@ export function DrawerContent(props, route) {
         <DrawerItem 
             icon={({color, size}) => (
                 <Icon 
-                    name='progress-wrench'
+                    name='car'
                     color={color}
                     size={size}
                 />
@@ -130,32 +121,44 @@ export function DrawerContent(props, route) {
                             </View>
                         </View>
                     </View>
-
-                    <Drawer.Section style={styles.drawerSection}>
-                        <DrawerItem 
-                        icon={({color, size}) => (
-                            <Icon 
-                                name='home-outline'
-                                color={color}
-                                size={size}
+                    { !isSwitchOn ? (
+                        <Drawer.Section style={styles.drawerSection}>
+                            <DrawerItem 
+                                icon={({color, size}) => (
+                                    <Icon 
+                                        name='home-outline'
+                                        color={color}
+                                        size={size}
+                                    />
+                                )}
+                                isEnabled={false}
+                                label="Domov"
+                                onPress={() => {props.navigation.navigate("Domov")}}
                             />
-                        )}
-                        label="Domov"
-                        onPress={() => {props.navigation.navigate("Domov")}}
-                        />
-                        <DrawerItem 
-                        icon={({color, size}) => (
-                            <Icon 
-                                name='progress-wrench'
-                                color={color}
-                                size={size}
+                            <DrawerItem 
+                                icon={({color, size}) => (
+                                    <Icon 
+                                        name='progress-wrench'
+                                        color={color}
+                                        size={size}
+                                    />
+                                )}
+                                label="Nastavenia"
+                                onPress={() => {props.navigation.navigate("SettingsScreenStack")}}
                             />
-                        )}
-                        label="Nastavenia"
-                        onPress={() => {props.navigation.navigate("SettingsScreenStack")}}
-                        />
-                        {becomeACourierOption}
-                    </Drawer.Section>
+                            {becomeACourierOption}
+                        </Drawer.Section>
+                    ) : (
+                        <View style={{display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
+                           <Icon 
+                                name='car'
+                                color={'#393485'}
+                                size={60}
+                                style={{marginTop: 20}}
+                            />
+                           <Text style={styles.courierAppText}>Ste prihlásený ako Doručovateľ</Text>
+                        </View>
+                    ) }
                 </View>
             </DrawerContentScrollView>
             {com}
@@ -232,5 +235,15 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: '#b5b5b5',
         fontWeight: 'bold'
+    },
+    courierAppText: {
+        fontSize: 15,
+        fontWeight: 'bold',
+        color: 'green',
+        marginTop: 5
+    },
+    tinyLogo: {
+        width: 50,
+        height: 50,
     }
   });

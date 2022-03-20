@@ -55,8 +55,9 @@ const CourierPickupDeliveryScreen = ({route, navigation}) => {
     const handleButton = async () => {
         try {
             await SecureStore.getItemAsync('access').then((token) => {
+                console.log(token)
                 if (token != null) {
-                    fetch(`http://147.175.150.96/api/core/deliveries/${safeID}/state`, {
+                    fetch(`http://147.175.150.96/api/deliveries/${safeID}/state`, {
                         method: 'PATCH',
                         headers: {
                             'Authorization': 'Bearer ' + token,
@@ -67,7 +68,7 @@ const CourierPickupDeliveryScreen = ({route, navigation}) => {
                     })
                     .then((response) => response.json())
                     .then((responseJson) => {
-
+                        console.log(responseJson)
                         navigation.navigate("CourierActiveDeliveryScreen", {
                             itemName: itemName,
                             itemDescription: itemDescription,
@@ -146,21 +147,21 @@ const styles = StyleSheet.create({
         flex: 1
     },
     header: {
-        flex: 4
+        flex: 3
     },
     footer: {
         flex: 1,
         backgroundColor: '#fff',
         paddingHorizontal: 20,
         justifyContent: 'flex-end',
-        paddingBottom: 50,
+        paddingBottom: 20,
         paddingTop: 20,
         borderTopLeftRadius: 30,
         borderTopRightRadius: 30
     },
     button: {
         alignItems: 'center',
-        marginTop: 20
+        marginTop: 12
     },
     signIn: {
         width: '100%',

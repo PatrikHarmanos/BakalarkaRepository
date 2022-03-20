@@ -53,16 +53,19 @@ const CourierScreenStack = ({navigation}) => (
         }
     }}>
             <Stack.Screen name="BecomeACourier" component={BecomeACourierScreen} options={{
-            headerLeft: () => (
-                <Icon.Button name="ios-menu" size={25} backgroundColor="#fff" color="#000" onPress={() => navigation.openDrawer()}></Icon.Button>
-            )
+                headerLeft: () => (
+                    <Icon.Button name="ios-menu" size={25} backgroundColor="#fff" color="#000" onPress={() => navigation.openDrawer()}></Icon.Button>
+                ),
+                title: 'Osobné doklady'
             }} />
-            <Stack.Screen name="BecomeACourierMoreInfo" component={BecomeACourierMoreInfoScreen} />
+            <Stack.Screen name="BecomeACourierMoreInfo" component={BecomeACourierMoreInfoScreen} options={{
+                title: 'Trvalý pobyt'
+            }}/>
             <Stack.Screen name="CourierMainScreen" component={CourierMainScreen} options={{
-                title: '',
-            headerLeft: () => (
-                <Icon.Button name="ios-menu" size={25} backgroundColor="#fff" color="#000" onPress={() => navigation.openDrawer()}></Icon.Button>
-            )
+                headerLeft: () => (
+                    <Icon.Button name="ios-menu" size={25} backgroundColor="#fff" color="#000" onPress={() => navigation.openDrawer()}></Icon.Button>
+                ),
+                title: ''
             }} />
             <Stack.Screen name="CourierDeliveryScreen" component={CourierDeliveryScreen} options={{
                 title: 'Detail zásielky'

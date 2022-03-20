@@ -43,7 +43,6 @@ const NewOrderScreen = ({navigation}) => {
                   placeholder='Vyhľadajte miesto vyzdvihnutia'
                   onPress={(data, details = null) => {
                     setPickupData(data);
-                    console.log(data);
                   }}
                   query={{
                     key: 'AIzaSyD3IdOaoOc8tVpnakDzh1BLImcS-iJxoVY',
@@ -58,7 +57,6 @@ const NewOrderScreen = ({navigation}) => {
                   placeholder='Vyhľadajte miesto doručenia'
                   onPress={(data, details = null) => {
                     setDeliveryData(data);
-                    console.log(data);
                   }}
                   query={{
                     key: 'AIzaSyD3IdOaoOc8tVpnakDzh1BLImcS-iJxoVY',

@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useContext} from "react";
 import {
   StyleSheet,
   TextInput,
@@ -15,45 +15,17 @@ import {
 } from 'react-native';
 
 import * as SecureStore from 'expo-secure-store';
+import Context from "../store/context";
 
 const EditProfileScreen = () =>{
 
   const [email, setEmail] = useState();
   const [firstName, setFirstName] = useState();
+  const [password, setPassword] = useState();
   const [lastName, setLastName] = useState();
   const [phoneNumber, setPhoneNumber] = useState();
 
-  useEffect(() => {
-    try {
-      SecureStore.getItemAsync('access').then((token) => {
-          console.log(token);
-          if (token != null) {
-              fetch('http://147.175.150.96/api/account/my_account/', {
-                  method: "GET",
-                  headers: {
-                      'Authorization': 'Bearer ' + token,
-                  },
-              })
-              .then((response) => response.json())
-              .then ((responseJson) => {
-                  console.log(responseJson);
-                  setEmail(responseJson.email);
-                  setFirstName(responseJson.person.first_name);
-                  setLastName(responseJson.person.last_name);
-                  setPhoneNumber(responseJson.person.phone_number);
-              })
-              .catch((error) => {
-                  console.log(error);
-              });
-          } else {
-              // call refresh token
-              return;
-          }
-      })
-    } catch(error) {
-        console.log(error);
-    }
-  }, [])
+  const {state, actions} = useContext(Context);
   
   const handleRegisterButton = async () => {
     if (!firstName) {
@@ -75,6 +47,7 @@ const EditProfileScreen = () =>{
 
     var dataToSend = {
       email: email,
+      password: password,
       person: {
         email: email,
         first_name: firstName,
@@ -96,7 +69,12 @@ const EditProfileScreen = () =>{
               })
               .then((response) => response.json())
               .then ((responseJson) => {
-                  console.log(responseJson);
+                actions({type: 'setState', payload: {...state, 
+                  first_name: responseJson.person.first_name,
+                  last_name: responseJson.person.last_name,
+                  email: responseJson.email,
+                  phone_number: responseJson.person.phone_number
+                }});
               })
               .catch((error) => {
                   console.log(error);
@@ -118,7 +96,7 @@ const EditProfileScreen = () =>{
           <TextInput style={styles.textInput}
               onChangeText={(FirstName) => setFirstName(FirstName)}
               placeholder="Zadajte meno"
-              defaultValue={firstName}
+              defaultValue={state.first_name}
           /> 
         </View>
         <Text style={[styles.text_footer, {marginTop: 35}]}>Priezvisko</Text>
@@ -126,7 +104,7 @@ const EditProfileScreen = () =>{
           <TextInput style={styles.textInput}
               onChangeText={(LastName) => setLastName(LastName)}
               placeholder="Zadajte priezvisko"
-              defaultValue={lastName}
+              defaultValue={state.last_name}
           />
         </View>
         <Text style={[styles.text_footer, {marginTop: 35}]}>Email</Text>
@@ -134,7 +112,7 @@ const EditProfileScreen = () =>{
           <TextInput style={styles.textInput}
               onChangeText={(Email) => setEmail(Email)}
               placeholder="Zadajte Email"
-              defaultValue={email}
+              defaultValue={state.email}
           /> 
         </View>
         <Text style={[styles.text_footer, {marginTop: 35}]}>Telefónne číslo</Text>
@@ -142,15 +120,15 @@ const EditProfileScreen = () =>{
           <TextInput style={styles.textInput}
               onChangeText={(Number) => setPhoneNumber(Number)}
               placeholder="Zadajte telefónne číslo"
-              defaultValue={phoneNumber}
+              defaultValue={state.phone_number}
           /> 
         </View>
         <Text style={[styles.text_footer, {marginTop: 35}]}>Heslo</Text>
         <View style={styles.action}>
           <TextInput style={styles.textInput}
-              onChangeText={(password) => setUserPassword(password)}
+              onChangeText={(password) => setPassword(password)}
               placeholder="Zadajte heslo"
-              editable={false}
+              secureTextEntry={true}
           /> 
         </View>
 

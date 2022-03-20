@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import * as SecureStore from 'expo-secure-store';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import Context from '../store/context';
 
@@ -28,7 +29,7 @@ const SplashScreen = ({navigation}) => {
             await SecureStore.getItemAsync('access').then((token) => {
                 console.log(token);
                 if (token != null) {
-                    fetch('http://147.175.150.96/api/account/my_account/', {
+                    fetch('http://147.175.150.96/api/accounts/me', {
                         method: "GET",
                         headers: {
                             'Content-Type': 'application/json',
@@ -38,11 +39,12 @@ const SplashScreen = ({navigation}) => {
                     .then((response) => response.json())
                     .then ((responseJson) => {
                         actions({type: 'setState', payload: {...state, 
-                            first_name: responseJson.person.first_name,
-                            last_name: responseJson.person.last_name,
+                            first_name: responseJson.first_name,
+                            last_name: responseJson.last_name,
                             email: responseJson.email,
-                            phone_number: responseJson.person.phone_number,
-                            is_courier: responseJson.is_courier
+                            phone_number: responseJson.phone_number,
+                            is_courier: responseJson.courier !== null ? true : false,
+                            courier_mode_on: false
                           }});
                         if (responseJson.code == "token_not_valid" || responseJson.code == "bad_authorization_header"){
                             navigation.navigate("Auth");
@@ -66,14 +68,19 @@ const SplashScreen = ({navigation}) => {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <Image/>
+                <Icon 
+                    name='truck-delivery-outline'
+                    color={'#fff'}
+                    size={200}
+                    style={{marginTop: 20}}
+                />
             </View>
             <View style={styles.footer}>
                 <Text style={styles.title}>Najrýchlejšie doručenie!</Text>
                 <Text style={styles.text}>Teraz už aj vo vašom meste.</Text>
                 <View style={styles.button}>
                     <TouchableOpacity style={styles.signIn} onPress={handleEnterAppButton}>
-                        <Text style={styles.textSign}>Prihlásiť sa</Text>
+                        <Text style={styles.textSign}>Vstúpiť</Text>
                         <MaterialIcons name="navigate-next" color="#fff" size={20} />
                     </TouchableOpacity>
                 </View>
@@ -105,7 +112,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         borderTopLeftRadius: 30,
         borderTopRightRadius: 30,
-        paddingVertical: 50,
+        paddingTop: 30,
+        paddingBottom: 50,
         paddingHorizontal: 30
     },
     title: {

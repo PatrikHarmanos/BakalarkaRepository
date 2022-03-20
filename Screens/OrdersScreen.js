@@ -17,6 +17,7 @@ const OrdersScreen = ({route, navigation}) => {
   Moment.locale('en');
 
   const [expanded, setExpanded] = useState(true);
+  const [isFetching, setIsFetching] = useState(false);
 
   const isFocused = useIsFocused();
 
@@ -27,17 +28,18 @@ const OrdersScreen = ({route, navigation}) => {
       SecureStore.getItemAsync('access').then((token) => {
           console.log(token);
           if (token != null) {
-              fetch('http://147.175.150.96/api/core/my_deliveries/', {
-                  method: "GET",
-                  headers: {
-                    'content-type': 'application/json',
-                    'Authorization': 'Bearer ' + token,
-                  },
+              fetch('http://147.175.150.96/api/deliveries/', {
+                method: "GET",
+                headers: {
+                  'content-type': 'application/json',
+                  'Authorization': 'Bearer ' + token,
+                },
               })
               .then((response) => response.json())
               .then ((responseJson) => {
                   console.log(responseJson);
                   setData(responseJson);
+                  setIsFetching(false);
               })
               .catch((error) => {
                   console.log(error);
@@ -50,7 +52,11 @@ const OrdersScreen = ({route, navigation}) => {
     } catch(error) {
         console.log(error);
     }
-  }, [isFocused])
+  }, [isFetching, isFocused])
+
+  const onRefresh = () => {
+    setIsFetching(true);
+  }
   
   return (
     <View style={styles.container}>
@@ -64,11 +70,18 @@ const OrdersScreen = ({route, navigation}) => {
           <FlatList
             data={data}
             keyExtractor={item => item.id}
+            onRefresh={() => onRefresh()}
+            refreshing={isFetching}
             renderItem={({ item }) => 
               <TouchableOpacity onPress={() => navigation.navigate("OrderDetails", {value: item})} style={styles.item}> 
-                <Text style={{ color: '#e8a438', fontSize: 12, fontWeight: 'bold', marginBottom: 2}}>
-                  { Moment(item.created_at).format('DD.MM.YYYY') }
-                </Text>
+                <View style={{display: 'flex', justifyContent: 'space-between', flexDirection: 'row'}}>
+                  <Text style={{ color: '#e8a438', fontSize: 12, fontWeight: 'bold', marginBottom: 2}}>
+                    { Moment(item.created_at).format('DD.MM.YYYY') }
+                  </Text>
+                  {item.state === 'ready' || item.state === 'assigned' || item.state === 'delivering' ? (
+                      <Text style={{fontSize: 12, fontWeight: 'bold', marginBottom: 2, color: 'green'}}>Aktívna</Text>
+                    ) : (<Text> </Text>)}
+                </View>
                 <Text style={styles.orderTitle}>
                   {item.receiver.first_name} {item.receiver.last_name}
                 </Text>

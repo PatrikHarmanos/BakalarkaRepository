@@ -8,7 +8,8 @@ import {
     TouchableOpacity,
     route,
     KeyboardAvoidingView,
-    TextInput
+    TextInput,
+    Alert
 } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { Avatar } from 'react-native-paper';
@@ -28,17 +29,20 @@ const OrderDetailsScreen = ({ route, navigation }) => {
     s = 'Zásielka bola priradená kuriérovi';
   } else if (value.state == 'delivering') {
     s = 'Zásielka sa doručuje';
-  } else if ( value.state = 'undeliverable') {
+  } else if ( value.state == 'undeliverable') {
     s = 'Zásielku nebolo možné doručiť';
   } else {
     s = 'Zásielka bola doručená';
   }
 
-  const callCourier = (number) => {
-    
+  const showCourierPhoneNumber = (number) => {
+    Alert.alert(
+      "Telefónne číslo",
+      number
+    )
   }
  
-  const courierInfo = value.courier ? (
+  const courierInfo = value.courier !== null ? (
         <View style={[styles.courierInfoBox, {display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}]}>
           <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'center',}}>
             <Avatar.Image 
@@ -47,14 +51,14 @@ const OrderDetailsScreen = ({ route, navigation }) => {
             />
             <View style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', marginLeft: 20}}>
               <Text style={{fontSize: 16, fontWeight: 'bold'}}>Kuriér</Text>
-              <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#393485'}}>{ value.courier.person.first_name }</Text>
+              <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#393485'}}>{ value.courier.first_name }</Text>
             </View>
           </View>
           <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'center',}}>
-            <TouchableOpacity onPress={() => callCourier(value.courier.person.phone_number)}>
+            <TouchableOpacity onPress={() => showCourierPhoneNumber(value.courier.phone_number)}>
               <MaterialComunityIcons name="phone" size={30} style={{marginLeft: 50}}/> 
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => showCourierPhoneNumber(value.courier.phone_number)}>
               <MaterialComunityIcons name="message-processing" size={30} style={{marginLeft: 15}}/> 
             </TouchableOpacity>
           </View>

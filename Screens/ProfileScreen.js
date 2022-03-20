@@ -27,11 +27,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Context from '../store/context';
 
 const ProfileScreen = ({navigation}) => {
-  const [email, setEmail] = useState();
-  const [firstName, setFirstName] = useState();
-  const [lastName, setLastName] = useState();
-  const [phoneNumber, setPhoneNumber] = useState();
-
+  
   const {state} = useContext(Context)
 
     return (

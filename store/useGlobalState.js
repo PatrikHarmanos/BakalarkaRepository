@@ -7,7 +7,8 @@ const useGlobalState = () => {
             last_name: '',
             email: '',
             phone_number: '',
-            is_courier: false
+            is_courier: false,
+            courier_mode_on: false
         }
     );
 
