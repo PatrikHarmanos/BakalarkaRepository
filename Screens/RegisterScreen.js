@@ -117,12 +117,12 @@ const RegisterScreen = ({navigation}) => {
                 secureTextEntry={true}
             /> 
           </View>
-        </ScrollView>
           <View style={styles.button}>
             <TouchableOpacity onPress={handleRegisterButton} style={styles.signIn}>
                 <Text style={styles.textSign}>Vytvoriť účet</Text>
             </TouchableOpacity>
           </View>
+        </ScrollView>
       </View>
       
     </View>

@@ -16,16 +16,18 @@ import {
 
 import * as SecureStore from 'expo-secure-store';
 import Context from "../store/context";
+import { NavigationContainer } from "@react-navigation/native";
 
-const EditProfileScreen = () =>{
-
-  const [email, setEmail] = useState();
-  const [firstName, setFirstName] = useState();
-  const [password, setPassword] = useState();
-  const [lastName, setLastName] = useState();
-  const [phoneNumber, setPhoneNumber] = useState();
+const EditProfileScreen = ({navigation}) => {
 
   const {state, actions} = useContext(Context);
+
+  const [email, setEmail] = useState(state.email);
+  const [firstName, setFirstName] = useState(state.first_name);
+  const [password, setPassword] = useState();
+  const [repeatPassword, setRepeatPassword] = useState();
+  const [lastName, setLastName] = useState(state.last_name);
+  const [phoneNumber, setPhoneNumber] = useState(state.phone_number);
   
   const handleRegisterButton = async () => {
     if (!firstName) {
@@ -47,34 +49,45 @@ const EditProfileScreen = () =>{
 
     var dataToSend = {
       email: email,
-      password: password,
-      person: {
-        email: email,
-        first_name: firstName,
-        last_name: lastName,
-        phone_number: phoneNumber
+      first_name: firstName,
+      last_name: lastName,
+      phone_number: phoneNumber
+    }
+
+    if (password) {
+      if (!repeatPassword) {
+        alert('Please fill password again');
+        return;
       }
+      if (password != repeatPassword) {
+        alert('Hesla sa nezhoduju');
+        return;
+      }
+      dataToSend["password"] = password;
     }
     
     try {
-      await AsyncStorage.getItem('@access_token').then((token) => {
+      await SecureStore.getItemAsync('access').then((token) => {
           console.log(token);
           if (token != null) {
-              fetch('http://147.175.150.96/api/account/my_account/', {
-                  method: "PATCH",
-                  headers: {
-                      'Authorization': 'Bearer ' + token,
-                  },
-                  body: dataToSend
+              fetch('http://147.175.150.96/api/accounts/me', {
+                method: "PATCH",
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': 'Bearer ' + token,
+                },
+                body: dataToSend
               })
               .then((response) => response.json())
               .then ((responseJson) => {
+                console.log(responseJson)
                 actions({type: 'setState', payload: {...state, 
-                  first_name: responseJson.person.first_name,
-                  last_name: responseJson.person.last_name,
+                  first_name: responseJson.first_name,
+                  last_name: responseJson.last_name,
                   email: responseJson.email,
-                  phone_number: responseJson.person.phone_number
+                  phone_number: responseJson.phone_number
                 }});
+                navigation.navigate("Profile")
               })
               .catch((error) => {
                   console.log(error);
@@ -90,7 +103,7 @@ const EditProfileScreen = () =>{
 
   return (
     <View style={styles.container}>
-      <KeyboardAvoidingView>
+      <ScrollView>
         <Text style={[styles.text_footer, {marginTop: 5}]}>Meno</Text>
         <View style={styles.action}>
           <TextInput style={styles.textInput}
@@ -131,13 +144,21 @@ const EditProfileScreen = () =>{
               secureTextEntry={true}
           /> 
         </View>
+        <Text style={[styles.text_footer, {marginTop: 35}]}>Potvrdiť heslo</Text>
+        <View style={styles.action}>
+          <TextInput style={styles.textInput}
+              onChangeText={(password) => setRepeatPassword(password)}
+              placeholder="Zadajte heslo"
+              secureTextEntry={true}
+          /> 
+        </View>
 
         <View style={styles.button}>
           <TouchableOpacity onPress={handleRegisterButton} style={styles.signIn}>
               <Text style={styles.textSign}>Zmeniť údaje</Text>
           </TouchableOpacity>
         </View>
-      </KeyboardAvoidingView>      
+      </ScrollView>      
     </View>
       
   );

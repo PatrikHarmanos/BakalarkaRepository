@@ -64,23 +64,16 @@ const BecomeACourierMoreInfoScreen = ({navigation, route}) => {
           console.log(token);
           if (token != null) {
             console.log(JSON.stringify(dataToSend))
-            fetch('http://147.175.150.96/api/couriers', {
+            fetch('http://147.175.150.96/api/couriers/', {
               method: 'POST',
               headers: {
+                'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + token,
               },
-              body: JSON.stringify({
-                "id_number": "432432432",
-                "id_expiration_date": "2022-03-18",
-                "dl_number": "4234234",
-                "dl_expiration_date": "2022-03-18",
-                "vehicle_type": "small",
-                "home_address": "4343243"
-              })
+              body: JSON.stringify(dataToSend)
             })
-              .then((response) => response.text())
+              .then((response) => response.json())
               .then ((responseJson) => {
-                console.log(responseJson)
                 actions({type: 'setState', payload: {...state, 
                   is_courier: true,
                   courier_mode_on: true

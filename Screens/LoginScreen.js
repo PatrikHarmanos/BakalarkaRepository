@@ -83,26 +83,69 @@ const LoginScreen = ({ navigation }) => {
             method: "GET",
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + responseJson.access,
+                'Authorization': 'Bearer ' + responseJson.access + 'sss',
             }
           })
             .then((r) => r.json())
             .then ((rJson) => {
-              actions({type: 'setState', payload: {...state, 
-                first_name: rJson.first_name,
-                last_name: rJson.last_name,
-                email: rJson.email,
-                phone_number: rJson.phone_number,
-                is_courier: responseJson.courier !== null ? true : false,
-                courier_mode_on: false
-              }});
+              // ak je platny
+              if (rJson.code !== "token_not_valid") {
+                actions({type: 'setState', payload: {...state, 
+                  first_name: rJson.first_name,
+                  last_name: rJson.last_name,
+                  email: rJson.email,
+                  phone_number: rJson.phone_number,
+                  is_courier: rJson.courier !== null ? true : false,
+                  courier_mode_on: false
+                }});
+                // navigate to the app
+                navigation.navigate("DrawerNavigation");
+              } else {
+                // ak je neplatny access token
+                // call refresh
+                fetch('http://147.175.150.96/api/accounts/token/refresh/', {
+                  method: "POST",
+                  headers: {
+                      'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({"refresh": responseJson.refresh})
+                })
+                  .then((res) => res.json())
+                  .then ((responseJsonSecond) => {
+                    console.log(responseJsonSecond)
+                    // save new access and refresh token
+                    save('access' , responseJsonSecond.access);
+                    save('refresh', responseJsonSecond.refresh);
+
+                    // get user info from server with new access token
+                    fetch('http://147.175.150.96/api/accounts/me', {
+                      method: "GET",
+                      headers: {
+                          'Content-Type': 'application/json',
+                          'Authorization': 'Bearer ' + responseJsonSecond.access,
+                      }
+                    })
+                      .then((res) => res.json())
+                      .then ((responseJson) => {
+                        console.log(responseJson)
+                        actions({type: 'setState', payload: {...state, 
+                          first_name: responseJson.first_name,
+                          last_name: responseJson.last_name,
+                          email: responseJson.email,
+                          phone_number: responseJson.phone_number,
+                          is_courier: responseJson.courier !== null ? true : false,
+                          courier_mode_on: false
+                        }});
+                        // navigate to the app
+                        navigation.navigate("DrawerNavigation");
+                      })
+                  })
+              }
+              
             })
             .catch((error) => {
                 console.log(error);
             });
-
-          // navigate to the app
-          navigation.navigate("DrawerNavigation");
         } else {
           // else show an error
           alert('Nesprávny email alebo heslo. Skúste znovu.');
