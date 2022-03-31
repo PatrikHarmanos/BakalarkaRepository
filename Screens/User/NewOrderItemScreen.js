@@ -1,18 +1,14 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     View, 
     Text,
-    Button,
     StyleSheet,
-    Dimensions,
     TouchableOpacity,
-    route,
-    KeyboardAvoidingView,
     TextInput
 } from 'react-native';
-import MaterialComunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import RNPickerSelect from 'react-native-picker-select';
 import { ScrollView } from 'react-native-gesture-handler';
+import { callAPI } from '../../Helpers/FetchHelper'
 
 const NewOrderItemScreen = ({route, navigation}) => {
     const [itemCategory, setItemCategory] = useState('');
@@ -45,46 +41,38 @@ const NewOrderItemScreen = ({route, navigation}) => {
 
     useEffect(() => {
       // call google places API to get latitude and longtitude from place_id for pickup place
-      fetch(`https://maps.googleapis.com/maps/api/place/details/json?placeid=${pickup_place.place_id}&key=AIzaSyD3IdOaoOc8tVpnakDzh1BLImcS-iJxoVY`, {
-                method: 'GET',
-              })
-                .then((response) => response.json())
-                .then((responseJson) => {
-                  for (let i = 0; i < responseJson.result.address_components.length; i++){
-                    console.log(responseJson);
-                    if (responseJson.result.address_components[i].types[0] == "postal_code"){
-                      setPickupPlacePostalCode(responseJson.result.address_components[i].short_name);
-                    }
-                  }
-                  setPickupPlaceLat(responseJson.result.geometry.location.lat);
-                  setPickupPlaceLong(responseJson.result.geometry.location.lng);
-                  
-                })
-                .catch((error) => {
-                  console.log(error);
-                });
+      callAPI(
+        `https://maps.googleapis.com/maps/api/place/details/json?placeid=${pickup_place.place_id}&key=AIzaSyD3IdOaoOc8tVpnakDzh1BLImcS-iJxoVY`,
+        'GET',
+      ).then((data) => {
+        for (let i = 0; i < data.result.address_components.length; i++){
+          console.log(data);
+          if (data.result.address_components[i].types[0] == "postal_code"){
+            setPickupPlacePostalCode(data.result.address_components[i].short_name);
+          }
+        }
+        setPickupPlaceLat(data.result.geometry.location.lat);
+        setPickupPlaceLong(data.result.geometry.location.lng);
+      })
 
       // call google places API to get latitude and longtitude from place_id for delivery place
-      fetch(`https://maps.googleapis.com/maps/api/place/details/json?placeid=${delivery_place.place_id}&key=AIzaSyD3IdOaoOc8tVpnakDzh1BLImcS-iJxoVY`, {
-                method: 'GET',
-              })
-                .then((response) => response.json())
-                .then((responseJson) => {
-                  // get postal code from json response
-                  // it has to be done in the loop, because the number of elements in the array can be different due to address number (sometimes there is no address number)
-                  for (let i = 0; i < responseJson.result.address_components.length; i++){
-                    if (responseJson.result.address_components[i].types[0] == "postal_code"){
-                      setDeliveryPlacePostalCode(responseJson.result.address_components[i].short_name);
-                    }
-                  }
-                  // get lat and long from json response
-                  setDeliveryPlaceLat(responseJson.result.geometry.location.lat);
-                  setDeliveryPlaceLong(responseJson.result.geometry.location.lng);
-                })
-                .catch((error) => {
-                  console.log(error);
-                });
-                // response can be length 3/4 depending if the address has also a number
+      callAPI(
+        `https://maps.googleapis.com/maps/api/place/details/json?placeid=${delivery_place.place_id}&key=AIzaSyD3IdOaoOc8tVpnakDzh1BLImcS-iJxoVY`,
+        'GET',
+      ).then((responseJson) => {
+        // get postal code from json response
+        // it has to be done in the loop, because the number of elements in the array can be different due to address number (sometimes there is no address number)
+        for (let i = 0; i < responseJson.result.address_components.length; i++){
+          if (responseJson.result.address_components[i].types[0] == "postal_code"){
+            setDeliveryPlacePostalCode(responseJson.result.address_components[i].short_name);
+          }
+        }
+        // get lat and long from json response
+        setDeliveryPlaceLat(responseJson.result.geometry.location.lat);
+        setDeliveryPlaceLong(responseJson.result.geometry.location.lng);
+      })
+                
+      // response can be length 3/4 depending if the address has also a number
       if (pickup_place.terms.length == 3){
         setPickupPlaceStreetAddress(pickup_place.terms[0].value);
         setPickupPlaceCity(pickup_place.terms[1].value);

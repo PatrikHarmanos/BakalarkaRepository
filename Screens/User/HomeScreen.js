@@ -1,15 +1,13 @@
-import { NavigationContainer } from '@react-navigation/native';
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useContext } from 'react';
 import {
     View, 
     Text,
     StyleSheet,
     TouchableOpacity
 } from 'react-native';
-import { Avatar, Button, Card, Title, Paragraph } from 'react-native-paper';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Card, Title, Paragraph } from 'react-native-paper';
 
-import Context from '../store/context';
+import Context from '../../store/context';
 
 const HomeScreen = ({ navigation, route }) => {
   
@@ -18,7 +16,7 @@ const HomeScreen = ({ navigation, route }) => {
     return (
       <View style={styles.container}>
           <Card style={styles.item}>
-            <Card.Cover source={require('../images/becomeACourier.jpg')} />
+            <Card.Cover source={require('../../images/becomeACourier.jpg')} />
             <Card.Content>
               <Title style={styles.cardTitle}>Staň sa aj ty kuriérom!</Title>
               <Paragraph style={styles.cardSubtitle}>Poď medzi nás a objav všetky výhody.</Paragraph>

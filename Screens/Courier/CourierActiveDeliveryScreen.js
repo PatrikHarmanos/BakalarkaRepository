@@ -1,23 +1,17 @@
-import React, {useState, useRef, useEffect} from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
     View, 
     Text,
-    Button,
     StyleSheet,
-    Dimensions,
-    TouchableOpacity,
-    route,
-    KeyboardAvoidingView,
-    TextInput,
-    TouchableHighlight,
-    ScrollView
+    TouchableOpacity
 } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
 import { getPreciseDistance } from 'geolib';
 import * as SecureStore from 'expo-secure-store';
+import { callAPI, callRefreshToken } from '../../Helpers/FetchHelper'
 
-const CourierDeliveryScreen = ({route, navigation}) => {
+const CourierActiveDeliveryScreen = ({route, navigation}) => {
     const { 
         itemName,
         itemDescription,
@@ -68,6 +62,10 @@ const CourierDeliveryScreen = ({route, navigation}) => {
         setFinalTime((distance*1.5).toFixed(0));
     };
 
+    async function save(key, value) {
+        await SecureStore.setItemAsync(key, value)
+    }
+
     useEffect(() => {
         calculatePreciseDistance();
         calculateFinalPrice();
@@ -75,53 +73,43 @@ const CourierDeliveryScreen = ({route, navigation}) => {
     }, []);
 
     const handleButton = async () => {
-    
         try {
             await SecureStore.getItemAsync('access').then((token) => {
-                console.log(safeID)
                 if (token != null) {
-                    fetch(`http://147.175.150.96/api/deliveries/${safeID}/state`, {
-                        method: 'PATCH',
-                        headers: {
-                            'Authorization': 'Bearer ' + token,
+                    callAPI(
+                        `http://147.175.150.96/api/deliveries/${safeID}/state`,
+                        'PATCH',
+                        {
+                            'content-type': 'application/json',
+                            'Authorization': 'Bearer ' + token
                         },
-                        body: JSON.stringify({
-                            "state": "assigned"
-                        })
+                        JSON.stringify({ state: "delivered" })
+                    ).then((data) => {
+                        if (data.code !== 'token_not_valid') {
+                            navigation.navigate("CourierMainScreen")
+                        } else {
+                            SecureStore.getItemAsync('refresh').then((refreshToken) => {
+                                // if access token is invalid => call refresh token
+                                callRefreshToken(refreshToken).then((data) => {
+                                    // save new access and refresh token
+                                    save('access', data.access)
+                                    save('refresh', data.refresh)
+                    
+                                    callAPI(
+                                        `http://147.175.150.96/api/deliveries/${safeID}/state`,
+                                        'PATCH',
+                                        {
+                                            'content-type': 'application/json',
+                                            'Authorization': 'Bearer ' + data.access
+                                        },
+                                        JSON.stringify({ state: "delivered" })
+                                    ).then((data) => {
+                                        navigation.navigate("CourierMainScreen")
+                                    })
+                                })
+                            })
+                        }
                     })
-                    .then((response) => response.json())
-                    .then((responseJson) => {
-                        console.log(responseJson)
-                        navigation.navigate("CourierPickupDeliveryScreen", {
-                            itemName: itemName,
-                            itemDescription: itemDescription,
-                            itemPhoto: itemPhoto,
-                            itemSize: itemSize,
-                            itemWeight: itemWeight,
-                            itemIsFragile: itemIsFragile,
-                            pickupPlaceLat: pickupPlaceLat,
-                            pickupPlaceLong: pickupPlaceLong,
-                            pickupPlacePostalCode: pickupPlacePostalCode,
-                            pickupPlaceCountry: pickupPlaceCountry,
-                            pickupPlaceCity: pickupPlaceCity,
-                            pickupPlaceStreetAddress: pickupPlaceStreetAddress,
-                            pickupID: pickupID,
-                            pickupPlaceDescription: pickupPlaceDescription,
-                            deliveryPlaceLat: deliveryPlaceLat,
-                            deliveryPlaceLong: deliveryPlaceLong,
-                            deliveryPlacePostalCode: deliveryPlacePostalCode,
-                            deliveryPlaceCountry: deliveryPlaceCountry,
-                            deliveryPlaceCity: deliveryPlaceCity,
-                            deliveryPlaceStreetAddress: deliveryPlaceStreetAddress,
-                            deliveryID: deliveryID,
-                            deliveryPlaceDescription: deliveryPlaceDescription,
-                            safeID: safeID,
-                          });
-                        
-                    })
-                    .catch((error) => {
-                        console.log(error);
-                    });
                 } else {
                     navigation.navigate("Auth");
                 }
@@ -129,9 +117,55 @@ const CourierDeliveryScreen = ({route, navigation}) => {
         } catch(error) {
             console.log(error);
         }
-
     };
-        
+
+    const rejectOrderHandleButton = async () => {
+        try {
+            await SecureStore.getItemAsync('access').then((token) => {
+                if (token != null) {
+                    callAPI(
+                        `http://147.175.150.96/api/deliveries/${safeID}/state`,
+                        'PATCH',
+                        {
+                            'content-type': 'application/json',
+                            'Authorization': 'Bearer ' + token
+                        },
+                        JSON.stringify({ state: "undeliverable" })
+                    ).then((data) => {
+                        if (data.code !== 'token_not_valid') {
+                            navigation.navigate("CourierMainScreen")
+                        } else {
+                            SecureStore.getItemAsync('refresh').then((refreshToken) => {
+                                // if access token is invalid => call refresh token
+                                callRefreshToken(refreshToken).then((data) => {
+                                    // save new access and refresh token
+                                    save('access', data.access)
+                                    save('refresh', data.refresh)
+                    
+                                    callAPI(
+                                        `http://147.175.150.96/api/deliveries/${safeID}/state`,
+                                        'PATCH',
+                                        {
+                                            'content-type': 'application/json',
+                                            'Authorization': 'Bearer ' + data.access
+                                        },
+                                        JSON.stringify({ state: "undeliverable" })
+                                    ).then((data) => {
+                                        navigation.navigate("CourierMainScreen")
+                                    })
+                                })
+                            })
+                        }
+                    })
+                } else {
+                    navigation.navigate("Auth");
+                }
+            })
+        } catch(error) {
+            console.log(error);
+        }
+    };
+    
     return (
         <View style={styles.container}>
             <View style={styles.header}>
@@ -192,23 +226,18 @@ const CourierDeliveryScreen = ({route, navigation}) => {
                 </MapView>
             </View>
             <View style={styles.footer}>
-                <ScrollView>
-                    <View style={styles.footer_section}>
-                        <Text style={styles.footer_section_text}>Miesto vyzdvihnutia</Text>
-                        <Text style={styles.footer_section_value}>{pickupPlaceDescription} </Text>
-                    </View>
-                    <View style={styles.footer_section}>
-                        <Text style={styles.footer_section_text}>Miesto doručenia</Text>
-                        <Text style={styles.footer_section_value}>{deliveryPlaceDescription}</Text>
-                    </View>
-                    <View style={styles.footer_section}>
-                        <Text style={styles.footer_section_text}>Vzdialenosť</Text>
-                        <Text style={styles.footer_section_value}>{distance} km</Text>
-                    </View>
-                </ScrollView>
+                <View style={styles.footer_section}>
+                    <Text style={styles.footer_section_text}>Miesto doručenia</Text>
+                    <Text style={styles.footer_section_value}>{deliveryPlaceDescription}</Text>
+                </View>
                 <View style={styles.button}>
                         <TouchableOpacity style={styles.signIn} onPress={handleButton}>
-                            <Text style={styles.textSign}>Akceptovať objednávku</Text>
+                            <Text style={styles.textSign}>Zásielka bola doručená</Text>
+                        </TouchableOpacity>
+                </View>
+                <View style={styles.button}>
+                        <TouchableOpacity style={styles.rejectOrder} onPress={rejectOrderHandleButton}>
+                            <Text style={styles.textSign}>Zásielku sa nepodarilo doručiť</Text>
                         </TouchableOpacity>
                 </View>
             </View>
@@ -216,11 +245,11 @@ const CourierDeliveryScreen = ({route, navigation}) => {
     ); 
 }
 
-export default CourierDeliveryScreen;
+export default CourierActiveDeliveryScreen;
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1
+        flex: 2
     },
     header: {
         flex: 3
@@ -230,7 +259,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         paddingHorizontal: 20,
         justifyContent: 'flex-end',
-        paddingBottom: 20,
+        paddingBottom: 50,
         paddingTop: 20,
         borderTopLeftRadius: 30,
         borderTopRightRadius: 30
@@ -246,6 +275,14 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         borderRadius: 10,
         backgroundColor: '#393485'
+    },
+    rejectOrder: {
+        width: '100%',
+        height: 50,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 10,
+        backgroundColor: '#bd0909'
     },
     textSign: {
         fontSize: 18,

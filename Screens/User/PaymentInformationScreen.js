@@ -1,28 +1,17 @@
-import React, {useState, useEffect} from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
   TextInput,
   View,
   Text,
-  Image,
   KeyboardAvoidingView,
-  Keyboard,
-  TouchableOpacity,
-  ScrollView,
-  Button,
-  Dimensions,
-  Platform
+  TouchableOpacity
 } from 'react-native';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import RNPickerSelect from 'react-native-picker-select';
 
 const PaymentInformationScreen = () =>{
-
-  const [cardNum, setcardNum] = useState();
-  const [cardMonth, setCardMonth] = useState();
-  const [cardYear, setCardYear] = useState();
-  const [cardCode, setCardCode] = useState();
 
   return (
     <View style={styles.container}>

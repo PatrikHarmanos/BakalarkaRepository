@@ -20,23 +20,15 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import * as SecureStore from 'expo-secure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Location from 'expo-location';
-import CourierMainScreen from './CourierMainScreen';
+import CourierMainScreen from '../Courier/CourierMainScreen';
 import { Avatar } from 'react-native-elements';
 
-import Context from '../store/context';
+import Context from '../../store/context';
 
 export function DrawerContent(props, route) {
 
     const [isSwitchOn, setIsSwitchOn] = useState(false);
-
-    const [email, setEmail] = useState();
-    const [firstName, setFirstName] = useState();
-    const [lastName, setLastName] = useState();
-
     const {state} = useContext(Context)
-
-    const m = route.params;
-
     const [currentLocationLat, setCurrentLocationLat] = React.useState();
     const [currentLocationLon, setCurrentLocationLon] = React.useState();
 
@@ -81,12 +73,12 @@ export function DrawerContent(props, route) {
         />
     ) : null;
 
-    // function for log out, we need to delete access token
-    // !!! also delete refresh token
+    // function for log out, we need to delete access token and refresh token
     const deleteToken = async () => {
         try {
             // delete access token
             await SecureStore.deleteItemAsync('access');
+            await SecureStore.deleteItemAsync('refresh');
 
             // delete user info from async storage
             await AsyncStorage.removeItem('@email');

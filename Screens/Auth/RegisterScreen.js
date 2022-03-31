@@ -1,19 +1,12 @@
-import React, {useState, createRef} from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
   TextInput,
   View,
   Text,
-  Image,
-  KeyboardAvoidingView,
-  Keyboard,
   TouchableOpacity,
-  ScrollView,
-  Button,
-  Dimensions,
-  Platform
+  ScrollView
 } from 'react-native';
-
 
 const RegisterScreen = ({navigation}) => {
   const [userFirstName, setUserFirstName] = useState('');
@@ -21,9 +14,6 @@ const RegisterScreen = ({navigation}) => {
   const [userEmail, setUserEmail] = useState('');
   const [userPassword, setUserPassword] = useState('');
   const [userNumber, setUserNumber] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [errorText, setErrorText] = useState('');
-  const [isRegistrationSuccess, setIsRegistrationSuccess] = useState(false);
 
   const handleRegisterButton = () => {
     if (!userFirstName) {

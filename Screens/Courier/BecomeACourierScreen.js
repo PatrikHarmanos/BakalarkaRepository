@@ -1,22 +1,14 @@
 import React, { useState } from 'react';
 import {
     View, 
-    Button,
     StyleSheet,
-    Dimensions,
     TouchableOpacity,
-    route,
-    SafeAreaView,
     ScrollView,
     TextInput
   } from 'react-native'; 
 
 import {
-  Title,
-  Caption,
-  Text,
-  TouchableRipple,
-  BottomNavigation
+  Text
 } from 'react-native-paper';
 
 const BecomeACourierScreen = ({navigation}) => {

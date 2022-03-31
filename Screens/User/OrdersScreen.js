@@ -1,8 +1,7 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     View, 
     Text,
-    Button,
     StyleSheet,
     FlatList
 } from 'react-native';
@@ -10,47 +9,63 @@ import * as SecureStore from 'expo-secure-store';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Moment from 'moment';
 import { useIsFocused } from '@react-navigation/native';
+import { callAPI, callRefreshToken } from '../../Helpers/FetchHelper'
 
 const OrdersScreen = ({route, navigation}) => {
 
   const [data, setData] = useState([]);
   Moment.locale('en');
-
-  const [expanded, setExpanded] = useState(true);
   const [isFetching, setIsFetching] = useState(false);
-
   const isFocused = useIsFocused();
 
-  const handlePress = () => setExpanded(!expanded);
+  async function save(key, value) {
+    await SecureStore.setItemAsync(key, value)
+  }
 
   useEffect(() => {
     try {
       SecureStore.getItemAsync('access').then((token) => {
-          console.log(token);
-          if (token != null) {
-              fetch('http://147.175.150.96/api/deliveries/', {
-                method: "GET",
-                headers: {
-                  'content-type': 'application/json',
-                  'Authorization': 'Bearer ' + token,
-                },
+        if (token != null) {
+          callAPI(
+            'http://147.175.150.96/api/deliveries/',
+            'GET',
+            {
+              'content-type': 'application/json',
+              'Authorization': 'Bearer ' + token,
+            },
+          ).then ((data) => {
+            if (data.code !== 'token_not_valid') {
+              setData(data);
+              setIsFetching(false);
+            } else {
+              SecureStore.getItemAsync('refresh').then((refreshToken) => {
+                // if access token is invalid => call refresh token
+                callRefreshToken(refreshToken).then((data) => {
+                  // save new access and refresh token
+                  save('access', data.access)
+                  save('refresh', data.refresh)
+
+                  callAPI(
+                    'http://147.175.150.96/api/deliveries/',
+                    'GET',
+                    {
+                      'content-type': 'application/json',
+                      'Authorization': 'Bearer ' + data.access,
+                    },
+                  ).then((data) => {
+                    setData(data);
+                    setIsFetching(false);
+                  })
+                })
               })
-              .then((response) => response.json())
-              .then ((responseJson) => {
-                  console.log(responseJson);
-                  setData(responseJson);
-                  setIsFetching(false);
-              })
-              .catch((error) => {
-                  console.log(error);
-              });
-          } else {
-              // call refresh token
-              return;
-          }
+            }
+          })
+        } else {
+          navigation.navigate("Auth");
+        }
       })
     } catch(error) {
-        console.log(error);
+      console.log(error);
     }
   }, [isFetching, isFocused])
 

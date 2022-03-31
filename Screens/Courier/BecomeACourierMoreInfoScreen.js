@@ -1,4 +1,4 @@
-import React, {useState, useContext} from 'react';
+import React, { useState, useContext } from 'react';
 import {
     View, 
     ScrollView,
@@ -8,17 +8,13 @@ import {
   } from 'react-native'; 
 
 import {
-  Title,
-  Caption,
-  Text,
-  TouchableRipple,
-  BottomNavigation
+  Text
 } from 'react-native-paper';
 
 import RNPickerSelect from 'react-native-picker-select';
 import * as SecureStore from 'expo-secure-store';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import Context from '../store/context';
+import Context from '../../store/context';
+import { callAPI, callRefreshToken } from '../../Helpers/FetchHelper'
 
 const BecomeACourierMoreInfoScreen = ({navigation, route}) => {
 
@@ -36,6 +32,10 @@ const BecomeACourierMoreInfoScreen = ({navigation, route}) => {
   const [psc, setPsc] = useState('');
   const [vehicle, setVehicle] = useState('');
 
+  async function save(key, value) {
+    await SecureStore.setItemAsync(key, value)
+  }
+
   const handleButton = async () => {
     if (!address) {
       alert('Prosím zadajte adresu');
@@ -49,46 +49,71 @@ const BecomeACourierMoreInfoScreen = ({navigation, route}) => {
       alert('Prosím zadajte PSČ');
       return;
     }
+    if (!vehicle) {
+      alert('Prosím vyberte vozidlo');
+      return;
+    }
 
     var dataToSend = {
-      id_number: "432432432",
-      id_expiration_date: "2022-03-18",
-      dl_number: "4234234",
-      dl_expiration_date: "2022-03-18",
+      id_number: numberOP,
+      id_expiration_date: validOP,
+      dl_number: numberVP,
+      dl_expiration_date: validVP,
       vehicle_type: "small",
-      home_address: "4343243"
+      home_address: address + ', ' + city + ', ' + psc
     }
 
     try {
       await SecureStore.getItemAsync('access').then((token) => {
-          console.log(token);
-          if (token != null) {
-            console.log(JSON.stringify(dataToSend))
-            fetch('http://147.175.150.96/api/couriers/', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + token,
-              },
-              body: JSON.stringify(dataToSend)
-            })
-              .then((response) => response.json())
-              .then ((responseJson) => {
-                actions({type: 'setState', payload: {...state, 
-                  is_courier: true,
-                  courier_mode_on: true
-                }});
-                navigation.navigate("CourierMainScreen");
+        if (token != null) {
+          callAPI(
+            'http://147.175.150.96/api/couriers/',
+            'POST',
+            {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + token,
+            },
+            JSON.stringify(dataToSend)
+          ).then ((data) => {
+            if (data.code !== 'token_not_valid') {
+              actions({type: 'setState', payload: {...state, 
+                is_courier: true,
+                courier_mode_on: true
+              }});
+              navigation.navigate("CourierMainScreen");
+            } else {
+              SecureStore.getItemAsync('refresh').then((refreshToken) => {
+                // if access token is invalid => call refresh token
+                callRefreshToken(refreshToken).then((data) => {
+                  // save new access and refresh token
+                  save('access', data.access)
+                  save('refresh', data.refresh)
+
+                  callAPI(
+                    'http://147.175.150.96/api/couriers/',
+                    'POST',
+                    {
+                      'Content-Type': 'application/json',
+                      'Authorization': 'Bearer ' + data.access,
+                    },
+                    JSON.stringify(dataToSend)
+                  ).then((data) => {
+                    actions({type: 'setState', payload: {...state, 
+                      is_courier: true,
+                      courier_mode_on: true
+                    }});
+                    navigation.navigate("CourierMainScreen");
+                  })
+                })
               })
-              .catch((error) => {
-                  console.log(error);
-              });
-          } else {
-              navigation.navigate("Auth");
-          }
+            }
+          })
+        } else {
+          navigation.navigate("Auth");
+        }
       })
     } catch(error) {
-        console.log(error);
+      console.log(error);
     }
   }
 

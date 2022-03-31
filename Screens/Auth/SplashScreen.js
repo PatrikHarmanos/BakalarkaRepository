@@ -1,23 +1,15 @@
-import React, {useContext} from 'react';
+import React, { useContext } from 'react';
 import {
     View, 
     Text,
-    Button,
     StyleSheet,
-    Dimensions,
     TouchableOpacity,
-    Image
 } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import * as SecureStore from 'expo-secure-store';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-
-import Context from '../store/context';
-
-async function getValueFor(key) {
-    let result = await SecureStore.getItemAsync(key);
-    return result;
-}
+import Context from '../../store/context';
+import { callAPI } from '../../Helpers/FetchHelper' 
 
 const SplashScreen = ({navigation}) => {
 
@@ -29,33 +21,29 @@ const SplashScreen = ({navigation}) => {
             await SecureStore.getItemAsync('access').then((token) => {
                 console.log(token);
                 if (token != null) {
-                    fetch('http://147.175.150.96/api/accounts/me', {
-                        method: "GET",
-                        headers: {
+                    callAPI(
+                        'http://147.175.150.96/api/accounts/me',
+                        "GET",
+                        { 
                             'Content-Type': 'application/json',
-                            'Authorization': 'Bearer ' + token,
-                        }
-                    })
-                    .then((response) => response.json())
-                    .then ((responseJson) => {
+                            'Authorization': 'Bearer ' + token 
+                        }   
+                    ).then ((data) => {
                         actions({type: 'setState', payload: {...state, 
-                            first_name: responseJson.first_name,
-                            last_name: responseJson.last_name,
-                            email: responseJson.email,
-                            phone_number: responseJson.phone_number,
-                            is_courier: responseJson.courier !== null ? true : false,
+                            first_name: data.first_name,
+                            last_name: data.last_name,
+                            email: data.email,
+                            phone_number: data.phone_number,
+                            is_courier: data.courier !== null ? true : false,
                             courier_mode_on: false
                           }});
-                        if (responseJson.code == "token_not_valid" || responseJson.code == "bad_authorization_header"){
+                        if (data.code == "token_not_valid" || data.code == "bad_authorization_header"){
                             navigation.navigate("Auth");
                         } else {
-                            global.is_courier = responseJson.is_courier;
+                            global.is_courier = data.is_courier;
                             navigation.navigate("DrawerNavigation");
                         }
                     })
-                    .catch((error) => {
-                        console.log(error);
-                    });
                 } else {
                     navigation.navigate("Auth");
                 }

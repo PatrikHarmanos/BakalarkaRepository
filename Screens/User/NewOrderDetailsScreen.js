@@ -1,17 +1,12 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
     View, 
     Text,
-    Button,
     StyleSheet,
-    Dimensions,
     TouchableOpacity,
-    route,
-    KeyboardAvoidingView,
     TextInput
 } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import MaterialComunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const NewOrderDetailsScreen = ({route, navigation}) => {
   const [receiverFirstName, setReceiverFirstName] = useState('');

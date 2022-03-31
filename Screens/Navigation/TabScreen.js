@@ -7,16 +7,16 @@ import MaterialComunityIcons from 'react-native-vector-icons/MaterialCommunityIc
 
 const Stack = createStackNavigator();
 
-import HomeScreen from './HomeScreen';
-import ProfileScreen from './ProfileScreen';
-import EditProfileScreen from './EditProfileScreen';
-import NewOrderScreen from './NewOrderScreen';
-import OrdersScreen from './OrdersScreen';
-import NewOrderDetailsScreen from './NewOrderDetailsScreen';
-import NewOrderItemScreen from './NewOrderItemScreen';
-import OrderDetailsScreen from './OrderDetailsScreen';
-import OrderCheckoutScreen from './OrderCheckoutScreen';
-import PaymentInformationScreen from './PaymentInformationScreen';
+import HomeScreen from '../User/HomeScreen';
+import ProfileScreen from '../User/ProfileScreen';
+import EditProfileScreen from '../User/EditProfileScreen';
+import NewOrderScreen from '../User/NewOrderScreen';
+import OrdersScreen from '../User/OrdersScreen';
+import NewOrderDetailsScreen from '../User/NewOrderDetailsScreen';
+import NewOrderItemScreen from '../User/NewOrderItemScreen';
+import OrderDetailsScreen from '../User/OrderDetailsScreen';
+import OrderCheckoutScreen from '../User/OrderCheckoutScreen';
+import PaymentInformationScreen from '../User/PaymentInformationScreen';
 
 const HomeStackScreen = ({navigation}) => (
   <Stack.Navigator screenOptions={{
@@ -70,7 +70,7 @@ const ProfileStackScreen = ({navigation}) => (
           <Stack.Screen 
             name="PaymentInformation"
             options= {{
-              title: "Zadat platobne udaje"
+              title: "Platobné údaje"
             }}
             component={PaymentInformationScreen}
           />

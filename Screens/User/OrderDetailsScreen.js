@@ -1,14 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
     View, 
     Text,
-    Button,
     StyleSheet,
-    Dimensions,
     TouchableOpacity,
-    route,
-    KeyboardAvoidingView,
-    TextInput,
     Alert
 } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -46,7 +41,7 @@ const OrderDetailsScreen = ({ route, navigation }) => {
         <View style={[styles.courierInfoBox, {display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}]}>
           <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'center',}}>
             <Avatar.Image 
-                source={require('../images/courier_avatar.png')}
+                source={require('../../images/courier_avatar.png')}
                 size={50}
             />
             <View style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', marginLeft: 20}}>

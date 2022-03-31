@@ -1,21 +1,15 @@
-import React, {useState, useRef, useEffect} from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
     View, 
     Text,
-    Button,
     StyleSheet,
-    Dimensions,
-    TouchableOpacity,
-    route,
-    KeyboardAvoidingView,
-    TextInput,
-    TouchableHighlight,
-    ScrollView
+    TouchableOpacity
 } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
 import { getPreciseDistance } from 'geolib';
 import * as SecureStore from 'expo-secure-store';
+import { callAPI } from '../../Helpers/FetchHelper'
 
 const OrderCheckoutScreen = ({route, navigation}) => {
     const { 
@@ -51,6 +45,10 @@ const OrderCheckoutScreen = ({route, navigation}) => {
     const [finalTime, setFinalTime] = useState(0);
 
     const mapRef = useRef();
+
+    async function save(key, value) {
+        await SecureStore.setItemAsync(key, value)
+    }
 
     const calculatePreciseDistance = () => {
         var pdis = getPreciseDistance(
@@ -106,24 +104,39 @@ const OrderCheckoutScreen = ({route, navigation}) => {
 
         try {
             await SecureStore.getItemAsync('access').then((token) => {
-                console.log(token);
                 if (token != null) {
-                fetch('http://147.175.150.96/api/deliveries/', {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                    'Authorization': 'Bearer ' + token,
-                    }
-                })
-                    .then((response) => response.json())
-                    .then((responseJson) => {
+                    callAPI(
+                        'http://147.175.150.96/api/deliveries/',
+                        'POST',
+                        {
+                            'Authorization': 'Bearer ' + token,
+                        },
+                        formData
+                    ).then((data) => {
+                        if (data.code !== 'token_not_valid') {
+                            navigation.navigate("Orders");
+                        } else {
+                            SecureStore.getItemAsync('refresh').then((refreshToken) => {
+                                // if access token is invalid => call refresh token
+                                callRefreshToken(refreshToken).then((data) => {
+                                    // save new access and refresh token
+                                    save('access', data.access)
+                                    save('refresh', data.refresh)
                     
-                    console.log(responseJson);
-                    
+                                    callAPI(
+                                        'http://147.175.150.96/api/deliveries/',
+                                        'POST',
+                                        {
+                                            'Authorization': 'Bearer ' + data.access,
+                                        },
+                                        formData
+                                    ).then((data) => {
+                                        navigation.navigate("Orders");
+                                    })
+                                })
+                            })
+                        }
                     })
-                    .catch((error) => {
-                    console.log(error);
-                    });
                 } else {
                     navigation.navigate("Auth");
                 }
@@ -131,8 +144,6 @@ const OrderCheckoutScreen = ({route, navigation}) => {
         } catch(error) {
             console.log(error);
         }
-
-        navigation.navigate("Orders");
     };
         
     return (

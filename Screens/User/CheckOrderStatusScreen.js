@@ -1,18 +1,13 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
   TextInput,
   View,
   Text,
-  Image,
   KeyboardAvoidingView,
-  Keyboard,
-  TouchableOpacity,
-  ScrollView,
-  Button,
-  Dimensions,
-  Platform
+  TouchableOpacity
 } from 'react-native';
+import { callAPI } from '../../Helpers/FetchHelper'
 
 const CheckOrderStatusScreen = ({navigation}) => {
   const [deliveryID, setDeliveryID] = useState('');
@@ -25,24 +20,15 @@ const CheckOrderStatusScreen = ({navigation}) => {
       return;
     }
 
-    var dataToSend = {
-      id: deliveryID
-    }
-
-    fetch(`http://147.175.150.96/api/core/get_delivery/?id=${deliveryID}`, {
-      method: 'GET',
-      headers: {
+    callAPI(
+      `http://147.175.150.96/api/core/get_delivery/?id=${deliveryID}`,
+      'GET',
+      {
         'Content-Type': 'application/json'
       }
-    })
-      .then((response) => response.json())
-      .then((responseJson) => {
+    ).then((responseJson) => {
         setData(responseJson);
-        console.log(responseJson);
       })
-      .catch((error) => {
-        console.log(error);
-      });
 
     navigation.navigate("OrderDetails", {value: data})
   };

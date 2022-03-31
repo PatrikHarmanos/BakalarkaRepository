@@ -1,12 +1,12 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import LoginScreen from './Screens/LoginScreen';
-import RegisterScreen from './Screens/RegisterScreen';
-import SplashScreen from './Screens/SplashScreen';
-import DrawerNavigation from './Screens/DrawerNavigation';
-import CheckOrderStatusScreen from './Screens/CheckOrderStatusScreen';
-import OrderDetailsScreen from './Screens/OrderDetailsScreen';
+import LoginScreen from './Screens/Auth/LoginScreen';
+import RegisterScreen from './Screens/Auth/RegisterScreen';
+import SplashScreen from './Screens/Auth/SplashScreen';
+import DrawerNavigation from './Screens/Navigation/DrawerNavigation';
+import CheckOrderStatusScreen from './Screens/User/CheckOrderStatusScreen';
+import OrderDetailsScreen from './Screens/User/OrderDetailsScreen';
 
 
 

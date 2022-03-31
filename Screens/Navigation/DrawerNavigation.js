@@ -4,23 +4,23 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 
-import HomeScreen from './HomeScreen';
-import SettingsScreen from './SettingsScreen';
-import ProfileScreen from './ProfileScreen';
+import HomeScreen from '../User/HomeScreen';
+import SettingsScreen from '../User/SettingsScreen';
+import ProfileScreen from '../User/ProfileScreen';
 
 import TabScreen from './TabScreen';
 
-import BecomeACourierScreen from './BecomeACourierScreen';
-import BecomeACourierMoreInfoScreen from './BecomeACourierMoreInfoScreen';
-import CourierMainScreen from './CourierMainScreen';
+import BecomeACourierScreen from '../Courier/BecomeACourierScreen';
+import BecomeACourierMoreInfoScreen from '../Courier/BecomeACourierMoreInfoScreen';
+import CourierMainScreen from '../Courier/CourierMainScreen';
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 
-import { DrawerContent } from './DrawerContent';
-import CourierDeliveryScreen from './CourierDeliveryScreen';
-import CourierPickupDeliveryScreen from './CourierPickupDeliveryScreen';
-import CourierActiveDeliveryScreen from './CourierActiveDeliveryScreen';
+import { DrawerContent } from '../Navigation/DrawerContent';
+import CourierDeliveryScreen from '../Courier/CourierDeliveryScreen';
+import CourierPickupDeliveryScreen from '../Courier/CourierPickupDeliveryScreen';
+import CourierActiveDeliveryScreen from '../Courier/CourierActiveDeliveryScreen';
 
 const SettingsScreenStack = ({navigation}) => (
     <Stack.Navigator screenOptions={{

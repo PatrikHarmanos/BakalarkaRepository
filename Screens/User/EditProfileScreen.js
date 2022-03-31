@@ -1,22 +1,16 @@
-import React, {useState, useContext} from "react";
+import React, { useState, useContext } from "react";
 import {
   StyleSheet,
   TextInput,
   View,
   Text,
-  Image,
-  KeyboardAvoidingView,
-  Keyboard,
   TouchableOpacity,
-  ScrollView,
-  Button,
-  Dimensions,
-  Platform
+  ScrollView
 } from 'react-native';
 
 import * as SecureStore from 'expo-secure-store';
-import Context from "../store/context";
-import { NavigationContainer } from "@react-navigation/native";
+import Context from "../../store/context";
+import { callAPI } from '../../Helpers/FetchHelper'
 
 const EditProfileScreen = ({navigation}) => {
 
@@ -28,6 +22,10 @@ const EditProfileScreen = ({navigation}) => {
   const [repeatPassword, setRepeatPassword] = useState();
   const [lastName, setLastName] = useState(state.last_name);
   const [phoneNumber, setPhoneNumber] = useState(state.phone_number);
+
+  async function save(key, value) {
+    await SecureStore.setItemAsync(key, value)
+  }
   
   const handleRegisterButton = async () => {
     if (!firstName) {
@@ -47,7 +45,7 @@ const EditProfileScreen = ({navigation}) => {
       return;
     }
 
-    var dataToSend = {
+    let start = {
       email: email,
       first_name: firstName,
       last_name: lastName,
@@ -63,37 +61,64 @@ const EditProfileScreen = ({navigation}) => {
         alert('Hesla sa nezhoduju');
         return;
       }
-      dataToSend["password"] = password;
+      let end = {
+        password: password
+      }
     }
+
+    const dataToSend = Object.assign(start, end)
     
     try {
       await SecureStore.getItemAsync('access').then((token) => {
-          console.log(token);
           if (token != null) {
-              fetch('http://147.175.150.96/api/accounts/me', {
-                method: "PATCH",
-                headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': 'Bearer ' + token,
-                },
-                body: dataToSend
-              })
-              .then((response) => response.json())
-              .then ((responseJson) => {
-                console.log(responseJson)
+            callAPI(
+              'http://147.175.150.96/api/accounts/me',
+              'PATCH',
+              {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token,
+              },
+              JSON.stringify(dataToSend)
+            ).then ((data) => {
+              if (data.code !== 'token_not_valid') {
                 actions({type: 'setState', payload: {...state, 
-                  first_name: responseJson.first_name,
-                  last_name: responseJson.last_name,
-                  email: responseJson.email,
-                  phone_number: responseJson.phone_number
+                  first_name: data.first_name,
+                  last_name: data.last_name,
+                  email: data.email,
+                  phone_number: data.phone_number
                 }});
                 navigation.navigate("Profile")
-              })
-              .catch((error) => {
-                  console.log(error);
-              });
+              } else {
+                SecureStore.getItemAsync('refresh').then((refreshToken) => {
+                  // if access token is invalid => call refresh token
+                  callRefreshToken(refreshToken).then((data) => {
+                    // save new access and refresh token
+                    save('access', data.access)
+                    save('refresh', data.refresh)
+  
+                    callAPI(
+                      'http://147.175.150.96/api/accounts/me',
+                      'PATCH',
+                      {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + data.access,
+                      },
+                      JSON.stringify(dataToSend)
+                    ).then((data) => {
+                      actions({type: 'setState', payload: {...state, 
+                        first_name: data.first_name,
+                        last_name: data.last_name,
+                        email: data.email,
+                        phone_number: data.phone_number
+                      }});
+                      navigation.navigate("Profile")
+                    })
+                  })
+                })
+              }
+            })
           } else {
-              
+            navigation.navigate("Auth");
           }
       })
     } catch(error) {
