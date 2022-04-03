@@ -17,6 +17,7 @@ import NewOrderItemScreen from '../User/NewOrderItemScreen';
 import OrderDetailsScreen from '../User/OrderDetailsScreen';
 import OrderCheckoutScreen from '../User/OrderCheckoutScreen';
 import PaymentInformationScreen from '../User/PaymentInformationScreen';
+import StatisticsScreen from '../User/StatisticsScreen';
 
 const HomeStackScreen = ({navigation}) => (
   <Stack.Navigator screenOptions={{
@@ -73,6 +74,14 @@ const ProfileStackScreen = ({navigation}) => (
               title: "Platobné údaje"
             }}
             component={PaymentInformationScreen}
+          />
+
+          <Stack.Screen 
+            name="StatisticsScreen"
+            options= {{
+              title: "Vaše štatistiky"
+            }}
+            component={StatisticsScreen}
           />
   </Stack.Navigator>
   );

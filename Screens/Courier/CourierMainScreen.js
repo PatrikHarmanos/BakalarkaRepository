@@ -1,41 +1,52 @@
 import React, { useEffect, useState } from "react";
-import { View, Button, StyleSheet, Dimensions, FlatList, ActivityIndicator } from "react-native";
+import { View, StyleSheet, FlatList, ActivityIndicator } from "react-native";
 
 import {
-  Title,
-  Caption,
-  Text,
-  TouchableRipple,
-  BottomNavigation,
+  Text
 } from "react-native-paper";
 
 import * as Location from "expo-location";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import * as SecureStore from "expo-secure-store";
 import { useIsFocused } from '@react-navigation/native';
+import { callAPI, callRefreshToken } from '../../Helpers/FetchHelper'
 
 const CourierMainScreen = ({ route, navigation }) => {
   const [data, setData] = useState([]);
   const [isLoading, setLoading] = useState(true);
-
-  const [pickupPlacePostalCode, setPickupPlacePostalCode] = useState();
-  const [pickupPlaceLat, setPickupPlaceLat] = useState();
-  const [pickupPlaceLong, setPickupPlaceLong] = useState();
-  const [deliveryPlacePostalCode, setDeliveryPlacePostalCode] = useState();
-  const [deliveryPlaceLat, setDeliveryPlaceLat] = useState();
-  const [deliveryPlaceLong, setDeliveryPlaceLong] = useState();
-
-  const [currentLocationLat, setCurrentLocationLat] = useState();
-  const [currentLocationLon, setCurrentLocationLon] = useState();
-
   const isFocused = useIsFocused();
   const [isFetching, setIsFetching] = useState(false);
+  const [echo, setEcho] = useState()
 
   useEffect(() => {
     getDeliveries();
     setIsFetching(false);
   }, [isFetching, isFocused]);
+
+  // useEffect(async () => {
+  //   SecureStore.getItemAsync("access").then((token) => {
+  //     console.log(token)
+  //     var socket = new WebSocket(`wss://poslito.com/ws/couriers/?token=${token}`);
+
+  //     socket.onopen = () => socket.send(JSON.stringify({
+  //       latitude: 50.6548,
+  //       longitude: 62.2415
+  //     }));
+
+  //     socket.onmessage = ({data}) => {
+  //         console.log(data);
+
+  //         this.setEcho(data);
+  //     }
+
+  //     setTimeout(() => {
+  //       socket.send(JSON.stringify({
+  //         latitude: 50.6548,
+  //         longitude: 62.2415
+  //       }));
+  //     }, 3000);
+  //   })
+  // }, [])
 
   const onRefresh = () => {
     setIsFetching(true);
@@ -48,26 +59,18 @@ const CourierMainScreen = ({ route, navigation }) => {
         return;
       }
       let location = await Location.getCurrentPositionAsync({})
-      setCurrentLocationLat(location["coords"]["latitude"]);
-      setCurrentLocationLon(location["coords"]["longitude"]);
 
       await SecureStore.getItemAsync("access").then((token) => {
         if (token != null) {
-          fetch(`http://147.175.150.96/api/couriers/closest_deliveries/?lon=${location["coords"]["longitude"]}&lat=${location["coords"]["latitude"]}`,
+          callAPI(
+            `http://147.175.150.96/api/couriers/closest_deliveries/?lon=${location["coords"]["longitude"]}&lat=${location["coords"]["latitude"]}`,
+            'GET',
             {
-              method: "GET",
-              headers: {
-                Authorization: "Bearer " + token,
-              },
+              Authorization: "Bearer " + token,
             }
-          )
-            .then((response) => response.json())
-            .then((responseJson) => {
-              setData(responseJson);
+          ).then((data) => {
+              setData(data);
             })
-            .catch((error) => {
-              console.log(error);
-            });
         } else {
           navigation.navigate("Auth");
         }
@@ -83,14 +86,37 @@ const CourierMainScreen = ({ route, navigation }) => {
     let p, p1, p2, d, d1, d2
 
     // call google places API to get latitude and longtitude from place_id for pickup place
-    await fetch(
+    callAPI(
       `https://maps.googleapis.com/maps/api/place/details/json?placeid=${data[index]["pickup_place"]["place_id"]}&key=AIzaSyD3IdOaoOc8tVpnakDzh1BLImcS-iJxoVY`,
+      'GET'
+    ).then((data) => {
+      for (
+          let i = 0;
+          i < data.result.address_components.length;
+          i++
+        ) {
+          if (
+            data.result.address_components[i].types[0] == "postal_code"
+          ) {
+            p = data.result.address_components[i].short_name
+            break
+          }
+        }
+
+      p1 = data.result.geometry.location.lat;
+      p2 = data.result.geometry.location.lng;
+    });
+
+    await fetch(
+      `https://maps.googleapis.com/maps/api/place/details/json?placeid=${data[index]["delivery_place"]["place_id"]}&key=AIzaSyD3IdOaoOc8tVpnakDzh1BLImcS-iJxoVY`,
       {
         method: "GET",
       }
     )
       .then((response) => response.json())
       .then((responseJson) => {
+        // get postal code from json response
+        // it has to be done in thge loop, because the number of elements in the array can be different due to address number (sometimes there is no address number)
         for (
           let i = 0;
           i < responseJson.result.address_components.length;
@@ -99,41 +125,14 @@ const CourierMainScreen = ({ route, navigation }) => {
           if (
             responseJson.result.address_components[i].types[0] == "postal_code"
           ) {
-            p = responseJson.result.address_components[i].short_name
-            break
+            d = responseJson.result.address_components[i].short_name
           }
         }
 
-        p1 = responseJson.result.geometry.location.lat;
-        p2 = responseJson.result.geometry.location.lng;
+        // get lat and long from json response
+        d1 = responseJson.result.geometry.location.lat;
+        d2 = responseJson.result.geometry.location.lng;
       });
-
-      await fetch(
-        `https://maps.googleapis.com/maps/api/place/details/json?placeid=${data[index]["delivery_place"]["place_id"]}&key=AIzaSyD3IdOaoOc8tVpnakDzh1BLImcS-iJxoVY`,
-        {
-          method: "GET",
-        }
-      )
-        .then((response) => response.json())
-        .then((responseJson) => {
-          // get postal code from json response
-          // it has to be done in thge loop, because the number of elements in the array can be different due to address number (sometimes there is no address number)
-          for (
-            let i = 0;
-            i < responseJson.result.address_components.length;
-            i++
-          ) {
-            if (
-              responseJson.result.address_components[i].types[0] == "postal_code"
-            ) {
-              d = responseJson.result.address_components[i].short_name
-            }
-          }
-  
-          // get lat and long from json response
-          d1 = responseJson.result.geometry.location.lat;
-          d2 = responseJson.result.geometry.location.lng;
-        });
     
     navigation.navigate("CourierDeliveryScreen", {
       itemName: data[index]["item"]["name"],

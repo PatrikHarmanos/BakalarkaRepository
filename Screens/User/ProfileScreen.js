@@ -81,6 +81,12 @@ const ProfileScreen = ({navigation}) => {
                 <Text style={styles.menuItemText}>Nastavenia</Text>
               </View>
           </TouchableRipple>
+          <TouchableRipple onPress={() => navigation.navigate('StatisticsScreen')}>
+              <View style={styles.menuItem}>
+                <Icon name="stats-chart" size={25} color="#393485" />
+                <Text style={styles.menuItemText}>Vaše štatistiky</Text>
+              </View>
+          </TouchableRipple>
         </View>
       </View>
     </SafeAreaView>

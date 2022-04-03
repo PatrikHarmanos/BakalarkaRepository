@@ -50,22 +50,12 @@ const CourierDeliveryScreen = ({route, navigation}) => {
        setDistance((pdis/1000).toFixed(2));
     };
 
-    const calculateFinalPrice = () => {
-        setFinalPrice((distance*0.4).toFixed(2));
-    };
-
-    const calculateFinalTime = () => {
-        setFinalTime((distance*1.5).toFixed(0));
-    };
-
     async function save(key, value) {
         await SecureStore.setItemAsync(key, value)
     }
 
     useEffect(() => {
         calculatePreciseDistance();
-        calculateFinalPrice();
-        calculateFinalTime();
     }, []);
 
     const handleButton = async () => {
@@ -238,12 +228,12 @@ const CourierDeliveryScreen = ({route, navigation}) => {
                         <Text style={styles.footer_section_text}>Vzdialenosť</Text>
                         <Text style={styles.footer_section_value}>{distance} km</Text>
                     </View>
+                    <View style={styles.button}>
+                            <TouchableOpacity style={styles.signIn} onPress={handleButton}>
+                                <Text style={styles.textSign}>Akceptovať objednávku</Text>
+                            </TouchableOpacity>
+                    </View>
                 </ScrollView>
-                <View style={styles.button}>
-                        <TouchableOpacity style={styles.signIn} onPress={handleButton}>
-                            <Text style={styles.textSign}>Akceptovať objednávku</Text>
-                        </TouchableOpacity>
-                </View>
             </View>
         </View>
     ); 
@@ -270,7 +260,8 @@ const styles = StyleSheet.create({
     },
     button: {
         alignItems: 'center',
-        marginTop: 20
+        marginTop: 20,
+        marginBottom: 20
     },
     signIn: {
         width: '100%',

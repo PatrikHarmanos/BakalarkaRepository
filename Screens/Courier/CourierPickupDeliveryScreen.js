@@ -1,21 +1,13 @@
-import React, {useState, useRef, useEffect} from 'react';
+import React, { useState, useRef } from 'react';
 import {
     View, 
     Text,
-    Button,
     StyleSheet,
-    Dimensions,
-    TouchableOpacity,
-    route,
-    KeyboardAvoidingView,
-    TextInput,
-    TouchableHighlight,
-    ScrollView
+    TouchableOpacity
 } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
-import MapViewDirections from 'react-native-maps-directions';
-import { getPreciseDistance } from 'geolib';
 import * as SecureStore from 'expo-secure-store';
+import { callAPI, callRefreshToken } from '../../Helpers/FetchHelper'
 
 const CourierPickupDeliveryScreen = ({route, navigation}) => {
     const { 
@@ -44,61 +36,92 @@ const CourierPickupDeliveryScreen = ({route, navigation}) => {
         safeID
     } = route.params;
 
-    const [distance, setDistance] = useState(0);
-    const [finalPrice, setFinalPrice] = useState(0);
-    const [finalTime, setFinalTime] = useState(0);
-
-    const [isLoading, setLoading] = useState(true);
-
     const mapRef = useRef();
 
     const handleButton = async () => {
         try {
             await SecureStore.getItemAsync('access').then((token) => {
-                console.log(token)
                 if (token != null) {
-                    fetch(`http://147.175.150.96/api/deliveries/${safeID}/state`, {
-                        method: 'PATCH',
-                        headers: {
+                    callAPI(
+                        `http://147.175.150.96/api/deliveries/${safeID}/state`,
+                        'PATCH',
+                        {
                             'Authorization': 'Bearer ' + token,
                         },
-                        body: JSON.stringify({
-                            "state": "delivering"
-                        })
+                        JSON.stringify({ state: "delivering" })
+                    ).then((data) => {
+                        if (data.code !== 'token_not_valid') {
+                            navigation.navigate("CourierActiveDeliveryScreen", {
+                                itemName: itemName,
+                                itemDescription: itemDescription,
+                                itemPhoto: itemPhoto,
+                                itemSize: itemSize,
+                                itemWeight: itemWeight,
+                                itemIsFragile: itemIsFragile,
+                                pickupPlaceLat: pickupPlaceLat,
+                                pickupPlaceLong: pickupPlaceLong,
+                                pickupPlacePostalCode: pickupPlacePostalCode,
+                                pickupPlaceCountry: pickupPlaceCountry,
+                                pickupPlaceCity: pickupPlaceCity,
+                                pickupPlaceStreetAddress: pickupPlaceStreetAddress,
+                                pickupID: pickupID,
+                                pickupPlaceDescription: pickupPlaceDescription,
+                                deliveryPlaceLat: deliveryPlaceLat,
+                                deliveryPlaceLong: deliveryPlaceLong,
+                                deliveryPlacePostalCode: deliveryPlacePostalCode,
+                                deliveryPlaceCountry: deliveryPlaceCountry,
+                                deliveryPlaceCity: deliveryPlaceCity,
+                                deliveryPlaceStreetAddress: deliveryPlaceStreetAddress,
+                                deliveryID: deliveryID,
+                                deliveryPlaceDescription: deliveryPlaceDescription,
+                                safeID: safeID,
+                            })
+                        } else {
+                            SecureStore.getItemAsync('refresh').then((refreshToken) => {
+                              // if access token is invalid => call refresh token
+                              callRefreshToken(refreshToken).then((data) => {
+                                // save new access and refresh token
+                                save('access', data.access)
+                                save('refresh', data.refresh)
+              
+                                callAPI(
+                                    `http://147.175.150.96/api/deliveries/${safeID}/state`,
+                                    'PATCH',
+                                    {
+                                        'Authorization': 'Bearer ' + token,
+                                    },
+                                    JSON.stringify({ state: "delivering" })
+                                ).then((data) => {
+                                    navigation.navigate("CourierActiveDeliveryScreen", {
+                                        itemName: itemName,
+                                        itemDescription: itemDescription,
+                                        itemPhoto: itemPhoto,
+                                        itemSize: itemSize,
+                                        itemWeight: itemWeight,
+                                        itemIsFragile: itemIsFragile,
+                                        pickupPlaceLat: pickupPlaceLat,
+                                        pickupPlaceLong: pickupPlaceLong,
+                                        pickupPlacePostalCode: pickupPlacePostalCode,
+                                        pickupPlaceCountry: pickupPlaceCountry,
+                                        pickupPlaceCity: pickupPlaceCity,
+                                        pickupPlaceStreetAddress: pickupPlaceStreetAddress,
+                                        pickupID: pickupID,
+                                        pickupPlaceDescription: pickupPlaceDescription,
+                                        deliveryPlaceLat: deliveryPlaceLat,
+                                        deliveryPlaceLong: deliveryPlaceLong,
+                                        deliveryPlacePostalCode: deliveryPlacePostalCode,
+                                        deliveryPlaceCountry: deliveryPlaceCountry,
+                                        deliveryPlaceCity: deliveryPlaceCity,
+                                        deliveryPlaceStreetAddress: deliveryPlaceStreetAddress,
+                                        deliveryID: deliveryID,
+                                        deliveryPlaceDescription: deliveryPlaceDescription,
+                                        safeID: safeID,
+                                    })
+                                })
+                              })
+                            })
+                        }
                     })
-                    .then((response) => response.json())
-                    .then((responseJson) => {
-                        console.log(responseJson)
-                        navigation.navigate("CourierActiveDeliveryScreen", {
-                            itemName: itemName,
-                            itemDescription: itemDescription,
-                            itemPhoto: itemPhoto,
-                            itemSize: itemSize,
-                            itemWeight: itemWeight,
-                            itemIsFragile: itemIsFragile,
-                            pickupPlaceLat: pickupPlaceLat,
-                            pickupPlaceLong: pickupPlaceLong,
-                            pickupPlacePostalCode: pickupPlacePostalCode,
-                            pickupPlaceCountry: pickupPlaceCountry,
-                            pickupPlaceCity: pickupPlaceCity,
-                            pickupPlaceStreetAddress: pickupPlaceStreetAddress,
-                            pickupID: pickupID,
-                            pickupPlaceDescription: pickupPlaceDescription,
-                            deliveryPlaceLat: deliveryPlaceLat,
-                            deliveryPlaceLong: deliveryPlaceLong,
-                            deliveryPlacePostalCode: deliveryPlacePostalCode,
-                            deliveryPlaceCountry: deliveryPlaceCountry,
-                            deliveryPlaceCity: deliveryPlaceCity,
-                            deliveryPlaceStreetAddress: deliveryPlaceStreetAddress,
-                            deliveryID: deliveryID,
-                            deliveryPlaceDescription: deliveryPlaceDescription,
-                            safeID: safeID,
-                          });
-                        
-                    })
-                    .catch((error) => {
-                        console.log(error);
-                    });
                 } else {
                     navigation.navigate("Auth");
                 }

@@ -1,20 +1,23 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import {
     View, 
     Text,
     StyleSheet,
-    TouchableOpacity
+    TouchableOpacity,
+    Dimensions
 } from 'react-native';
 import { Card, Title, Paragraph } from 'react-native-paper';
 
 import Context from '../../store/context';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const HomeScreen = ({ navigation, route }) => {
   
   const {state} = useContext(Context);
-    
+  
     return (
       <View style={styles.container}>
+        <ScrollView>
           <Card style={styles.item}>
             <Card.Cover source={require('../../images/becomeACourier.jpg')} />
             <Card.Content>
@@ -38,6 +41,7 @@ const HomeScreen = ({ navigation, route }) => {
                 </TouchableOpacity>
             </View>
           </View>
+        </ScrollView>
       </View>
     );
 };
