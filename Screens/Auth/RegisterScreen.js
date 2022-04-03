@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import {
   StyleSheet,
-  TextInput,
   View,
   Text,
+  TextInput,
   TouchableOpacity,
   ScrollView
 } from 'react-native';
+import { HelperText } from 'react-native-paper';
 
 const RegisterScreen = ({navigation}) => {
   const [userFirstName, setUserFirstName] = useState('');
@@ -14,6 +15,20 @@ const RegisterScreen = ({navigation}) => {
   const [userEmail, setUserEmail] = useState('');
   const [userPassword, setUserPassword] = useState('');
   const [userNumber, setUserNumber] = useState('');
+
+  const hasErrors = () => {
+    var validRegex = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+    if (userEmail !== '' && !userEmail.match(validRegex))
+      return true
+    return false
+  };
+
+  const badPhoneNumber = () => {
+    var validRegex = /^(0|[1-9][0-9]*)$/;
+    if (userNumber !== '' && !userNumber.match(validRegex))
+      return true
+    return false
+  }
 
   const handleRegisterButton = () => {
     if (!userFirstName) {
@@ -91,6 +106,9 @@ const RegisterScreen = ({navigation}) => {
                 onChangeText={(Email) => setUserEmail(Email)}
                 placeholder="Zadajte email"
             /> 
+            <HelperText type="error" visible={hasErrors()}>
+              Zlý formát e-mailu!
+            </HelperText>
           </View>
           <Text style={[styles.text_footer, {marginTop: 35}]}>Telefónne číslo</Text>
           <View style={styles.action}>
@@ -98,6 +116,9 @@ const RegisterScreen = ({navigation}) => {
                 onChangeText={(number) => setUserNumber(number)}
                 placeholder="Zadajte telefónne číslo"
             /> 
+            <HelperText type="error" visible={badPhoneNumber()}>
+              Zlý formát! (iba číslice)
+            </HelperText>
           </View>
           <Text style={[styles.text_footer, {marginTop: 35}]}>Heslo</Text>
           <View style={styles.action}>

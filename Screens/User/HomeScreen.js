@@ -7,9 +7,9 @@ import {
     Dimensions
 } from 'react-native';
 import { Card, Title, Paragraph } from 'react-native-paper';
-
 import Context from '../../store/context';
 import { ScrollView } from 'react-native-gesture-handler';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const HomeScreen = ({ navigation, route }) => {
   
@@ -39,6 +39,58 @@ const HomeScreen = ({ navigation, route }) => {
                 <TouchableOpacity onPress={() => {navigation.navigate('Order', {screen: 'NewOrder'})}} style={styles.signIn}>
                     <Text style={styles.textSign}>Poslať zásielku</Text>
                 </TouchableOpacity>
+            </View>
+          </View>
+
+          <View style={styles.timeline}>
+            <Text style={styles.timelineHeading}>Ako poslať zásielku?</Text>
+            <View style={styles.timelineItem}>
+              <View style={styles.timelineItemInner}>
+                <Text style={styles.timelineItemHeading}>1.</Text>
+                <Text style={styles.timelineItemText}>Vytvoriť novú zásielku.</Text>
+              </View>
+              <Icon name="arrow-down" size={25} color="#393485" />
+            </View>
+            <View style={styles.timelineItem}>
+              <View style={styles.timelineItemInner}>
+                <Text style={styles.timelineItemHeading}>2.</Text>
+                <Text style={styles.timelineItemText}>Zadať adresu vyzdvihnutia a doručenia.</Text>
+              </View>
+              <Icon name="arrow-down" size={25} color="#393485" />
+            </View>
+            <View style={styles.timelineItem}>
+              <View style={styles.timelineItemInner}>
+                <Text style={styles.timelineItemHeading}>3.</Text>
+                <Text style={styles.timelineItemText}>Zadať údaje o zásielke a prijímateľovi.</Text>
+              </View>
+              <Icon name="arrow-down" size={25} color="#393485" />
+            </View>
+            <View style={styles.timelineItem}>
+              <View style={styles.timelineItemInner}>
+                <Text style={styles.timelineItemHeading}>4.</Text>
+                <Text style={styles.timelineItemText}>Potvrdiť zásielku.</Text>
+              </View>
+              <Icon name="arrow-down" size={25} color="#393485" />
+            </View>
+            <View style={styles.timelineItem}>
+              <View style={styles.timelineItemInner}>
+                <Text style={styles.timelineItemHeading}>5.</Text>
+                <Text style={styles.timelineItemText}>Počkať na potvrdenie kuriérom.</Text>
+              </View>
+              <Icon name="arrow-down" size={25} color="#393485" />
+            </View>
+            <View style={styles.timelineItem}>
+              <View style={styles.timelineItemInner}>
+                <Text style={styles.timelineItemHeading}>4.</Text>
+                <Text style={styles.timelineItemText}>Sledovať stav zásielky.</Text>
+              </View>
+              <Icon name="arrow-down" size={25} color="#393485" />
+            </View>
+            <View style={styles.timelineItem}>
+              <View style={styles.timelineItemInner}>
+                <Text style={styles.timelineItemHeading}>4.</Text>
+                <Text style={styles.timelineItemText}>Zásielka je úspešne doručená!</Text>
+              </View>
             </View>
           </View>
         </ScrollView>
@@ -102,6 +154,42 @@ const styles = StyleSheet.create({
     createOrderCardText: {
       fontSize: 22,
       color: '#fff',
+      fontWeight: 'bold'
+    },
+    timeline: {
+      marginVertical: 8,
+      marginHorizontal: 16
+    },
+    timelineHeading: {
+      color: '#393485',
+      fontSize: 20,
+      fontWeight: 'bold',
+      marginBottom: 10
+    },
+    timelineItem: {
+      marginTop: 5,
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+    },
+    timelineItemInner: {
+      display: 'flex',
+      flexDirection: 'row',
+      justifyContent: 'center',
+      marginBottom: 3,
+      borderRadius: 10,
+      backgroundColor: '#f7f7f7',
+      padding: 14
+    },
+    timelineItemHeading: {
+      color: '#e8a438',
+      fontSize: 16,
+      fontWeight: 'bold',
+      marginRight: 10
+    },
+    timelineItemText: {
+      color: '#000',
+      fontSize: 14,
       fontWeight: 'bold'
     }
 });
