@@ -19,62 +19,41 @@ const CourierMainScreen = ({ route, navigation }) => {
   const [echo, setEcho] = useState()
 
   useEffect(() => {
-    getDeliveries();
-    setIsFetching(false);
+    getDeliveries().then(() =>  setIsFetching(false))
   }, [isFetching, isFocused]);
-
-  // useEffect(async () => {
-  //   SecureStore.getItemAsync("access").then((token) => {
-  //     console.log(token)
-  //     var socket = new WebSocket(`wss://poslito.com/ws/couriers/?token=${token}`);
-
-  //     socket.onopen = () => socket.send(JSON.stringify({
-  //       latitude: 50.6548,
-  //       longitude: 62.2415
-  //     }));
-
-  //     socket.onmessage = ({data}) => {
-  //         console.log(data);
-
-  //         this.setEcho(data);
-  //     }
-
-  //     setTimeout(() => {
-  //       socket.send(JSON.stringify({
-  //         latitude: 50.6548,
-  //         longitude: 62.2415
-  //       }));
-  //     }, 3000);
-  //   })
-  // }, [])
 
   const onRefresh = () => {
     setIsFetching(true);
   }
 
+  const getCurrentLocation = async () => {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+        return;
+    }
+    let location = await Location.getCurrentPositionAsync({})
+    return location
+  }
+
   const getDeliveries = async () => {
     try {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        return;
-      }
-      let location = await Location.getCurrentPositionAsync({})
-
-      await SecureStore.getItemAsync("access").then((token) => {
-        if (token != null) {
-          callAPI(
-            `http://147.175.150.96/api/couriers/closest_deliveries/?lon=${location["coords"]["longitude"]}&lat=${location["coords"]["latitude"]}`,
-            'GET',
-            {
-              Authorization: "Bearer " + token,
-            }
-          ).then((data) => {
-              setData(data);
-            })
-        } else {
-          navigation.navigate("Auth");
-        }
-      });
+      getCurrentLocation().then(async (location) => {
+        await SecureStore.getItemAsync("access").then((token) => {
+          if (token != null) {
+            callAPI(
+              `http://147.175.150.96/api/couriers/closest_deliveries/?lon=${location["coords"]["longitude"]}&lat=${location["coords"]["latitude"]}`,
+              'GET',
+              {
+                Authorization: "Bearer " + token,
+              }
+            ).then((data) => {
+                setData(data);
+              })
+          } else {
+            navigation.navigate("Auth");
+          }
+        });
+      })
     } catch (error) {
       console.log(error)
     } finally {
@@ -85,36 +64,32 @@ const CourierMainScreen = ({ route, navigation }) => {
   const handleButton = async (index) => {
     let p, p1, p2, d, d1, d2
 
-    // call google places API to get latitude and longtitude from place_id for pickup place
-    callAPI(
-      `https://maps.googleapis.com/maps/api/place/details/json?placeid=${data[index]["pickup_place"]["place_id"]}&key=AIzaSyD3IdOaoOc8tVpnakDzh1BLImcS-iJxoVY`,
-      'GET'
-    ).then((data) => {
-      for (
-          let i = 0;
-          i < data.result.address_components.length;
-          i++
-        ) {
-          if (
-            data.result.address_components[i].types[0] == "postal_code"
+    Promise.all([
+      // call google places API to get latitude and longtitude from place_id for pickup place
+      callAPI(
+        `https://maps.googleapis.com/maps/api/place/details/json?placeid=${data[index]["pickup_place"]["place_id"]}&key=AIzaSyD3IdOaoOc8tVpnakDzh1BLImcS-iJxoVY`,
+        'GET'
+      ).then((data) => {
+        for (
+            let i = 0;
+            i < data.result.address_components.length;
+            i++
           ) {
-            p = data.result.address_components[i].short_name
-            break
+            if (
+              data.result.address_components[i].types[0] == "postal_code"
+            ) {
+              p = data.result.address_components[i].short_name
+              break
+            }
           }
-        }
 
-      p1 = data.result.geometry.location.lat;
-      p2 = data.result.geometry.location.lng;
-    });
-
-    await fetch(
-      `https://maps.googleapis.com/maps/api/place/details/json?placeid=${data[index]["delivery_place"]["place_id"]}&key=AIzaSyD3IdOaoOc8tVpnakDzh1BLImcS-iJxoVY`,
-      {
-        method: "GET",
-      }
-    )
-      .then((response) => response.json())
-      .then((responseJson) => {
+        p1 = data.result.geometry.location.lat;
+        p2 = data.result.geometry.location.lng;
+      }),
+      callAPI(
+        `https://maps.googleapis.com/maps/api/place/details/json?placeid=${data[index]["delivery_place"]["place_id"]}&key=AIzaSyD3IdOaoOc8tVpnakDzh1BLImcS-iJxoVY`,
+        "GET",
+      ).then((responseJson) => {
         // get postal code from json response
         // it has to be done in thge loop, because the number of elements in the array can be different due to address number (sometimes there is no address number)
         for (
@@ -128,40 +103,41 @@ const CourierMainScreen = ({ route, navigation }) => {
             d = responseJson.result.address_components[i].short_name
           }
         }
-
+  
         // get lat and long from json response
         d1 = responseJson.result.geometry.location.lat;
         d2 = responseJson.result.geometry.location.lng;
-      });
-    
-    navigation.navigate("CourierDeliveryScreen", {
-      itemName: data[index]["item"]["name"],
-      itemDescription: data[index]["item"]["description"],
-      itemPhoto: data[index]["item"]["photo"],
-      itemSize: data[index]["item"]["size"],
-      itemWeight: data[index]["item"]["weight"],
-      itemIsFragile: data[index]["item"]["fragile"],
-      pickupPlaceLat: p1,
-      pickupPlaceLong: p2,
-      pickupPlacePostalCode: p,
-      pickupPlaceCountry: data[index]["pickup_place"]["country"],
-      pickupPlaceCity: data[index]["pickup_place"]["city"],
-      pickupPlaceStreetAddress: data[index]["pickup_place"]["street_address"],
-      pickupID: data[index]["pickup_place"]["place_id"],
-      pickupPlaceDescription: data[index]["pickup_place"]["formatted_address"],
-      deliveryPlaceLat: d1,
-      deliveryPlaceLong: d2,
-      deliveryPlacePostalCode: d,
-      deliveryPlaceCountry: data[index]["delivery_place"]["country"],
-      deliveryPlaceCity: data[index]["delivery_place"]["city"],
-      deliveryPlaceStreetAddress:
-        data[index]["delivery_place"]["street_address"],
-      deliveryID: data[index]["delivery_place"]["place_id"],
-      deliveryPlaceDescription:
-        data[index]["delivery_place"]["formatted_address"],
-      safeID: data[index]["safe_id"],
-    });
-  };
+      })
+    ]).then(() => {
+      navigation.navigate("CourierDeliveryScreen", {
+        itemName: data[index]["item"]["name"],
+        itemDescription: data[index]["item"]["description"],
+        itemPhoto: data[index]["item"]["photo"],
+        itemSize: data[index]["item"]["size"],
+        itemWeight: data[index]["item"]["weight"],
+        itemIsFragile: data[index]["item"]["fragile"],
+        pickupPlaceLat: p1,
+        pickupPlaceLong: p2,
+        pickupPlacePostalCode: p,
+        pickupPlaceCountry: data[index]["pickup_place"]["country"],
+        pickupPlaceCity: data[index]["pickup_place"]["city"],
+        pickupPlaceStreetAddress: data[index]["pickup_place"]["street_address"],
+        pickupID: data[index]["pickup_place"]["place_id"],
+        pickupPlaceDescription: data[index]["pickup_place"]["formatted_address"],
+        deliveryPlaceLat: d1,
+        deliveryPlaceLong: d2,
+        deliveryPlacePostalCode: d,
+        deliveryPlaceCountry: data[index]["delivery_place"]["country"],
+        deliveryPlaceCity: data[index]["delivery_place"]["city"],
+        deliveryPlaceStreetAddress:
+          data[index]["delivery_place"]["street_address"],
+        deliveryID: data[index]["delivery_place"]["place_id"],
+        deliveryPlaceDescription:
+          data[index]["delivery_place"]["formatted_address"],
+        safeID: data[index]["safe_id"],
+      })
+    })
+  }
 
   return (
     <View style={styles.container}>

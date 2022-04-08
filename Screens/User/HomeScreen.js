@@ -81,14 +81,14 @@ const HomeScreen = ({ navigation, route }) => {
             </View>
             <View style={styles.timelineItem}>
               <View style={styles.timelineItemInner}>
-                <Text style={styles.timelineItemHeading}>4.</Text>
+                <Text style={styles.timelineItemHeading}>6.</Text>
                 <Text style={styles.timelineItemText}>Sledovať stav zásielky.</Text>
               </View>
               <Icon name="arrow-down" size={25} color="#393485" />
             </View>
             <View style={styles.timelineItem}>
               <View style={styles.timelineItemInner}>
-                <Text style={styles.timelineItemHeading}>4.</Text>
+                <Text style={styles.timelineItemHeading}>7.</Text>
                 <Text style={styles.timelineItemText}>Zásielka je úspešne doručená!</Text>
               </View>
             </View>
@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
       marginTop: 5,
       display: 'flex',
       flexDirection: 'column',
-      alignItems: 'center',
+      alignItems: 'center'
     },
     timelineItemInner: {
       display: 'flex',
@@ -179,7 +179,9 @@ const styles = StyleSheet.create({
       marginBottom: 3,
       borderRadius: 10,
       backgroundColor: '#f7f7f7',
-      padding: 14
+      padding: 14,
+      borderColor: '#e8a438',
+      borderWidth: 1
     },
     timelineItemHeading: {
       color: '#e8a438',

@@ -21,6 +21,7 @@ import { DrawerContent } from '../Navigation/DrawerContent';
 import CourierDeliveryScreen from '../Courier/CourierDeliveryScreen';
 import CourierPickupDeliveryScreen from '../Courier/CourierPickupDeliveryScreen';
 import CourierActiveDeliveryScreen from '../Courier/CourierActiveDeliveryScreen';
+import CourierHistoryScreen from '../Courier/CourierHistoryScreen'
 
 const SettingsScreenStack = ({navigation}) => (
     <Stack.Navigator screenOptions={{
@@ -67,14 +68,20 @@ const CourierScreenStack = ({navigation}) => (
                 ),
                 title: ''
             }} />
+            <Stack.Screen name="CourierHistoryScreen" component={CourierHistoryScreen} options={{
+                headerLeft: () => (
+                    <Icon.Button name="ios-menu" size={25} backgroundColor="#fff" color="#000" onPress={() => navigation.openDrawer()}></Icon.Button>
+                ),
+                title: ''
+            }} />
             <Stack.Screen name="CourierDeliveryScreen" component={CourierDeliveryScreen} options={{
                 title: 'Detail zásielky'
             }}/>
             <Stack.Screen name="CourierPickupDeliveryScreen" component={CourierPickupDeliveryScreen} options={{
-                title: 'Vyzdvihnutie zasielky'
+                title: 'Vyzdvihnutie zásielky'
             }}/>
             <Stack.Screen name="CourierActiveDeliveryScreen" component={CourierActiveDeliveryScreen} options={{
-                title: 'Aktivna zasielka'
+                title: 'Aktívna zásielka'
             }}/>
     </Stack.Navigator>
 );

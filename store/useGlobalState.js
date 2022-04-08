@@ -8,7 +8,7 @@ const useGlobalState = () => {
             email: '',
             phone_number: '',
             is_courier: false,
-            courier_mode_on: false
+            courier_mode_on: false,
         }
     );
 

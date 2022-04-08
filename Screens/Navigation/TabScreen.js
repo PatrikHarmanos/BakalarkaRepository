@@ -18,6 +18,7 @@ import OrderDetailsScreen from '../User/OrderDetailsScreen';
 import OrderCheckoutScreen from '../User/OrderCheckoutScreen';
 import PaymentInformationScreen from '../User/PaymentInformationScreen';
 import StatisticsScreen from '../User/StatisticsScreen';
+import WatchCourierScreen from '../User/WatchCourierScreen';
 
 const HomeStackScreen = ({navigation}) => (
   <Stack.Navigator screenOptions={{
@@ -79,7 +80,7 @@ const ProfileStackScreen = ({navigation}) => (
           <Stack.Screen 
             name="StatisticsScreen"
             options= {{
-              title: "Vaše štatistiky"
+              title: "Moje štatistiky"
             }}
             component={StatisticsScreen}
           />
@@ -133,6 +134,13 @@ const NewOrderScreenStack = ({navigation}) => (
               title: "Detail zásielky"
             }}
             component={OrderDetailsScreen}
+          />
+          <Stack.Screen 
+            name="WatchCourier"
+            options= {{
+              title: "Pozícia kuriéra"
+            }}
+            component={WatchCourierScreen}
           />
           <Stack.Screen 
             name="OrderCheckout"

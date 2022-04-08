@@ -13,7 +13,7 @@ import Moment from 'moment';
 
 const OrderDetailsScreen = ({ route, navigation }) => {
   
-  const { value } = route.params;
+  const { value, token } = route.params;
   Moment.locale('en');
 
   let s = '';
@@ -36,8 +36,13 @@ const OrderDetailsScreen = ({ route, navigation }) => {
       number
     )
   }
+
+  const watchCourierButton = () => {
+    navigation.navigate("WatchCourier", {token: token})
+  }
  
   const courierInfo = value.courier !== null ? (
+    <View>
         <View style={[styles.courierInfoBox, {display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}]}>
           <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'center',}}>
             <Avatar.Image 
@@ -58,6 +63,13 @@ const OrderDetailsScreen = ({ route, navigation }) => {
             </TouchableOpacity>
           </View>
         </View>
+        <View>
+        <TouchableOpacity onPress={watchCourierButton} style={styles.watchCourier}>
+          <Text style={{fontSize: 18, fontWeight: 'bold', color: '#393485'}}>Sledovať na mape</Text>
+          <MaterialComunityIcons name="arrow-right" size={30} color={'#393485'} style={{marginBottom: 0}}/> 
+        </TouchableOpacity>
+      </View>
+    </View>
     ) : (<View style={[styles.courierInfoBox, {display: 'flex', flexDirection: 'row', alignItems: 'center'}]}>
             <Text style={{fontSize: 14, fontWeight: 'bold', color: '#393485'}}>Kuriér ešte nebol pridelený</Text>
         </View>);
@@ -130,6 +142,14 @@ const styles = StyleSheet.create({
       borderRadius: 10,
       borderBottomColor: '#dddddd',
       borderBottomWidth: 1
+    },
+    watchCourier: {
+      marginHorizontal: 16,
+      display: 'flex',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: 10
     },
     mainItemBox: {
       backgroundColor: '#fff',

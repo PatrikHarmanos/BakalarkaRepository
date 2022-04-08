@@ -9,7 +9,6 @@ import CheckOrderStatusScreen from './Screens/User/CheckOrderStatusScreen';
 import OrderDetailsScreen from './Screens/User/OrderDetailsScreen';
 
 
-
 const Stack = createStackNavigator();
 
 const Auth = () => {
@@ -19,12 +18,12 @@ const Auth = () => {
       <Stack.Screen name="RegisterScreen" component={RegisterScreen} options={{headerShown: false}}/>
       <Stack.Screen name="CheckOrderStatusScreen" component={CheckOrderStatusScreen} options={{headerShown: false}}/>
       <Stack.Screen 
-            name="OrderDetails"
-            options= {{
-              title: "Order details"
-            }}
-            component={OrderDetailsScreen}
-          />
+        name="OrderDetails"
+        options= {{
+          title: "Order details"
+        }}
+        component={OrderDetailsScreen}
+      />
     </Stack.Navigator>
   );
 };

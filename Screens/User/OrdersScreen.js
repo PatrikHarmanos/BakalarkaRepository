@@ -14,6 +14,7 @@ import { callAPI, callRefreshToken } from '../../Helpers/FetchHelper'
 const OrdersScreen = ({route, navigation}) => {
 
   const [data, setData] = useState([]);
+  const [token, setToken] = useState();
   Moment.locale('en');
   const [isFetching, setIsFetching] = useState(false);
   const isFocused = useIsFocused();
@@ -25,6 +26,7 @@ const OrdersScreen = ({route, navigation}) => {
   useEffect(() => {
     try {
       SecureStore.getItemAsync('access').then((token) => {
+        setToken(token)
         if (token != null) {
           callAPI(
             'http://147.175.150.96/api/deliveries/',
@@ -88,7 +90,7 @@ const OrdersScreen = ({route, navigation}) => {
             onRefresh={() => onRefresh()}
             refreshing={isFetching}
             renderItem={({ item }) => 
-              <TouchableOpacity onPress={() => navigation.navigate("OrderDetails", {value: item})} style={styles.item}> 
+              <TouchableOpacity onPress={() => navigation.navigate("OrderDetails", {value: item, token: token})} style={styles.item}> 
                 <View style={{display: 'flex', justifyContent: 'space-between', flexDirection: 'row'}}>
                   <Text style={{ color: '#e8a438', fontSize: 12, fontWeight: 'bold', marginBottom: 2}}>
                     { Moment(item.created_at).format('DD.MM.YYYY') }

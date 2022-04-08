@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
     View, 
     Text,
@@ -8,6 +8,7 @@ import {
 import MapView, { Marker } from 'react-native-maps';
 import * as SecureStore from 'expo-secure-store';
 import { callAPI, callRefreshToken } from '../../Helpers/FetchHelper'
+import * as Location from "expo-location";
 
 const CourierPickupDeliveryScreen = ({route, navigation}) => {
     const { 
@@ -37,6 +38,38 @@ const CourierPickupDeliveryScreen = ({route, navigation}) => {
     } = route.params;
 
     const mapRef = useRef();
+
+    var ws = undefined 
+
+    useEffect(async () => {
+        await SecureStore.getItemAsync('access').then((token) => {
+            console.log(token)
+            ws = new WebSocket(`wss://poslito.com/ws/couriers/?token=${token}`)
+        })
+    }, [])
+
+    const getCurrentLocation = async () => {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+            return;
+        }
+        let location = await Location.getCurrentPositionAsync({})
+        return location
+    }
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            if (ws !== undefined) {
+                getCurrentLocation().then((data) => {
+                    ws.send(JSON.stringify({
+                        "latitude": data["coords"]["latitude"],
+                        "longitude": data["coords"]["longitude"]
+                        }))
+                })
+            }
+        }, 4000)
+        return () => clearInterval(interval)
+    })
 
     const handleButton = async () => {
         try {
@@ -170,21 +203,23 @@ const styles = StyleSheet.create({
         flex: 1
     },
     header: {
-        flex: 3
+        flex: 4
     },
     footer: {
-        flex: 1,
+        flex: 2,
         backgroundColor: '#fff',
         paddingHorizontal: 20,
         justifyContent: 'flex-end',
         paddingBottom: 20,
-        paddingTop: 20,
         borderTopLeftRadius: 30,
-        borderTopRightRadius: 30
+        borderTopRightRadius: 30,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'stretch',
+        justifyContent: 'space-evenly'
     },
     button: {
         alignItems: 'center',
-        marginTop: 12
     },
     signIn: {
         width: '100%',

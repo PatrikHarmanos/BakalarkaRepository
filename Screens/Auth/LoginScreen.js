@@ -5,7 +5,8 @@ import {
   View,
   Text,
   KeyboardAvoidingView,
-  TouchableOpacity
+  TouchableOpacity,
+  Linking
 } from 'react-native'
 
 import * as SecureStore from 'expo-secure-store'
@@ -148,6 +149,10 @@ const LoginScreen = ({ navigation }) => {
                 <Text style={styles.textSign}>Vytvoriť ucet</Text>
             </TouchableOpacity>
           </View>
+
+          <TouchableOpacity style={styles.forgotPassword} onPress={() => { Linking.openURL('http://147.175.150.96/api/accounts/reset_password/') }}>
+            <Text style={{fontSize: 16, color: "#777"}}>Zabudli ste heslo?</Text>
+          </TouchableOpacity>
         
         </KeyboardAvoidingView>
              
@@ -203,6 +208,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 50
   },
+  forgotPassword: {
+    alignItems: 'center',
+    marginTop: 40
+  },  
   signIn: {
     width: '100%',
     height: 50,

@@ -3,8 +3,7 @@ import {
     View, 
     Text,
     StyleSheet,
-    TouchableOpacity,
-    ScrollView
+    TouchableOpacity
 } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
@@ -54,7 +53,7 @@ const CourierDeliveryScreen = ({route, navigation}) => {
         await SecureStore.setItemAsync(key, value)
     }
 
-    useEffect(() => {
+    useEffect(async () => {
         calculatePreciseDistance();
     }, []);
 
@@ -205,9 +204,9 @@ const CourierDeliveryScreen = ({route, navigation}) => {
                             mapRef.current.fitToCoordinates(result.coordinates, {
                                 edgePadding: {
                                     right: 30,
-                                    bottom: 150,
+                                    bottom: 50,
                                     left: 30,
-                                    top: 100
+                                    top: 50
                                 }
                             })
                         }}
@@ -215,25 +214,23 @@ const CourierDeliveryScreen = ({route, navigation}) => {
                 </MapView>
             </View>
             <View style={styles.footer}>
-                <ScrollView>
-                    <View style={styles.footer_section}>
-                        <Text style={styles.footer_section_text}>Miesto vyzdvihnutia</Text>
-                        <Text style={styles.footer_section_value}>{pickupPlaceDescription} </Text>
-                    </View>
-                    <View style={styles.footer_section}>
-                        <Text style={styles.footer_section_text}>Miesto doručenia</Text>
-                        <Text style={styles.footer_section_value}>{deliveryPlaceDescription}</Text>
-                    </View>
-                    <View style={styles.footer_section}>
-                        <Text style={styles.footer_section_text}>Vzdialenosť</Text>
-                        <Text style={styles.footer_section_value}>{distance} km</Text>
-                    </View>
-                    <View style={styles.button}>
-                            <TouchableOpacity style={styles.signIn} onPress={handleButton}>
-                                <Text style={styles.textSign}>Akceptovať objednávku</Text>
-                            </TouchableOpacity>
-                    </View>
-                </ScrollView>
+                <View style={styles.footer_section}>
+                    <Text style={styles.footer_section_text}>Miesto vyzdvihnutia</Text>
+                    <Text style={styles.footer_section_value}>{pickupPlaceDescription} </Text>
+                </View>
+                <View style={styles.footer_section}>
+                    <Text style={styles.footer_section_text}>Miesto doručenia</Text>
+                    <Text style={styles.footer_section_value}>{deliveryPlaceDescription}</Text>
+                </View>
+                <View style={styles.footer_section}>
+                    <Text style={styles.footer_section_text}>Vzdialenosť</Text>
+                    <Text style={styles.footer_section_value}>{distance} km</Text>
+                </View>
+                <View style={styles.button}>
+                        <TouchableOpacity style={styles.signIn} onPress={handleButton}>
+                            <Text style={styles.textSign}>Akceptovať objednávku</Text>
+                        </TouchableOpacity>
+                </View>
             </View>
         </View>
     ); 
@@ -246,7 +243,7 @@ const styles = StyleSheet.create({
         flex: 1
     },
     header: {
-        flex: 3
+        flex: 2
     },
     footer: {
         flex: 2,
@@ -254,9 +251,12 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         justifyContent: 'flex-end',
         paddingBottom: 20,
-        paddingTop: 20,
         borderTopLeftRadius: 30,
-        borderTopRightRadius: 30
+        borderTopRightRadius: 30,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'stretch',
+        justifyContent: 'center'
     },
     button: {
         alignItems: 'center',

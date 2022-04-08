@@ -73,6 +73,12 @@ const CourierActiveDeliveryScreen = ({route, navigation}) => {
     }, []);
 
     const handleButton = async () => {
+        await SecureStore.getItemAsync('access').then((token) => {
+            let ws = new WebSocket(`wss://poslito.com/ws/couriers/?token=${token}`)
+            // close socket connection
+            ws.close()
+        })
+
         try {
             await SecureStore.getItemAsync('access').then((token) => {
                 if (token != null) {
@@ -120,6 +126,12 @@ const CourierActiveDeliveryScreen = ({route, navigation}) => {
     };
 
     const rejectOrderHandleButton = async () => {
+        await SecureStore.getItemAsync('access').then((token) => {
+            let ws = new WebSocket(`wss://poslito.com/ws/couriers/?token=${token}`)
+            // close socket connection
+            ws.close()
+        })
+
         try {
             await SecureStore.getItemAsync('access').then((token) => {
                 if (token != null) {
@@ -259,10 +271,13 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         paddingHorizontal: 20,
         justifyContent: 'flex-end',
-        paddingBottom: 50,
-        paddingTop: 20,
+        paddingBottom: 20,
         borderTopLeftRadius: 30,
-        borderTopRightRadius: 30
+        borderTopRightRadius: 30,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'stretch',
+        justifyContent: 'center'
     },
     button: {
         alignItems: 'center',

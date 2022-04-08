@@ -141,14 +141,42 @@ export function DrawerContent(props, route) {
                             {becomeACourierOption}
                         </Drawer.Section>
                     ) : (
-                        <View style={{display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
-                           <Icon 
-                                name='car'
-                                color={'#393485'}
-                                size={60}
-                                style={{marginTop: 20}}
-                            />
-                           <Text style={styles.courierAppText}>Ste prihlásený ako Doručovateľ</Text>
+                        <View>
+                            <View style={{display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
+                                <Icon 
+                                        name='car'
+                                        color={'#393485'}
+                                        size={60}
+                                        style={{marginTop: 20}}
+                                    />
+                                <Text style={styles.courierAppText}>Ste prihlásený ako Doručovateľ</Text>
+                            </View>
+                            <Drawer.Section style={styles.drawerSectionCourier}>
+                                <DrawerItem 
+                                    icon={({color, size}) => (
+                                        <Icon 
+                                            name='truck-delivery-outline'
+                                            color={color}
+                                            size={size}
+                                        />
+                                    )}
+                                    isEnabled={false}
+                                    label="Aktívne zásielky"
+                                    onPress={() => {props.navigation.navigate("CourierMainScreen")}}
+                                />
+                                <DrawerItem 
+                                    icon={({color, size}) => (
+                                        <Icon 
+                                            name='email-outline'
+                                            color={color}
+                                            size={size}
+                                        />
+                                    )}
+                                    isEnabled={false}
+                                    label="História doručovania"
+                                    onPress={() => {props.navigation.navigate("CourierHistoryScreen")}}
+                                />
+                            </Drawer.Section>
                         </View>
                     ) }
                 </View>
@@ -208,6 +236,13 @@ const styles = StyleSheet.create({
         marginBottom: 15,
         borderTopColor: '#f4f4f4',
         borderTopWidth: 1
+    },
+    drawerSectionCourier: {
+        borderTopColor: '#f4f4f4',
+        borderTopWidth: 1,
+        borderBottomColor: '#f4f4f4',
+        borderBottomWidth: 1,
+        marginTop: 20
     },
     preference: {
       flexDirection: 'row',

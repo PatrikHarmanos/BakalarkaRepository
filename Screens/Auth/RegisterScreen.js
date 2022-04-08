@@ -24,7 +24,7 @@ const RegisterScreen = ({navigation}) => {
   };
 
   const badPhoneNumber = () => {
-    var validRegex = /^(0|[1-9][0-9]*)$/;
+    var validRegex = /^(0[0-9]*)$/;
     if (userNumber !== '' && !userNumber.match(validRegex))
       return true
     return false
@@ -70,6 +70,7 @@ const RegisterScreen = ({navigation}) => {
       .then((response) => {
         // If registration was successfull => go to Login Screen
         if (response.status == 201) {
+          alert("Prosím potvrďte vašu e-mailovú adresu.")
           navigation.navigate("LoginScreen");
         }
         // Else => error message
