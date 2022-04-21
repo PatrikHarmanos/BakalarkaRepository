@@ -15,6 +15,7 @@ import {
   callRefreshToken,
   callAPI
 } from '../../Helpers/FetchHelper'
+import {BASE_URL} from '../../cofig'
 
 const LoginScreen = ({ navigation }) => {
 
@@ -43,7 +44,7 @@ const LoginScreen = ({ navigation }) => {
     }
 
     callAPI(
-      'http://147.175.150.96/api/accounts/token/',
+      `${BASE_URL}/accounts/token/`,
       'POST',
       { 'Content-Type': 'application/json' },
       JSON.stringify(dataToSend)
@@ -63,6 +64,7 @@ const LoginScreen = ({ navigation }) => {
             'Authorization': 'Bearer ' + data.access,
           }
         ).then ((data) => {
+          console.log(data)
           // if access token is valid
           if (data.code !== "token_not_valid") {
             // call actions for saving data to store
@@ -146,7 +148,7 @@ const LoginScreen = ({ navigation }) => {
 
           <View style={styles.button}>
             <TouchableOpacity onPress={() => navigation.navigate('RegisterScreen')} style={styles.signIn}>
-                <Text style={styles.textSign}>Vytvoriť ucet</Text>
+                <Text style={styles.textSign}>Vytvoriť účet</Text>
             </TouchableOpacity>
           </View>
 

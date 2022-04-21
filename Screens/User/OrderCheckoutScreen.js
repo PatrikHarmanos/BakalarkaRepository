@@ -10,6 +10,8 @@ import MapViewDirections from 'react-native-maps-directions';
 import { getPreciseDistance } from 'geolib';
 import * as SecureStore from 'expo-secure-store';
 import { callAPI } from '../../Helpers/FetchHelper'
+import { BASE_URL } from '../../cofig';
+import { ActivityIndicator } from 'react-native-paper';
 
 const OrderCheckoutScreen = ({route, navigation}) => {
     const { 
@@ -43,6 +45,7 @@ const OrderCheckoutScreen = ({route, navigation}) => {
     const [distance, setDistance] = useState(0);
     const [finalPrice, setFinalPrice] = useState(0);
     const [finalTime, setFinalTime] = useState(0);
+    const [isLoading, setIsLoading] = useState(false);
 
     const mapRef = useRef();
 
@@ -50,27 +53,85 @@ const OrderCheckoutScreen = ({route, navigation}) => {
         await SecureStore.setItemAsync(key, value)
     }
 
-    const calculatePreciseDistance = () => {
-        var pdis = getPreciseDistance(
-          { latitude: pickupPlaceLat, longitude: pickupPlaceLong },
-          { latitude: deliveryPlaceLat, longitude: deliveryPlaceLong }
-        );
-       setDistance((pdis/1000).toFixed(2));
-    };
+    const getRouteData = async () => {
+        setIsLoading(true);
+        let formData = new FormData();
 
-    const calculateFinalPrice = () => {
-        setFinalPrice((distance*0.4).toFixed(2));
-    };
+        formData.append("item.name", itemCategory);
+        formData.append("item.description", itemDescription);
+        formData.append("item.size", itemSize);
+        formData.append("item.weight", itemWeight);
+        formData.append("item.fragile", itemIsFragile);
+        formData.append("pickup_place.place_id", pickupID);
+        formData.append("pickup_place.formatted_address", pickupPlaceDescription);
+        formData.append("pickup_place.country", pickupPlaceCountry);
+        formData.append("pickup_place.city", pickupPlaceCity);
+        formData.append("pickup_place.street_address", pickupPlaceStreetAddress);
+        formData.append("pickup_place.postal_code", pickupPlacePostalCode);
+        formData.append("pickup_place.latitude", pickupPlaceLat);
+        formData.append("pickup_place.longitude", pickupPlaceLong);
+        formData.append("delivery_place.place_id", deliveryID);
+        formData.append("delivery_place.formatted_address", deliveryPlaceDescription);
+        formData.append("delivery_place.country", deliveryPlaceCountry);
+        formData.append("delivery_place.city", deliveryPlaceCity);
+        formData.append("delivery_place.street_address", deliveryPlaceStreetAddress);
+        formData.append("delivery_place.postal_code", deliveryPlacePostalCode);
+        formData.append("delivery_place.latitude", deliveryPlaceLat);
+        formData.append("delivery_place.longitude", deliveryPlaceLong);
 
-    const calculateFinalTime = () => {
-        setFinalTime((distance*1.5).toFixed(0));
-    };
+        try {
+            await SecureStore.getItemAsync('access').then((token) => {
+                if (token != null) {
+                    callAPI(
+                        `${BASE_URL}/deliveries/preview`,
+                        'POST',
+                        {
+                            'Authorization': 'Bearer ' + token,
+                        },
+                        formData
+                    ).then((data) => {
+                        if (data.code !== 'token_not_valid') {
+                            setDistance(data.distance.text)
+                            setFinalTime(data.duration.text)
+                            setFinalPrice(data.price)
+                        } else {
+                            SecureStore.getItemAsync('refresh').then((refreshToken) => {
+                                // if access token is invalid => call refresh token
+                                callRefreshToken(refreshToken).then((data) => {
+                                    // save new access and refresh token
+                                    save('access', data.access)
+                                    save('refresh', data.refresh)
+                    
+                                    callAPI(
+                                        `${BASE_URL}/deliveries/preview`,
+                                        'POST',
+                                        {
+                                            'Authorization': 'Bearer ' + token,
+                                        },
+                                        formData
+                                    ).then((data) => {
+                                        setDistance(data.distance.text)
+                                        setFinalTime(data.duration.text)
+                                        setFinalPrice(data.price)
+                                    })
+                                })
+                            })
+                        }
+                    })
+                } else {
+                    navigation.navigate("Auth");
+                }
+            })
+        } catch(error) {
+            console.log(error);
+        } finally {
+            setIsLoading(false)
+        }
+    }
 
     useEffect(() => {
-        calculatePreciseDistance();
-        calculateFinalPrice();
-        calculateFinalTime();
-    });
+        getRouteData();
+    }, []);
 
     const handleButton = async () => {
 
@@ -206,24 +267,28 @@ const OrderCheckoutScreen = ({route, navigation}) => {
                 </MapView>
             </View>
             <View style={styles.footer}>
-                <View style={styles.footer_section}>
-                    <Text style={styles.footer_section_text}>Cena</Text>
-                    <Text style={styles.footer_section_value}>{finalPrice} €</Text>
-                </View>
-                <View style={styles.footer_section}>
-                    <Text style={styles.footer_section_text}>Vydialenosť</Text>
-                    <Text style={styles.footer_section_value}>{distance} km</Text>
-                </View>
-                <View style={styles.footer_section}>
-                    <Text style={styles.footer_section_text}>Doba doručenia</Text>
-                    <Text style={styles.footer_section_value}>{finalTime} minút</Text>
-                </View>
-                
-                <View style={styles.button}>
-                    <TouchableOpacity style={styles.signIn} onPress={handleButton}>
-                        <Text style={styles.textSign}>Potvrdiť objednávku</Text>
-                    </TouchableOpacity>
-                </View>
+                { isLoading ? <ActivityIndicator/> : (
+                    <View style={{ display: 'flex', flexDirection: 'column', alignItems: 'stretch'}}>
+                        <View style={styles.footer_section}>
+                        <Text style={styles.footer_section_text}>Cena</Text>
+                        <Text style={styles.footer_section_value}>{finalPrice} €</Text>
+                        </View>
+                        <View style={styles.footer_section}>
+                            <Text style={styles.footer_section_text}>Vydialenosť</Text>
+                            <Text style={styles.footer_section_value}>{distance}</Text>
+                        </View>
+                        <View style={styles.footer_section}>
+                            <Text style={styles.footer_section_text}>Doba doručenia</Text>
+                            <Text style={styles.footer_section_value}>{finalTime}</Text>
+                        </View>
+                        
+                        <View style={styles.button}>
+                            <TouchableOpacity style={styles.signIn} onPress={handleButton}>
+                                <Text style={styles.textSign}>Potvrdiť objednávku</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                )}
             </View>
         </View>
     ); 
@@ -242,14 +307,13 @@ const styles = StyleSheet.create({
         flex: 2,
         backgroundColor: '#fff',
         paddingHorizontal: 20,
-        justifyContent: 'flex-start',
-        paddingTop: 10,
         borderTopLeftRadius: 30,
-        borderTopRightRadius: 30
+        borderTopRightRadius: 30,
+        justifyContent: 'center'
     },
     button: {
         alignItems: 'center',
-        marginTop: 10
+        marginTop: 20
     },
     signIn: {
         width: '100%',

@@ -13,7 +13,19 @@ import Icon from 'react-native-vector-icons/Ionicons';
 
 const HomeScreen = ({ navigation, route }) => {
   
-  const {state} = useContext(Context);
+  const {state, actions} = useContext(Context);
+
+  const goToCourierApp = () => {
+    if (state.is_courier) {
+      navigation.navigate('CourierScreenStack', {screen: 'CourierMainScreen'})
+      actions({type: 'setState', payload: {...state, 
+        courier_mode_on: true
+      }});
+    }
+    else {
+      navigation.navigate('CourierScreenStack')
+    }
+  }
   
     return (
       <View style={styles.container}>
@@ -26,7 +38,7 @@ const HomeScreen = ({ navigation, route }) => {
             </Card.Content>
             <Card.Actions>
               <View style={styles.button}>
-                <TouchableOpacity onPress={() => {navigation.navigate('CourierScreenStack')}} style={styles.signIn}>
+                <TouchableOpacity onPress={goToCourierApp} style={styles.signIn}>
                     <Text style={styles.textSign}>Preskúmať</Text>
                 </TouchableOpacity>
               </View>
@@ -36,7 +48,7 @@ const HomeScreen = ({ navigation, route }) => {
           <View style={styles.createOrderCard}>
           <Text style={styles.createOrderCardText}>Vitajte, { state.first_name }</Text>
             <View style={styles.button}>
-                <TouchableOpacity onPress={() => {navigation.navigate('Order', {screen: 'NewOrder'})}} style={styles.signIn}>
+                <TouchableOpacity onPress={() => {navigation.navigate('Order')}} style={styles.signIn}>
                     <Text style={styles.textSign}>Poslať zásielku</Text>
                 </TouchableOpacity>
             </View>

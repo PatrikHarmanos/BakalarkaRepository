@@ -64,10 +64,12 @@ const OrderDetailsScreen = ({ route, navigation }) => {
           </View>
         </View>
         <View>
-        <TouchableOpacity onPress={watchCourierButton} style={styles.watchCourier}>
-          <Text style={{fontSize: 18, fontWeight: 'bold', color: '#393485'}}>Sledovať na mape</Text>
-          <MaterialComunityIcons name="arrow-right" size={30} color={'#393485'} style={{marginBottom: 0}}/> 
-        </TouchableOpacity>
+        { s === 'Zásielka bola doručená' ? null : (
+          <TouchableOpacity onPress={watchCourierButton} style={styles.watchCourier}>
+            <Text style={{fontSize: 18, fontWeight: 'bold', color: '#393485'}}>Sledovať na mape</Text>
+            <MaterialComunityIcons name="arrow-right" size={30} color={'#393485'} style={{marginBottom: 0}}/> 
+          </TouchableOpacity>
+        )}
       </View>
     </View>
     ) : (<View style={[styles.courierInfoBox, {display: 'flex', flexDirection: 'row', alignItems: 'center'}]}>

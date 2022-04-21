@@ -1,3 +1,10 @@
+import * as SecureStore from 'expo-secure-store';
+import axios from 'axios';
+
+async function save(key, value) {
+    await SecureStore.setItemAsync(key, value)
+}
+
 export const callRefreshToken = async (refreshToken) => {
     try {
       const url = 'http://147.175.150.96/api/accounts/token/refresh/'
