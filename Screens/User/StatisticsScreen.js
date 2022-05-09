@@ -8,88 +8,91 @@ import {
 import {
     BarChart
 } from "react-native-chart-kit";
-import { callAPI, callRefreshToken } from '../../Helpers/FetchHelper'
+import { FETCH } from '../../Helpers/FetchHelper'
 import * as SecureStore from 'expo-secure-store';
+import { BASE_URL } from "../../cofig";
+import { ActivityIndicator } from "react-native-paper";
+import Moment from 'moment';
 
 const StatisticsScreen = () => {
 
     const [data, setData] = useState([]);
     const [isFetching, setIsFetching] = useState(true);
     const [chartData, setChartData] = useState();  
+    Moment.locale('en');
 
     useEffect(() => {
         setIsFetching(true)
-        try {
-          SecureStore.getItemAsync('access').then((token) => {
-            if (token != null) {
-              callAPI(
-                'http://147.175.150.96/api/deliveries/',
-                'GET',
-                {
-                  'content-type': 'application/json',
-                  'Authorization': 'Bearer ' + token,
-                },
-              ).then ((data) => {
-                if (data.code !== 'token_not_valid') {
-                  console.log(data)
-                  setData(data);
-                  setChartData({
-                    labels: ["January", "February", "march"],
+        SecureStore.getItemAsync('access').then((token) => {
+          if (token != null) {
+            const options = {
+              method: 'GET',
+              headers: {
+                'content-type': 'application/json',
+                'Authorization': 'Bearer ' + token,
+              }
+            }
+
+            FETCH(`${BASE_URL}/deliveries/statistics`, options).then((data) => {
+              if (data.message === 'logout_user') {
+                navigation.navigate("Auth");
+              } else if (data.message === 'new_token') {
+                const new_options = {
+                  method: 'GET',
+                  headers: {
+                    'content-type': 'application/json',
+                    'Authorization': 'Bearer ' + data.new_access,
+                  }
+                }
+                FETCH(`${BASE_URL}/deliveries/statistics`, new_options).then((data) => {
+                  let chart = {
+                    labels: [],
                     datasets: [
                       {
-                        data: [
-                          2, 5, 15
-                        ]
+                        data: []
                       }
                     ]
+                  }
+                  data.map((item) => {
+                    chart.labels.push( Moment(item.month).format('MM.YY'))
+                    chart.datasets[0].data.push(item.count)
                   })
+                  setChartData(chart)
                   setIsFetching(false);
-                } else {
-                  SecureStore.getItemAsync('refresh').then((refreshToken) => {
-                    // if access token is invalid => call refresh token
-                    callRefreshToken(refreshToken).then((data) => {
-                      // save new access and refresh token
-                      save('access', data.access)
-                      save('refresh', data.refresh)
-    
-                      callAPI(
-                        'http://147.175.150.96/api/deliveries/',
-                        'GET',
-                        {
-                          'content-type': 'application/json',
-                          'Authorization': 'Bearer ' + data.access,
-                        },
-                      ).then((data) => {
-                        setData(data);
-                        setIsFetching(false);
-                      })
-                    })
-                  })
+                })
+              } else {
+                let chart = {
+                  labels: [],
+                  datasets: [
+                    {
+                      data: []
+                    }
+                  ]
                 }
-              })
-            } else {
-              navigation.navigate("Auth");
-            }
-          })
-        } catch(error) {
-          console.log(error);
-        }
+                data.map((item) => {
+                  chart.labels.push( Moment(item.month).format('MM.YY'))
+                  chart.datasets[0].data.push(item.count)
+                })
+                setChartData(chart)
+                setIsFetching(false);
+              }
+            })
+          } else {
+            navigation.navigate("Auth");
+          }
+        })
       }, [])
 
   return (
     <View style={styles.container}>
-        { isFetching ? <Text>d</Text> : (
+        { isFetching ? <ActivityIndicator/> : (
             <View>
-              <Text>Vaše štatistiky</Text>
-              <Text>Odoslané zásielky</Text>
+              <Text style={styles.headingText}>Odoslané zásielky</Text>
               <BarChart
                 data={chartData}
                 width={Dimensions.get("window").width - 32} // from react-native
                 height={220}
-                withInnerLines={true}
                 fromZero={true}
-                showBarTops={false}
-                showValuesOnTopOfBars={true}
                 chartConfig={{
                   backgroundGradientFrom: "#f7f7f7",
                   backgroundGradientTo: "#f7f7f7",
@@ -119,5 +122,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff'
+  },
+  headingText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginLeft: 20,
+    marginVertical: 5
   }
 });

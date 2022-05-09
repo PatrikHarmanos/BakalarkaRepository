@@ -7,8 +7,6 @@ import {
   KeyboardAvoidingView,
   TouchableOpacity
 } from 'react-native';
-
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import RNPickerSelect from 'react-native-picker-select';
 
 const PaymentInformationScreen = () =>{

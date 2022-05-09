@@ -8,6 +8,8 @@ import {
   ScrollView
 } from 'react-native';
 import { HelperText } from 'react-native-paper';
+import { FETCH } from '../../Helpers/FetchHelper'
+import {BASE_URL} from '../../cofig'
 
 const RegisterScreen = ({navigation}) => {
   const [userFirstName, setUserFirstName] = useState('');
@@ -52,7 +54,7 @@ const RegisterScreen = ({navigation}) => {
       return;
     }
 
-    var dataToSend = {
+    const dataToSend = {
       email: userEmail,
       password: userPassword,
       first_name: userFirstName,
@@ -60,24 +62,21 @@ const RegisterScreen = ({navigation}) => {
       phone_number: userNumber,
     }
 
-    fetch('http://147.175.150.96/api/accounts/', {
+    const options = {
       method: 'POST',
-      body: JSON.stringify(dataToSend),
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(dataToSend)
+    }
+
+    FETCH(`${BASE_URL}/accounts/`, options).then((data) => {
+      if (data.email[0] === 'account with this email already exists.') {
+        alert("E-mailová adresa je obsadená.")
+        return
+      } else {
+        alert("Registrácia bola úspešná. Prosím potvrďte vašu e-mailovú adresu.")
+        navigation.navigate("LoginScreen");
+      }
     })
-      .then((response) => {
-        // If registration was successfull => go to Login Screen
-        if (response.status == 201) {
-          alert("Prosím potvrďte vašu e-mailovú adresu.")
-          navigation.navigate("LoginScreen");
-        }
-        // Else => error message
-      })
-      .catch((error) => {
-        console.log(error);
-      });
   };
 
   return (

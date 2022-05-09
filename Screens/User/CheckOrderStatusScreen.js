@@ -7,7 +7,8 @@ import {
   KeyboardAvoidingView,
   TouchableOpacity
 } from 'react-native';
-import { callAPI } from '../../Helpers/FetchHelper'
+import { FETCH } from '../../Helpers/FetchHelper'
+import { BASE_URL } from "../../cofig";
 
 const CheckOrderStatusScreen = ({navigation}) => {
   const [deliveryID, setDeliveryID] = useState('');
@@ -20,17 +21,15 @@ const CheckOrderStatusScreen = ({navigation}) => {
       return;
     }
 
-    callAPI(
-      `http://147.175.150.96/api/core/get_delivery/?id=${deliveryID}`,
-      'GET',
-      {
-        'Content-Type': 'application/json'
-      }
-    ).then((responseJson) => {
-        setData(responseJson);
-      })
+    const options = {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' }
+    }
 
-    navigation.navigate("OrderDetails", {value: data})
+    FETCH(`${BASE_URL}/core/get_delivery/?id=${deliveryID}`, options).then((data) => {
+      setData(data)
+      navigation.navigate("OrderDetails", {value: data})
+    })
   };
 
   return (

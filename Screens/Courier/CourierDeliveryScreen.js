@@ -9,7 +9,8 @@ import MapView, { Marker } from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
 import { getPreciseDistance } from 'geolib';
 import * as SecureStore from 'expo-secure-store';
-import { callAPI, callRefreshToken } from '../../Helpers/FetchHelper'
+import { FETCH } from '../../Helpers/FetchHelper'
+import { BASE_URL } from '../../cofig';
 
 const CourierDeliveryScreen = ({route, navigation}) => {
     const { 
@@ -57,101 +58,70 @@ const CourierDeliveryScreen = ({route, navigation}) => {
         calculatePreciseDistance();
     }, []);
 
+    const navigateNext = () => {
+        navigation.navigate("CourierPickupDeliveryScreen", {
+            itemName: itemName,
+            itemDescription: itemDescription,
+            itemPhoto: itemPhoto,
+            itemSize: itemSize,
+            itemWeight: itemWeight,
+            itemIsFragile: itemIsFragile,
+            pickupPlaceLat: pickupPlaceLat,
+            pickupPlaceLong: pickupPlaceLong,
+            pickupPlacePostalCode: pickupPlacePostalCode,
+            pickupPlaceCountry: pickupPlaceCountry,
+            pickupPlaceCity: pickupPlaceCity,
+            pickupPlaceStreetAddress: pickupPlaceStreetAddress,
+            pickupID: pickupID,
+            pickupPlaceDescription: pickupPlaceDescription,
+            deliveryPlaceLat: deliveryPlaceLat,
+            deliveryPlaceLong: deliveryPlaceLong,
+            deliveryPlacePostalCode: deliveryPlacePostalCode,
+            deliveryPlaceCountry: deliveryPlaceCountry,
+            deliveryPlaceCity: deliveryPlaceCity,
+            deliveryPlaceStreetAddress: deliveryPlaceStreetAddress,
+            deliveryID: deliveryID,
+            deliveryPlaceDescription: deliveryPlaceDescription,
+            safeID: safeID,
+        });
+    }
+
     const handleButton = async () => {
     
-        try {
-            await SecureStore.getItemAsync('access').then((token) => {
-                if (token != null) {
-                    callAPI(
-                        `http://147.175.150.96/api/deliveries/${safeID}/state`,
-                        'PATCH',
-                        {
-                            'content-type': 'application/json',
-                            'Authorization': 'Bearer ' + token
-                        },
-                        JSON.stringify({ state: "assigned" })
-                    ).then((data) => {
-                        if (data.code !== 'token_not_valid') {
-                            navigation.navigate("CourierPickupDeliveryScreen", {
-                                itemName: itemName,
-                                itemDescription: itemDescription,
-                                itemPhoto: itemPhoto,
-                                itemSize: itemSize,
-                                itemWeight: itemWeight,
-                                itemIsFragile: itemIsFragile,
-                                pickupPlaceLat: pickupPlaceLat,
-                                pickupPlaceLong: pickupPlaceLong,
-                                pickupPlacePostalCode: pickupPlacePostalCode,
-                                pickupPlaceCountry: pickupPlaceCountry,
-                                pickupPlaceCity: pickupPlaceCity,
-                                pickupPlaceStreetAddress: pickupPlaceStreetAddress,
-                                pickupID: pickupID,
-                                pickupPlaceDescription: pickupPlaceDescription,
-                                deliveryPlaceLat: deliveryPlaceLat,
-                                deliveryPlaceLong: deliveryPlaceLong,
-                                deliveryPlacePostalCode: deliveryPlacePostalCode,
-                                deliveryPlaceCountry: deliveryPlaceCountry,
-                                deliveryPlaceCity: deliveryPlaceCity,
-                                deliveryPlaceStreetAddress: deliveryPlaceStreetAddress,
-                                deliveryID: deliveryID,
-                                deliveryPlaceDescription: deliveryPlaceDescription,
-                                safeID: safeID,
-                              });
-                        } else {
-                            SecureStore.getItemAsync('refresh').then((refreshToken) => {
-                                // if access token is invalid => call refresh token
-                                callRefreshToken(refreshToken).then((data) => {
-                                    // save new access and refresh token
-                                    save('access', data.access)
-                                    save('refresh', data.refresh)
-                    
-                                    callAPI(
-                                        `http://147.175.150.96/api/deliveries/${safeID}/state`,
-                                        'PATCH',
-                                        {
-                                            'content-type': 'application/json',
-                                            'Authorization': 'Bearer ' + token
-                                        },
-                                        JSON.stringify({ state: "assigned" })
-                                    ).then((data) => {
-                                        navigation.navigate("CourierPickupDeliveryScreen", {
-                                            itemName: itemName,
-                                            itemDescription: itemDescription,
-                                            itemPhoto: itemPhoto,
-                                            itemSize: itemSize,
-                                            itemWeight: itemWeight,
-                                            itemIsFragile: itemIsFragile,
-                                            pickupPlaceLat: pickupPlaceLat,
-                                            pickupPlaceLong: pickupPlaceLong,
-                                            pickupPlacePostalCode: pickupPlacePostalCode,
-                                            pickupPlaceCountry: pickupPlaceCountry,
-                                            pickupPlaceCity: pickupPlaceCity,
-                                            pickupPlaceStreetAddress: pickupPlaceStreetAddress,
-                                            pickupID: pickupID,
-                                            pickupPlaceDescription: pickupPlaceDescription,
-                                            deliveryPlaceLat: deliveryPlaceLat,
-                                            deliveryPlaceLong: deliveryPlaceLong,
-                                            deliveryPlacePostalCode: deliveryPlacePostalCode,
-                                            deliveryPlaceCountry: deliveryPlaceCountry,
-                                            deliveryPlaceCity: deliveryPlaceCity,
-                                            deliveryPlaceStreetAddress: deliveryPlaceStreetAddress,
-                                            deliveryID: deliveryID,
-                                            deliveryPlaceDescription: deliveryPlaceDescription,
-                                            safeID: safeID,
-                                        });
-                                    })
-                                })
-                            })
-                        }            
-                    })
-                } else {
-                    navigation.navigate("Auth");
+        await SecureStore.getItemAsync('access').then((token) => {
+            if (token != null) {
+                const options = {
+                    method: 'PATCH',
+                    headers: {
+                        'content-type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify({ state: "assigned" })
                 }
-            })
-        } catch(error) {
-            console.log(error);
-        }
 
+                FETCH(`${BASE_URL}deliveries/${safeID}/state`, options).then((data) => {
+                    if (data.message === 'logout_user') {
+                        navigation.navigate("Auth");
+                    } else if (data.message === 'new_token') {
+                    const new_options = {
+                        method: 'PATCH',
+                        headers: {
+                            'content-type': 'application/json',
+                            'Authorization': 'Bearer ' + data.new_access
+                        },
+                        body: JSON.stringify({ state: "assigned" })
+                    }
+                    FETCH(`${BASE_URL}deliveries/${safeID}/state`, new_options).then((data) => {
+                        navigateNext()
+                    })
+                    } else {
+                        navigateNext()
+                    }
+                })
+            } else {
+                navigation.navigate("Auth");
+            }
+        })
     };
         
     return (

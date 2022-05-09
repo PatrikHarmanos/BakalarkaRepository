@@ -10,7 +10,8 @@ import {
 
 import * as SecureStore from 'expo-secure-store';
 import Context from "../../store/context";
-import { callAPI } from '../../Helpers/FetchHelper'
+import { FETCH } from '../../Helpers/FetchHelper'
+import { BASE_URL } from "../../cofig";
 
 const EditProfileScreen = ({navigation}) => {
 
@@ -61,69 +62,56 @@ const EditProfileScreen = ({navigation}) => {
         alert('Hesla sa nezhoduju');
         return;
       }
-      let end = {
-        password: password
-      }
     }
 
     const dataToSend = Object.assign(start, end)
-    
-    try {
-      await SecureStore.getItemAsync('access').then((token) => {
-          if (token != null) {
-            callAPI(
-              'http://147.175.150.96/api/accounts/me',
-              'PATCH',
-              {
+
+    await SecureStore.getItemAsync('access').then((token) => {
+      if (token != null) {
+        const options = {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token,
+          },
+          body: JSON.stringify(dataToSend)
+        }
+
+        FETCH(`${BASE_URL}/accounts/me`, options).then((data) => {
+          if (data.message === 'logout_user') {
+            navigation.navigate("Auth");
+          } else if (data.message === 'new_token') {
+            const new_options = {
+              method: 'PATCH',
+              headers: {
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + token,
+                'Authorization': 'Bearer ' + data.new_access,
               },
-              JSON.stringify(dataToSend)
-            ).then ((data) => {
-              if (data.code !== 'token_not_valid') {
-                actions({type: 'setState', payload: {...state, 
-                  first_name: data.first_name,
-                  last_name: data.last_name,
-                  email: data.email,
-                  phone_number: data.phone_number
-                }});
-                navigation.navigate("Profile")
-              } else {
-                SecureStore.getItemAsync('refresh').then((refreshToken) => {
-                  // if access token is invalid => call refresh token
-                  callRefreshToken(refreshToken).then((data) => {
-                    // save new access and refresh token
-                    save('access', data.access)
-                    save('refresh', data.refresh)
-  
-                    callAPI(
-                      'http://147.175.150.96/api/accounts/me',
-                      'PATCH',
-                      {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + data.access,
-                      },
-                      JSON.stringify(dataToSend)
-                    ).then((data) => {
-                      actions({type: 'setState', payload: {...state, 
-                        first_name: data.first_name,
-                        last_name: data.last_name,
-                        email: data.email,
-                        phone_number: data.phone_number
-                      }});
-                      navigation.navigate("Profile")
-                    })
-                  })
-                })
-              }
+              body: JSON.stringify(dataToSend)
+            }
+            FETCH(`${BASE_URL}/accounts/me`, new_options).then((data) => {
+              actions({type: 'setState', payload: {...state, 
+                first_name: data.first_name,
+                last_name: data.last_name,
+                email: data.email,
+                phone_number: data.phone_number
+              }});
+              navigation.navigate("Profile")
             })
           } else {
-            navigation.navigate("Auth");
+            actions({type: 'setState', payload: {...state, 
+              first_name: data.first_name,
+              last_name: data.last_name,
+              email: data.email,
+              phone_number: data.phone_number
+            }});
+            navigation.navigate("Profile")
           }
-      })
-    } catch(error) {
-        console.log(error);
-    }
+        })
+      } else {
+        navigation.navigate("Auth");
+      }
+    })
   };
 
   return (

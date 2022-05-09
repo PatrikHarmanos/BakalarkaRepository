@@ -4,9 +4,6 @@ import { createMaterialBottomTabNavigator } from '@react-navigation/material-bot
 import { createStackNavigator } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/Ionicons';
 import MaterialComunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-
-const Stack = createStackNavigator();
-
 import HomeScreen from '../User/HomeScreen';
 import ProfileScreen from '../User/ProfileScreen';
 import EditProfileScreen from '../User/EditProfileScreen';
@@ -19,6 +16,8 @@ import OrderCheckoutScreen from '../User/OrderCheckoutScreen';
 import PaymentInformationScreen from '../User/PaymentInformationScreen';
 import StatisticsScreen from '../User/StatisticsScreen';
 import WatchCourierScreen from '../User/WatchCourierScreen';
+
+const Stack = createStackNavigator();
 
 const HomeStackScreen = ({navigation}) => (
   <Stack.Navigator screenOptions={{

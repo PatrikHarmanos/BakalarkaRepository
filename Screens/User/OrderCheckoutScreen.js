@@ -9,7 +9,7 @@ import MapView, { Marker } from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
 import { getPreciseDistance } from 'geolib';
 import * as SecureStore from 'expo-secure-store';
-import { callAPI } from '../../Helpers/FetchHelper'
+import { FETCH } from '../../Helpers/FetchHelper'
 import { BASE_URL } from '../../cofig';
 import { ActivityIndicator } from 'react-native-paper';
 
@@ -79,54 +79,41 @@ const OrderCheckoutScreen = ({route, navigation}) => {
         formData.append("delivery_place.latitude", deliveryPlaceLat);
         formData.append("delivery_place.longitude", deliveryPlaceLong);
 
-        try {
-            await SecureStore.getItemAsync('access').then((token) => {
-                if (token != null) {
-                    callAPI(
-                        `${BASE_URL}/deliveries/preview`,
-                        'POST',
-                        {
-                            'Authorization': 'Bearer ' + token,
-                        },
-                        formData
-                    ).then((data) => {
-                        if (data.code !== 'token_not_valid') {
+        
+        await SecureStore.getItemAsync('access').then((token) => {
+            if (token != null) {
+                const options = {
+                    method: 'POST',
+                    headers: { 'Authorization': 'Bearer ' + token },
+                    body: formData
+                }
+                FETCH(`${BASE_URL}/deliveries/preview`, options).then((data) => {
+                    if (data.message === 'logout_user') {
+                        navigation.navigate("Auth");
+                    } else if (data.message === 'new_token') {
+                        const new_options = {
+                            method: 'POST',
+                            headers: { 'Authorization': 'Bearer ' + data.new_access },
+                            body: formData
+                        }
+                        FETCH(`${BASE_URL}/deliveries/preview`, new_options).then((data) => {
                             setDistance(data.distance.text)
                             setFinalTime(data.duration.text)
                             setFinalPrice(data.price)
-                        } else {
-                            SecureStore.getItemAsync('refresh').then((refreshToken) => {
-                                // if access token is invalid => call refresh token
-                                callRefreshToken(refreshToken).then((data) => {
-                                    // save new access and refresh token
-                                    save('access', data.access)
-                                    save('refresh', data.refresh)
-                    
-                                    callAPI(
-                                        `${BASE_URL}/deliveries/preview`,
-                                        'POST',
-                                        {
-                                            'Authorization': 'Bearer ' + token,
-                                        },
-                                        formData
-                                    ).then((data) => {
-                                        setDistance(data.distance.text)
-                                        setFinalTime(data.duration.text)
-                                        setFinalPrice(data.price)
-                                    })
-                                })
-                            })
-                        }
-                    })
-                } else {
-                    navigation.navigate("Auth");
-                }
-            })
-        } catch(error) {
-            console.log(error);
-        } finally {
-            setIsLoading(false)
-        }
+                            setIsLoading(false)
+                        })
+                    } else {
+                        setDistance(data.distance.text)
+                        setFinalTime(data.duration.text)
+                        setFinalPrice(data.price)
+                        setIsLoading(false)
+                    }
+                })
+            } else {
+                navigation.navigate("Auth");
+            }
+        })
+        
     }
 
     useEffect(() => {

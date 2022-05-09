@@ -8,9 +8,6 @@ import {
     TouchableOpacity
 } from 'react-native';
 
-
-
-
 const SettingsScreen = ({navigation}) => {
     return (
       <View style={styles.container}>

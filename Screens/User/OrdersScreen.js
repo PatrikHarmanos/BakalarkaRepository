@@ -9,7 +9,8 @@ import * as SecureStore from 'expo-secure-store';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Moment from 'moment';
 import { useIsFocused } from '@react-navigation/native';
-import { callAPI, callRefreshToken } from '../../Helpers/FetchHelper'
+import { FETCH } from '../../Helpers/FetchHelper'
+import { BASE_URL } from '../../cofig';
 
 const OrdersScreen = ({route, navigation}) => {
 
@@ -24,51 +25,40 @@ const OrdersScreen = ({route, navigation}) => {
   }
 
   useEffect(() => {
-    try {
-      SecureStore.getItemAsync('access').then((token) => {
+    SecureStore.getItemAsync('access').then((token) => {
+      if (token != null) {
         setToken(token)
-        if (token != null) {
-          callAPI(
-            'http://147.175.150.96/api/deliveries/',
-            'GET',
-            {
-              'content-type': 'application/json',
-              'Authorization': 'Bearer ' + token,
-            },
-          ).then ((data) => {
-            if (data.code !== 'token_not_valid') {
-              setData(data);
-              setIsFetching(false);
-            } else {
-              SecureStore.getItemAsync('refresh').then((refreshToken) => {
-                // if access token is invalid => call refresh token
-                callRefreshToken(refreshToken).then((data) => {
-                  // save new access and refresh token
-                  save('access', data.access)
-                  save('refresh', data.refresh)
-
-                  callAPI(
-                    'http://147.175.150.96/api/deliveries/',
-                    'GET',
-                    {
-                      'content-type': 'application/json',
-                      'Authorization': 'Bearer ' + data.access,
-                    },
-                  ).then((data) => {
-                    setData(data);
-                    setIsFetching(false);
-                  })
-                })
-              })
-            }
-          })
-        } else {
-          navigation.navigate("Auth");
+        const options = {
+          method: 'GET',
+          headers: {
+            'content-type': 'application/json',
+            'Authorization': 'Bearer ' + token,
+          }
         }
-      })
-    } catch(error) {
-      console.log(error);
-    }
+        FETCH(`${BASE_URL}/deliveries/`, options).then((data) => {
+          if (data.message === 'logout_user') {
+            navigation.navigate("Auth");
+          } else if (data.message === 'new_token') {
+            const new_options = {
+              method: 'GET',
+              headers: {
+                'content-type': 'application/json',
+                'Authorization': 'Bearer ' + data.new_access,
+              }
+            }
+            FETCH(`${BASE_URL}/deliveries/`, new_options).then((data) => {
+              setData(data);
+              setIsFetching(false); 
+            })
+          } else {
+            setData(data);
+            setIsFetching(false); 
+          }
+        })
+      } else {
+        navigation.navigate("Auth");
+      }
+    })
   }, [isFetching, isFocused])
 
   const onRefresh = () => {

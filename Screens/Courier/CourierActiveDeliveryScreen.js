@@ -9,7 +9,8 @@ import MapView, { Marker } from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
 import { getPreciseDistance } from 'geolib';
 import * as SecureStore from 'expo-secure-store';
-import { callAPI, callRefreshToken } from '../../Helpers/FetchHelper'
+import { FETCH } from '../../Helpers/FetchHelper'
+import { BASE_URL } from '../../cofig';
 
 const CourierActiveDeliveryScreen = ({route, navigation}) => {
     const { 
@@ -79,50 +80,40 @@ const CourierActiveDeliveryScreen = ({route, navigation}) => {
             ws.close()
         })
 
-        try {
-            await SecureStore.getItemAsync('access').then((token) => {
-                if (token != null) {
-                    callAPI(
-                        `http://147.175.150.96/api/deliveries/${safeID}/state`,
-                        'PATCH',
-                        {
-                            'content-type': 'application/json',
-                            'Authorization': 'Bearer ' + token
-                        },
-                        JSON.stringify({ state: "delivered" })
-                    ).then((data) => {
-                        if (data.code !== 'token_not_valid') {
-                            navigation.navigate("CourierMainScreen")
-                        } else {
-                            SecureStore.getItemAsync('refresh').then((refreshToken) => {
-                                // if access token is invalid => call refresh token
-                                callRefreshToken(refreshToken).then((data) => {
-                                    // save new access and refresh token
-                                    save('access', data.access)
-                                    save('refresh', data.refresh)
-                    
-                                    callAPI(
-                                        `http://147.175.150.96/api/deliveries/${safeID}/state`,
-                                        'PATCH',
-                                        {
-                                            'content-type': 'application/json',
-                                            'Authorization': 'Bearer ' + data.access
-                                        },
-                                        JSON.stringify({ state: "delivered" })
-                                    ).then((data) => {
-                                        navigation.navigate("CourierMainScreen")
-                                    })
-                                })
-                            })
-                        }
-                    })
-                } else {
-                    navigation.navigate("Auth");
+        await SecureStore.getItemAsync('access').then((token) => {
+            if (token != null) {
+                const options = {
+                    method: 'PATCH',
+                    headers: {
+                        'content-type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify({ state: "delivered" })
                 }
-            })
-        } catch(error) {
-            console.log(error);
-        }
+
+                FETCH(`${BASE_URL}/deliveries/${safeID}/state`, options).then((data) => {
+                    if (data.message === 'logout_user') {
+                        navigation.navigate("Auth");
+                    } else if (data.message === 'new_token') {
+                        const new_options = {
+                            method: 'PATCH',
+                            headers: {
+                                'content-type': 'application/json',
+                                'Authorization': 'Bearer ' + data.new_access
+                            },
+                            body: JSON.stringify({ state: "delivered" })
+                        }
+                        FETCH(`${BASE_URL}/deliveries/${safeID}/state`, new_options).then((data) => {
+                            navigation.navigate("CourierMainScreen")
+                        })
+                    } else {
+                        navigation.navigate("CourierMainScreen")
+                    }
+                })
+            } else {
+                navigation.navigate("Auth");
+            }
+        })
     };
 
     const rejectOrderHandleButton = async () => {
@@ -132,50 +123,40 @@ const CourierActiveDeliveryScreen = ({route, navigation}) => {
             ws.close()
         })
 
-        try {
-            await SecureStore.getItemAsync('access').then((token) => {
-                if (token != null) {
-                    callAPI(
-                        `http://147.175.150.96/api/deliveries/${safeID}/state`,
-                        'PATCH',
-                        {
-                            'content-type': 'application/json',
-                            'Authorization': 'Bearer ' + token
-                        },
-                        JSON.stringify({ state: "undeliverable" })
-                    ).then((data) => {
-                        if (data.code !== 'token_not_valid') {
-                            navigation.navigate("CourierMainScreen")
-                        } else {
-                            SecureStore.getItemAsync('refresh').then((refreshToken) => {
-                                // if access token is invalid => call refresh token
-                                callRefreshToken(refreshToken).then((data) => {
-                                    // save new access and refresh token
-                                    save('access', data.access)
-                                    save('refresh', data.refresh)
-                    
-                                    callAPI(
-                                        `http://147.175.150.96/api/deliveries/${safeID}/state`,
-                                        'PATCH',
-                                        {
-                                            'content-type': 'application/json',
-                                            'Authorization': 'Bearer ' + data.access
-                                        },
-                                        JSON.stringify({ state: "undeliverable" })
-                                    ).then((data) => {
-                                        navigation.navigate("CourierMainScreen")
-                                    })
-                                })
-                            })
-                        }
-                    })
-                } else {
-                    navigation.navigate("Auth");
+        await SecureStore.getItemAsync('access').then((token) => {
+            if (token != null) {
+                const options = {
+                    method: 'PATCH',
+                    headers: {
+                        'content-type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify({ state: "undeliverable" })
                 }
-            })
-        } catch(error) {
-            console.log(error);
-        }
+
+                FETCH(`${BASE_URL}/deliveries/${safeID}/state`, options).then((data) => {
+                    if (data.message === 'logout_user') {
+                        navigation.navigate("Auth");
+                    } else if (data.message === 'new_token') {
+                        const new_options = {
+                            method: 'PATCH',
+                            headers: {
+                                'content-type': 'application/json',
+                                'Authorization': 'Bearer ' + data.new_access
+                            },
+                            body: JSON.stringify({ state: "undeliverable" })
+                        }
+                        FETCH(`${BASE_URL}/deliveries/${safeID}/state`, new_options).then((data) => {
+                            navigation.navigate("CourierMainScreen")
+                        })
+                    } else {
+                        navigation.navigate("CourierMainScreen")
+                    }
+                })
+            } else {
+                navigation.navigate("Auth");
+            }
+        })
     };
     
     return (

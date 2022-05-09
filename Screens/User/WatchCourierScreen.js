@@ -6,10 +6,6 @@ import {
     Image
 } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
-import MapViewDirections from 'react-native-maps-directions';
-import { getPreciseDistance } from 'geolib';
-import * as SecureStore from 'expo-secure-store';
-import { callAPI, callRefreshToken } from '../../Helpers/FetchHelper'
 
 const WatchCourierScreen = ({route, navigation}) => {
 

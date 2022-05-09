@@ -11,10 +11,7 @@ import {
 
 import * as SecureStore from 'expo-secure-store'
 import Context from "../../store/context"
-import {
-  callRefreshToken,
-  callAPI
-} from '../../Helpers/FetchHelper'
+import { FETCH } from '../../Helpers/FetchHelper'
 import {BASE_URL} from '../../cofig'
 
 const LoginScreen = ({ navigation }) => {
@@ -43,31 +40,49 @@ const LoginScreen = ({ navigation }) => {
       password: userPassword,
     }
 
-    callAPI(
-      `${BASE_URL}/accounts/token/`,
-      'POST',
-      { 'Content-Type': 'application/json' },
-      JSON.stringify(dataToSend)
-    ).then((data) => {
-      // if login was successfull, go to HomeScreen and save access token
+    let options = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(dataToSend)
+    }
+
+    FETCH(`${BASE_URL}/accounts/token/`, options).then((data) => {
       if (data.detail !== "No active account found with the given credentials") {
-        // save access and refresh token to secure storage
         save('access' , data.access)
         save('refresh', data.refresh)
 
-        // get user info from server
-        callAPI(
-          'http://147.175.150.96/api/accounts/me',
-          'GET',
-          {
+        let options = {
+          method: 'GET',
+          headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + data.access,
           }
-        ).then ((data) => {
-          console.log(data)
-          // if access token is valid
-          if (data.code !== "token_not_valid") {
-            // call actions for saving data to store
+        }
+
+        FETCH(`${BASE_URL}/accounts/me`, options).then((data) => {
+          if (data.message === 'logout_user') {
+            navigation.navigate("Auth");
+          } else if (data.message === 'new_token') {
+            let new_options = {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + data.new_access,
+              }
+            }
+            FETCH(`${BASE_URL}/accounts/me`, new_options).then((data) => {
+              actions({type: 'setState', payload: {...state, 
+                first_name: data.first_name,
+                last_name: data.last_name,
+                email: data.email,
+                phone_number: data.phone_number,
+                is_courier: data.courier !== null ? true : false,
+                courier_mode_on: false
+              }})
+              // navigate to the app
+              navigation.navigate("DrawerNavigation")
+            })
+          } else {
             actions({type: 'setState', payload: {...state, 
               first_name: data.first_name,
               last_name: data.last_name,
@@ -78,43 +93,14 @@ const LoginScreen = ({ navigation }) => {
             }})
             // navigate to the app
             navigation.navigate("DrawerNavigation")
-          } else {
-            // if access token is invalid => call refresh token
-            callRefreshToken().then((data) => {
-              // save new access and refresh token
-              save('access' , data.access)
-              save('refresh', data.refresh)
-
-              // get user info from server with new access token
-              callAPI(
-                'http://147.175.150.96/api/accounts/me',
-                'GET',
-                {
-                  'Content-Type': 'application/json',
-                  'Authorization': 'Bearer ' + data.access,
-                }
-              ).then((data) => {
-                // call actions for saving data to store
-                actions({type: 'setState', payload: {...state, 
-                  first_name: data.first_name,
-                  last_name: data.last_name,
-                  email: data.email,
-                  phone_number: data.phone_number,
-                  is_courier: data.courier !== null ? true : false,
-                  courier_mode_on: false
-                }});
-                // navigate to the app
-                navigation.navigate("DrawerNavigation")
-              })
-            })
           }
         })
+
       } else {
-        // else show an error
         alert('Nesprávny email alebo heslo. Skúste znovu.')
-        return
       }
     })
+
   }
 
   return (
@@ -152,7 +138,7 @@ const LoginScreen = ({ navigation }) => {
             </TouchableOpacity>
           </View>
 
-          <TouchableOpacity style={styles.forgotPassword} onPress={() => { Linking.openURL('http://147.175.150.96/api/accounts/reset_password/') }}>
+          <TouchableOpacity style={styles.forgotPassword} onPress={() => { Linking.openURL('https://poslito.com/reset_password/') }}>
             <Text style={{fontSize: 16, color: "#777"}}>Zabudli ste heslo?</Text>
           </TouchableOpacity>
         

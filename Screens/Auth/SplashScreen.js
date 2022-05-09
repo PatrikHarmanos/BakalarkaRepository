@@ -9,7 +9,8 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import * as SecureStore from 'expo-secure-store';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Context from '../../store/context';
-import { callAPI } from '../../Helpers/FetchHelper' 
+import { FETCH } from '../../Helpers/FetchHelper' 
+import {BASE_URL} from '../../cofig'
 
 const SplashScreen = ({navigation}) => {
 
@@ -17,18 +18,39 @@ const SplashScreen = ({navigation}) => {
 
     const handleEnterAppButton = async () => {
 
-        try {
-            await SecureStore.getItemAsync('access').then((token) => {
-                console.log(token);
-                if (token != null) {
-                    callAPI(
-                        'http://147.175.150.96/api/accounts/me',
-                        "GET",
-                        { 
+        await SecureStore.getItemAsync('access').then((token) => {
+            if (token != null) {
+                const options = {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token 
+                    }
+                }
+                FETCH(`${BASE_URL}/accounts/me`, options).then((data) => {
+                    if (data.message === 'logout_user') {
+                        navigation.navigate("Auth");
+                    } else if (data.message === 'new_token') {
+                        let new_options = {
+                            method: 'GET',
+                            headers: {
                             'Content-Type': 'application/json',
-                            'Authorization': 'Bearer ' + token 
-                        }   
-                    ).then ((data) => {
+                            'Authorization': 'Bearer ' + data.new_access,
+                            }
+                        }
+                        FETCH(`${BASE_URL}/accounts/me`, new_options).then((data) => {
+                            actions({type: 'setState', payload: {...state, 
+                                first_name: data.first_name,
+                                last_name: data.last_name,
+                                email: data.email,
+                                phone_number: data.phone_number,
+                                is_courier: data.courier !== null ? true : false,
+                                courier_mode_on: false
+                            }})
+                            // navigate to the app
+                            navigation.navigate("DrawerNavigation")
+                        })
+                    } else {
                         actions({type: 'setState', payload: {...state, 
                             first_name: data.first_name,
                             last_name: data.last_name,
@@ -36,21 +58,15 @@ const SplashScreen = ({navigation}) => {
                             phone_number: data.phone_number,
                             is_courier: data.courier !== null ? true : false,
                             courier_mode_on: false
-                          }});
-                        if (data.code == "token_not_valid" || data.code == "bad_authorization_header"){
-                            navigation.navigate("Auth");
-                        } else {
-                            global.is_courier = data.is_courier;
-                            navigation.navigate("DrawerNavigation");
-                        }
-                    })
-                } else {
-                    navigation.navigate("Auth");
-                }
-            })
-        } catch(error) {
-            console.log(error);
-        }
+                        }})
+                        // navigate to the app
+                        navigation.navigate("DrawerNavigation")
+                    }
+                })
+            } else {
+                navigation.navigate("Auth");
+            }
+        })
     }
     
     return (

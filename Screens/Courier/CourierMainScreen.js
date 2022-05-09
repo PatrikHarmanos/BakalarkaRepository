@@ -9,14 +9,14 @@ import * as Location from "expo-location";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import * as SecureStore from "expo-secure-store";
 import { useIsFocused } from '@react-navigation/native';
-import { callAPI, callRefreshToken } from '../../Helpers/FetchHelper'
+import { FETCH } from '../../Helpers/FetchHelper';
+import { BASE_URL, GOOGLE_KEY, GOOGLE_PLACES_URL } from "../../cofig";
 
 const CourierMainScreen = ({ route, navigation }) => {
   const [data, setData] = useState([]);
   const [isLoading, setLoading] = useState(true);
   const isFocused = useIsFocused();
   const [isFetching, setIsFetching] = useState(false);
-  const [echo, setEcho] = useState()
 
   useEffect(() => {
     getDeliveries().then(() =>  setIsFetching(false))
@@ -40,15 +40,32 @@ const CourierMainScreen = ({ route, navigation }) => {
       getCurrentLocation().then(async (location) => {
         await SecureStore.getItemAsync("access").then((token) => {
           if (token != null) {
-            callAPI(
-              `http://147.175.150.96/api/couriers/closest_deliveries/?lon=${location["coords"]["longitude"]}&lat=${location["coords"]["latitude"]}`,
-              'GET',
-              {
-                Authorization: "Bearer " + token,
+            const options = {
+              method: 'GET',
+              headers: {
+                'content-type': 'application/json',
+                'Authorization': 'Bearer ' + token
               }
-            ).then((data) => {
+            }
+
+            FETCH(`${BASE_URL}/couriers/closest_deliveries/?lon=${location["coords"]["longitude"]}&lat=${location["coords"]["latitude"]}`, options).then((data) => {
+              if (data.message === 'logout_user') {
+                navigation.navigate("Auth");
+              } else if (data.message === 'new_token') {
+                const new_options = {
+                  method: 'GET',
+                  headers: {
+                    'content-type': 'application/json',
+                    'Authorization': 'Bearer ' + data.new_access
+                  }
+                }
+                FETCH(`${BASE_URL}/couriers/closest_deliveries/?lon=${location["coords"]["longitude"]}&lat=${location["coords"]["latitude"]}`, new_options).then((data) => {
+                  setData(data);
+                })
+              } else {
                 setData(data);
-              })
+              }
+            })
           } else {
             navigation.navigate("Auth");
           }
@@ -63,33 +80,28 @@ const CourierMainScreen = ({ route, navigation }) => {
 
   const handleButton = async (index) => {
     let p, p1, p2, d, d1, d2
+    const options = { method: 'GET' }
 
     Promise.all([
       // call google places API to get latitude and longtitude from place_id for pickup place
-      callAPI(
-        `https://maps.googleapis.com/maps/api/place/details/json?placeid=${data[index]["pickup_place"]["place_id"]}&key=AIzaSyD3IdOaoOc8tVpnakDzh1BLImcS-iJxoVY`,
-        'GET'
-      ).then((data) => {
+      FETCH(`${GOOGLE_PLACES_URL}?placeid=${data[index]["pickup_place"]["place_id"]}&key=${GOOGLE_KEY}`, options).then((data) => {
         for (
-            let i = 0;
-            i < data.result.address_components.length;
-            i++
+          let i = 0;
+          i < data.result.address_components.length;
+          i++
+        ) {
+          if (
+            data.result.address_components[i].types[0] == "postal_code"
           ) {
-            if (
-              data.result.address_components[i].types[0] == "postal_code"
-            ) {
-              p = data.result.address_components[i].short_name
-              break
-            }
+            p = data.result.address_components[i].short_name
+            break
           }
+        }
 
         p1 = data.result.geometry.location.lat;
         p2 = data.result.geometry.location.lng;
       }),
-      callAPI(
-        `https://maps.googleapis.com/maps/api/place/details/json?placeid=${data[index]["delivery_place"]["place_id"]}&key=AIzaSyD3IdOaoOc8tVpnakDzh1BLImcS-iJxoVY`,
-        "GET",
-      ).then((responseJson) => {
+      FETCH(`${GOOGLE_PLACES_URL}?placeid=${data[index]["delivery_place"]["place_id"]}&key=${GOOGLE_KEY}`, options).then((data) => {
         // get postal code from json response
         // it has to be done in thge loop, because the number of elements in the array can be different due to address number (sometimes there is no address number)
         for (

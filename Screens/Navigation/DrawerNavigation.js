@@ -3,25 +3,19 @@ import Icon from 'react-native-vector-icons/Ionicons';
 
 import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-
-import HomeScreen from '../User/HomeScreen';
 import SettingsScreen from '../User/SettingsScreen';
-import ProfileScreen from '../User/ProfileScreen';
-
 import TabScreen from './TabScreen';
-
 import BecomeACourierScreen from '../Courier/BecomeACourierScreen';
 import BecomeACourierMoreInfoScreen from '../Courier/BecomeACourierMoreInfoScreen';
 import CourierMainScreen from '../Courier/CourierMainScreen';
-
-const Stack = createStackNavigator();
-const Drawer = createDrawerNavigator();
-
 import { DrawerContent } from '../Navigation/DrawerContent';
 import CourierDeliveryScreen from '../Courier/CourierDeliveryScreen';
 import CourierPickupDeliveryScreen from '../Courier/CourierPickupDeliveryScreen';
 import CourierActiveDeliveryScreen from '../Courier/CourierActiveDeliveryScreen';
 import CourierHistoryScreen from '../Courier/CourierHistoryScreen'
+
+const Stack = createStackNavigator();
+const Drawer = createDrawerNavigator();
 
 const SettingsScreenStack = ({navigation}) => (
     <Stack.Navigator screenOptions={{

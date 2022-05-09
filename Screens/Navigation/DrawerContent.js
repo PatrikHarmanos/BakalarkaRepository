@@ -6,21 +6,14 @@ import {
 } from '@react-navigation/drawer';
 import {
     Title,
-    Caption,
-    Paragraph,
     Drawer,
     Text,
-    TouchableRipple,
-    Switch,
-    ActivityIndicator,
-    Image
+    Switch
 } from 'react-native-paper';
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import * as SecureStore from 'expo-secure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as Location from 'expo-location';
-import CourierMainScreen from '../Courier/CourierMainScreen';
 import { Avatar } from 'react-native-elements';
 
 import Context from '../../store/context';
@@ -107,9 +100,8 @@ export function DrawerContent(props, route) {
                                 onPress={() => console.log("Works!")}
                                 activeOpacity={0.7}
                             />
-                            <View style={{marginLeft:15, flexDirection:'column'}}>
+                            <View style={{marginLeft:15, marginTop: 5}}>
                                 <Title style={styles.title}>{state.first_name + ' ' + state.last_name}</Title>
-                                <Caption style={styles.caption}>{state.email}</Caption>
                             </View>
                         </View>
                     </View>
@@ -208,7 +200,6 @@ const styles = StyleSheet.create({
     },
     title: {
       fontSize: 16,
-      marginTop: 3,
       fontWeight: 'bold',
     },
     caption: {

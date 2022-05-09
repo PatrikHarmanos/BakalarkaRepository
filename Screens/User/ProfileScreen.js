@@ -15,13 +15,14 @@ import {
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Avatar } from 'react-native-elements';
 import Context from '../../store/context';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const ProfileScreen = ({navigation}) => {
   
   const {state} = useContext(Context)
 
   return (
-    <SafeAreaView style={[styles.container, {backgroundColor: '#fff'}]}>
+    <ScrollView style={[styles.container, {backgroundColor: '#fff'}]}>
       <View>
         <View style={styles.userInfoSection}>
           <View style={{flexDirection: 'row', marginTop: 25}}>
@@ -89,7 +90,7 @@ const ProfileScreen = ({navigation}) => {
           </TouchableRipple>
         </View>
       </View>
-    </SafeAreaView>
+    </ScrollView>
   );
 };
 

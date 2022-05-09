@@ -8,7 +8,8 @@ import {
 } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
 import { ScrollView } from 'react-native-gesture-handler';
-import { callAPI } from '../../Helpers/FetchHelper'
+import { FETCH } from '../../Helpers/FetchHelper'
+import { GOOGLE_KEY, GOOGLE_PLACES_URL } from '../../cofig';
 
 const NewOrderItemScreen = ({route, navigation}) => {
     const [itemCategory, setItemCategory] = useState('');
@@ -41,10 +42,8 @@ const NewOrderItemScreen = ({route, navigation}) => {
 
     useEffect(() => {
       // call google places API to get latitude and longtitude from place_id for pickup place
-      callAPI(
-        `https://maps.googleapis.com/maps/api/place/details/json?placeid=${pickup_place.place_id}&key=AIzaSyD3IdOaoOc8tVpnakDzh1BLImcS-iJxoVY`,
-        'GET',
-      ).then((data) => {
+      const options = { method: 'GET' }
+      FETCH(`${GOOGLE_PLACES_URL}?placeid=${pickup_place.place_id}&key=${GOOGLE_KEY}`, options).then((data) => {
         for (let i = 0; i < data.result.address_components.length; i++){
           console.log(data);
           if (data.result.address_components[i].types[0] == "postal_code"){
@@ -56,10 +55,7 @@ const NewOrderItemScreen = ({route, navigation}) => {
       })
 
       // call google places API to get latitude and longtitude from place_id for delivery place
-      callAPI(
-        `https://maps.googleapis.com/maps/api/place/details/json?placeid=${delivery_place.place_id}&key=AIzaSyD3IdOaoOc8tVpnakDzh1BLImcS-iJxoVY`,
-        'GET',
-      ).then((responseJson) => {
+      FETCH(`${GOOGLE_PLACES_URL}?placeid=${delivery_place.place_id}&key=${GOOGLE_KEY}`, options).then((data) => {
         // get postal code from json response
         // it has to be done in the loop, because the number of elements in the array can be different due to address number (sometimes there is no address number)
         for (let i = 0; i < responseJson.result.address_components.length; i++){

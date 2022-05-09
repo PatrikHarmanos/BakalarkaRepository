@@ -14,7 +14,8 @@ import {
 import RNPickerSelect from 'react-native-picker-select';
 import * as SecureStore from 'expo-secure-store';
 import Context from '../../store/context';
-import { callAPI, callRefreshToken } from '../../Helpers/FetchHelper'
+import { FETCH } from '../../Helpers/FetchHelper';
+import { BASE_URL } from '../../cofig';
 
 const BecomeACourierMoreInfoScreen = ({navigation, route}) => {
 
@@ -62,59 +63,49 @@ const BecomeACourierMoreInfoScreen = ({navigation, route}) => {
       vehicle_type: "small",
       home_address: address + ', ' + city + ', ' + psc
     }
+    
+    await SecureStore.getItemAsync('access').then((token) => {
+      if (token != null) {
+        const options = {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+          },
+          body: JSON.stringify(dataToSend)
+        }
 
-    try {
-      await SecureStore.getItemAsync('access').then((token) => {
-        if (token != null) {
-          callAPI(
-            'http://147.175.150.96/api/couriers/',
-            'POST',
-            {
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer ' + token,
-            },
-            JSON.stringify(dataToSend)
-          ).then ((data) => {
-            if (data.code !== 'token_not_valid') {
+        FETCH(`${BASE_URL}/couriers/`, options).then((data) => {
+          if (data.message === 'logout_user') {
+            navigation.navigate("Auth");
+          } else if (data.message === 'new_token') {
+            const new_options = {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + data.new_access
+              },
+              body: JSON.stringify(dataToSend)
+            }
+            FETCH(`${BASE_URL}/couriers/`, new_options).then((data) => {
               actions({type: 'setState', payload: {...state, 
                 is_courier: true,
                 courier_mode_on: true
               }});
               navigation.navigate("CourierMainScreen");
-            } else {
-              SecureStore.getItemAsync('refresh').then((refreshToken) => {
-                // if access token is invalid => call refresh token
-                callRefreshToken(refreshToken).then((data) => {
-                  // save new access and refresh token
-                  save('access', data.access)
-                  save('refresh', data.refresh)
-
-                  callAPI(
-                    'http://147.175.150.96/api/couriers/',
-                    'POST',
-                    {
-                      'Content-Type': 'application/json',
-                      'Authorization': 'Bearer ' + data.access,
-                    },
-                    JSON.stringify(dataToSend)
-                  ).then((data) => {
-                    actions({type: 'setState', payload: {...state, 
-                      is_courier: true,
-                      courier_mode_on: true
-                    }});
-                    navigation.navigate("CourierMainScreen");
-                  })
-                })
-              })
-            }
-          })
-        } else {
-          navigation.navigate("Auth");
-        }
-      })
-    } catch(error) {
-      console.log(error);
-    }
+            })
+          } else {
+            actions({type: 'setState', payload: {...state, 
+              is_courier: true,
+              courier_mode_on: true
+            }});
+            navigation.navigate("CourierMainScreen");
+          }
+        })
+      } else {
+        navigation.navigate("Auth");
+      }
+    })
   }
 
   return (

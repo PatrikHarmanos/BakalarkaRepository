@@ -9,7 +9,8 @@ import * as Location from "expo-location";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import * as SecureStore from "expo-secure-store";
 import { useIsFocused } from '@react-navigation/native';
-import { callAPI, callRefreshToken } from '../../Helpers/FetchHelper'
+import { FETCH } from '../../Helpers/FetchHelper'
+import { BASE_URL } from "../../cofig";
 import Moment from 'moment';
 
 const CourierHistoryScreen = ({ route, navigation }) => {
@@ -28,27 +29,38 @@ const CourierHistoryScreen = ({ route, navigation }) => {
   }
 
   const getDeliveries = async () => {
-    try {
-        await SecureStore.getItemAsync("access").then((token) => {
-          if (token != null) {
-            callAPI(
-              'http://147.175.150.96/api/deliveries/?courier=me',
-              'GET',
-              {
-                Authorization: "Bearer " + token,
-              }
-            ).then((data) => {
-                setData(data);
-              })
-          } else {
-            navigation.navigate("Auth");
+    await SecureStore.getItemAsync("access").then((token) => {
+      if (token != null) {
+        const options = {
+          method: 'GET',
+          headers: {
+            'content-type': 'application/json',
+            'Authorization': 'Bearer ' + token
           }
-        });
-    } catch (error) {
-      console.log(error)
-    } finally {
-      setLoading(false)
-    }
+        }
+
+        FETCH(`${BASE_URL}/deliveries/?courier=me`, options).then((data) => {
+          if (data.message === 'logout_user') {
+            navigation.navigate("Auth");
+          } else if (data.message === 'new_token') {
+            const new_options = {
+              method: 'GET',
+              headers: {
+                'content-type': 'application/json',
+                'Authorization': 'Bearer ' + data.new_access,
+              }
+            }
+            FETCH(`${BASE_URL}/deliveries/?courier=me`, new_options).then((data) => {
+              setData(data);
+              setIsFetching(false); 
+            })
+          } else {
+            setData(data);
+            setIsFetching(false); 
+          }
+        })
+      }
+    })
   }
 
   return (
