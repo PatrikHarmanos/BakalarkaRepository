@@ -21,7 +21,7 @@ import Context from '../../store/context';
 export function DrawerContent(props, route) {
 
     const [isSwitchOn, setIsSwitchOn] = useState(false);
-    const {state} = useContext(Context)
+    const {state, actions} = useContext(Context)
     const [currentLocationLat, setCurrentLocationLat] = React.useState();
     const [currentLocationLon, setCurrentLocationLon] = React.useState();
 
@@ -40,6 +40,9 @@ export function DrawerContent(props, route) {
             }});
         // if the switch turns off -> go back to user application (home screen)
         } else {
+            actions({type: 'setState', payload: {...state, 
+                courier_mode_on: false
+            }});
             props.navigation.navigate("TabScreen");
         }
     }
@@ -47,8 +50,8 @@ export function DrawerContent(props, route) {
     // if courier is true -> then display switch component, otherwise return null
     const com = state.is_courier ? (
         <View style={styles.changeToCourier}>
-                <Text style={styles.changeToCourierText}>Kuriérska časť</Text>
-                <Switch value={isSwitchOn} onValueChange={onToggleSwitch} color="#393485"/>
+            <Text style={styles.changeToCourierText}>Kuriérska časť</Text>
+            <Switch value={isSwitchOn} onValueChange={onToggleSwitch} color="#393485"/>
         </View>
     ) : null;
 
@@ -91,7 +94,7 @@ export function DrawerContent(props, route) {
             <DrawerContentScrollView {...props} >
                 <View style={styles.drawerContent}>
                     <View style={styles.userInfoSection}>
-                        <View style={{flexDirection:'row', marginTop: 15}}>
+                        <View style={{flexDirection:'row', marginTop: 15, borderBottomColor: '#f4f4f4', paddingLeft: 15, borderBottomWidth: 1, paddingBottom: 15}}>
                             <Avatar
                                 containerStyle={{backgroundColor: '#393485'}}
                                 size="medium"
@@ -131,6 +134,17 @@ export function DrawerContent(props, route) {
                                 onPress={() => {props.navigation.navigate("SettingsScreenStack")}}
                             />
                             {becomeACourierOption}
+                            <DrawerItem 
+                                icon={({color, size}) => (
+                                    <Icon 
+                                        name='information-outline'
+                                        color={color}
+                                        size={size}
+                                    />
+                                )}
+                                label="O aplikácii"
+                                onPress={() => {props.navigation.navigate("InfoScreenStack")}}
+                            />
                         </Drawer.Section>
                     ) : (
                         <View>
@@ -196,7 +210,7 @@ const styles = StyleSheet.create({
       flex: 1,
     },
     userInfoSection: {
-      paddingLeft: 20,
+      paddingLeft: 0,
     },
     title: {
       fontSize: 16,
@@ -221,7 +235,7 @@ const styles = StyleSheet.create({
       marginRight: 3,
     },
     drawerSection: {
-      marginTop: 15,
+      marginTop: 5,
     },
     bottomDrawerSection: {
         marginBottom: 15,

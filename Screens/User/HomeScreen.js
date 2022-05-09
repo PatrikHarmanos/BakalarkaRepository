@@ -30,20 +30,36 @@ const HomeScreen = ({ navigation, route }) => {
     return (
       <View style={styles.container}>
         <ScrollView>
-          <Card style={styles.item}>
-            <Card.Cover source={require('../../images/becomeACourier.jpg')} />
-            <Card.Content>
-              <Title style={styles.cardTitle}>Staň sa aj ty kuriérom!</Title>
-              <Paragraph style={styles.cardSubtitle}>Poď medzi nás a objav všetky výhody.</Paragraph>
-            </Card.Content>
-            <Card.Actions>
-              <View style={styles.button}>
-                <TouchableOpacity onPress={goToCourierApp} style={styles.signIn}>
-                    <Text style={styles.textSign}>Preskúmať</Text>
-                </TouchableOpacity>
-              </View>
-            </Card.Actions>
-          </Card>
+          { !state.is_courier ? 
+            <Card style={styles.item}>
+              <Card.Cover source={require('../../images/becomeACourier.jpg')} />
+              <Card.Content>
+                <Title style={styles.cardTitle}>Staň sa aj ty kuriérom!</Title>
+                <Paragraph style={styles.cardSubtitle}>Poď medzi nás a objav všetky výhody.</Paragraph>
+              </Card.Content>
+              <Card.Actions>
+                <View style={styles.button}>
+                  <TouchableOpacity onPress={goToCourierApp} style={styles.signIn}>
+                      <Text style={styles.textSign}>Preskúmať</Text>
+                  </TouchableOpacity>
+                </View>
+              </Card.Actions>
+            </Card>
+           :  <Card style={styles.item}>
+                <Card.Cover source={require('../../images/becomeACourier.jpg')} />
+                <Card.Content>
+                  <Title style={styles.cardTitle}>Doručujte zásielky.</Title>
+                  <Paragraph style={styles.cardSubtitle}>Prejdite do kuriérskej časti.</Paragraph>
+                </Card.Content>
+                <Card.Actions>
+                  <View style={styles.button}>
+                    <TouchableOpacity onPress={goToCourierApp} style={styles.signIn}>
+                      <Text style={styles.textSign}>Doručovať</Text>
+                    </TouchableOpacity>
+                  </View>
+                </Card.Actions>
+              </Card> }
+         
 
           <View style={styles.createOrderCard}>
           <Text style={styles.createOrderCardText}>Vitajte, { state.first_name }</Text>

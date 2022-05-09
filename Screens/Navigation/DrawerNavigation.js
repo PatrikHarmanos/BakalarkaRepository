@@ -13,6 +13,7 @@ import CourierDeliveryScreen from '../Courier/CourierDeliveryScreen';
 import CourierPickupDeliveryScreen from '../Courier/CourierPickupDeliveryScreen';
 import CourierActiveDeliveryScreen from '../Courier/CourierActiveDeliveryScreen';
 import CourierHistoryScreen from '../Courier/CourierHistoryScreen'
+import InfoScreen from '../User/InfoScreen';
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -29,6 +30,25 @@ const SettingsScreenStack = ({navigation}) => (
         }
     }}>
             <Stack.Screen name="Nastavenia" component={SettingsScreen} options={{
+            headerLeft: () => (
+                <Icon.Button name="ios-menu" size={25} backgroundColor="#fff" color="#000" onPress={() => navigation.openDrawer()}></Icon.Button>
+            )
+            }} />
+    </Stack.Navigator>
+);
+
+const InfoScreenStack = ({navigation}) => (
+    <Stack.Navigator screenOptions={{
+        headerStyle: {
+        backgroundColor: '#fff',
+        shadowColor: '#fff', // ios (header bottom line)
+        elevation: 0 // android 
+        },
+        headerTitleStyle: {
+        fontWeight: 'bold'
+        }
+    }}>
+            <Stack.Screen name="O aplikácii" component={InfoScreen} options={{
             headerLeft: () => (
                 <Icon.Button name="ios-menu" size={25} backgroundColor="#fff" color="#000" onPress={() => navigation.openDrawer()}></Icon.Button>
             )
@@ -93,6 +113,11 @@ const DrawerNavigation = (props) => {
             <Drawer.Screen name="SettingsScreenStack" component={SettingsScreenStack} 
                 options={{
                     title: 'Nastavenia',
+                    headerShown: false,
+                }}/>
+            <Drawer.Screen name="InfoScreenStack" component={InfoScreenStack} 
+                options={{
+                    title: 'O aplikácii',
                     headerShown: false,
                 }}/>
             <Drawer.Screen name="CourierScreenStack" component={CourierScreenStack} 
