@@ -53,7 +53,7 @@ const BecomeACourierScreen = ({navigation}) => {
             placeholder="Zadajte číslo OP"
         /> 
         </View>
-        <Text style={[styles.text_header, {marginTop: 20}]}>Dátum platnosti OP</Text>
+        <Text style={[styles.text_header, {marginTop: 20}]}>Dátum platnosti OP &#40;RRRR-MM-DD&#41;</Text>
         <View style={styles.action}>
         <TextInput style={styles.textInput} onChangeText={(value) => setValidOP(value)}
             placeholder="Zadajte dátum platnosti OP"
@@ -65,7 +65,7 @@ const BecomeACourierScreen = ({navigation}) => {
             placeholder="Zadajte číslo VP"
         /> 
         </View>
-        <Text style={[styles.text_header, {marginTop: 20}]}>Dátum platnosti VP</Text>
+        <Text style={[styles.text_header, {marginTop: 20}]}>Dátum platnosti VP &#40;RRRR-MM-DD&#41;</Text>
         <View style={styles.action}>
         <TextInput style={styles.textInput} onChangeText={(value) => setValidVP(value)}
             placeholder="Zadajte dátum platnosti VP"

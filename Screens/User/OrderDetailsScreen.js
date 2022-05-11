@@ -100,6 +100,11 @@ const OrderDetailsScreen = ({ route, navigation }) => {
           <Text style={{ fontSize: 16, fontWeight: 'bold', color: 'green'}}>{ s }</Text>
         </View>
 
+        <View style={[styles.deliveryStatus, {display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center'}]}>
+          <Text style={{ fontSize: 16, color: '#000', fontWeight: 'bold'}}>ID: </Text>
+          <Text style={{ fontSize: 14, fontWeight: 'bold', color: 'green'}}>{ value.id }</Text>
+        </View>
+
         {courierInfo}
 
         <View style={styles.mainItemBox}>

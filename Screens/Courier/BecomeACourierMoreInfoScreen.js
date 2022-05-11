@@ -60,7 +60,7 @@ const BecomeACourierMoreInfoScreen = ({navigation, route}) => {
       id_expiration_date: validOP,
       dl_number: numberVP,
       dl_expiration_date: validVP,
-      vehicle_type: "small",
+      vehicle_type: vehicle,
       home_address: address + ', ' + city + ', ' + psc
     }
     
@@ -140,11 +140,11 @@ const BecomeACourierMoreInfoScreen = ({navigation, route}) => {
         onValueChange={(value) => setVehicle(value)}
         placeholder={{ label: "Vyberte kategóriu vozidla", value: null }}
         items={[
-            { label: 'dodávka', value: 'dodávka' },
-            { label: 'auto', value: 'auto' },
-            { label: 'bicykel', value: 'bicykel' },
-            { label: 'kolobežka', value: 'kolobežka' },
-            { label: 'iné', value: 'iné' },
+            { label: 'dodávka', value: 'large' },
+            { label: 'auto', value: 'large' },
+            { label: 'bicykel', value: 'medium' },
+            { label: 'kolobežka', value: 'small' },
+            { label: 'iné', value: 'large' },
         ]}
         />
     </ScrollView>

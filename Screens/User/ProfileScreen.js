@@ -35,7 +35,7 @@ const ProfileScreen = ({navigation}) => {
           />
             <View style={{marginLeft: 20}}>
               <Title style={[styles.title, {marginTop: 15, marginBottom: 5}]}>{state.first_name} {state.last_name}</Title>
-              <Caption style={styles.caption}>@ax134kj7a</Caption>
+              <Caption style={styles.caption}>{state.email}</Caption>
             </View>
           </View>
         </View> 

@@ -35,11 +35,11 @@ const CheckOrderStatusScreen = ({navigation}) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.text_header}>Sledovat stav zasielky</Text>
+        <Text style={styles.text_header}>Sledovať stav zásielky</Text>
       </View>
       <View style={styles.footer}>
         <KeyboardAvoidingView>
-          <Text style={[styles.text_footer, {marginTop: 5}]}>Cislo zasielky</Text>
+          <Text style={[styles.text_footer, {marginTop: 5}]}>Číslo zásielky</Text>
           <View style={styles.action}>
             <TextInput style={styles.textInput}
                 onChangeText={(deliveryID) => setDeliveryID(deliveryID)}
@@ -49,7 +49,7 @@ const CheckOrderStatusScreen = ({navigation}) => {
 
           <View style={styles.button}>
             <TouchableOpacity onPress={handleSubmitButton} style={styles.signIn}>
-                <Text style={styles.textSign}>Sledovat zasielku</Text>
+                <Text style={styles.textSign}>Sledovať zásielku</Text>
             </TouchableOpacity>
           </View>
         
