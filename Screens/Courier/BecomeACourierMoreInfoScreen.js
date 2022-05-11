@@ -55,12 +55,21 @@ const BecomeACourierMoreInfoScreen = ({navigation, route}) => {
       return;
     }
 
+    let vehicle_type
+    if (vehicle === 'dodávka' || vehicle === 'auto') {
+      vehicle_type = 'large'
+    } else if (vehicle === 'bicykel') {
+      vehicle_type = 'medium'
+    } else {
+      vehicle_type = 'small'
+    }
+
     var dataToSend = {
       id_number: numberOP,
       id_expiration_date: validOP,
       dl_number: numberVP,
       dl_expiration_date: validVP,
-      vehicle_type: vehicle,
+      vehicle_type: vehicle_type,
       home_address: address + ', ' + city + ', ' + psc
     }
     
@@ -140,11 +149,11 @@ const BecomeACourierMoreInfoScreen = ({navigation, route}) => {
         onValueChange={(value) => setVehicle(value)}
         placeholder={{ label: "Vyberte kategóriu vozidla", value: null }}
         items={[
-            { label: 'dodávka', value: 'large' },
-            { label: 'auto', value: 'large' },
-            { label: 'bicykel', value: 'medium' },
-            { label: 'kolobežka', value: 'small' },
-            { label: 'iné', value: 'large' },
+            { label: 'dodávka', value: 'dodávka' },
+            { label: 'auto', value: 'auto' },
+            { label: 'bicykel', value: 'bicykel' },
+            { label: 'kolobežka', value: 'kolobežka' },
+            { label: 'iné', value: 'iné' },
         ]}
         />
     </ScrollView>

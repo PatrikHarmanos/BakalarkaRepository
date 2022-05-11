@@ -22,13 +22,12 @@ const WatchCourierScreen = ({route}) => {
         ws.onmessage = ({data}) => {
             if (isMounted) {
                 let dataJson = JSON.parse(data)
-                console.log(dataJson)
                 setLatitude(dataJson.latitude)
                 setLongitude(dataJson.longitude)
             }
         }
         
-        return () => { isMounted = true }; 
+        return () => { isMounted = false }; 
     })
     
     return (

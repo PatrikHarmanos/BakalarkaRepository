@@ -26,9 +26,14 @@ const CheckOrderStatusScreen = ({navigation}) => {
       headers: { 'Content-Type': 'application/json' }
     }
 
-    FETCH(`${BASE_URL}/core/get_delivery/?id=${deliveryID}`, options).then((data) => {
-      setData(data)
-      navigation.navigate("OrderDetails", {value: data})
+    FETCH(`${BASE_URL}/deliveries/${deliveryID}/`, options).then((data) => {
+      if (data.error) {
+        alert('Zadané ID zásielky je neplatné')
+      } else {
+        setData(data)
+        navigation.navigate("OrderDetails", {value: data})
+        setDeliveryID('')
+      }
     })
   };
 
