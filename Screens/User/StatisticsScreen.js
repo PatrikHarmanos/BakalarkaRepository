@@ -33,7 +33,7 @@ const StatisticsScreen = () => {
               }
             }
 
-            FETCH(`${BASE_URL}/deliveries/statistics`, options).then((data) => {
+            FETCH(`${BASE_URL}/deliveries/statistics/`, options).then((data) => {
               if (data.message === 'logout_user') {
                 navigation.navigate("Auth");
               } else if (data.message === 'new_token') {
@@ -44,7 +44,7 @@ const StatisticsScreen = () => {
                     'Authorization': 'Bearer ' + data.new_access,
                   }
                 }
-                FETCH(`${BASE_URL}/deliveries/statistics`, new_options).then((data) => {
+                FETCH(`${BASE_URL}/deliveries/statistics/`, new_options).then((data) => {
                   let chart = {
                     labels: [],
                     datasets: [

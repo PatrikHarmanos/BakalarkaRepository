@@ -27,8 +27,8 @@ const SplashScreen = ({navigation}) => {
                         'Authorization': 'Bearer ' + token 
                     }
                 }
-                FETCH(`${BASE_URL}/accounts/me`, options).then((data) => {
-                    if (data.message === 'logout_user') {
+                FETCH(`${BASE_URL}/accounts/me/`, options).then((data) => {
+                    if (data.message === 'logout_user' || data.code === 'user_not_found') {
                         navigation.navigate("Auth");
                     } else if (data.message === 'new_token') {
                         let new_options = {
@@ -38,7 +38,7 @@ const SplashScreen = ({navigation}) => {
                             'Authorization': 'Bearer ' + data.new_access,
                             }
                         }
-                        FETCH(`${BASE_URL}/accounts/me`, new_options).then((data) => {
+                        FETCH(`${BASE_URL}/accounts/me/`, new_options).then((data) => {
                             actions({type: 'setState', payload: {...state, 
                                 first_name: data.first_name,
                                 last_name: data.last_name,

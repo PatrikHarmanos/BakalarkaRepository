@@ -47,7 +47,7 @@ const LoginScreen = ({ navigation }) => {
     }
 
     FETCH(`${BASE_URL}/accounts/token/`, options).then((data) => {
-      if (data.detail !== "No active account found with the given credentials") {
+      if (data.detail !== 'No active account found with the given credentials' && data.detail !== 'Authentication credentials were not provided.') {
         save('access' , data.access)
         save('refresh', data.refresh)
 
@@ -59,7 +59,7 @@ const LoginScreen = ({ navigation }) => {
           }
         }
 
-        FETCH(`${BASE_URL}/accounts/me`, options).then((data) => {
+        FETCH(`${BASE_URL}/accounts/me/`, options).then((data) => {
           if (data.message === 'logout_user') {
             navigation.navigate("Auth");
           } else if (data.message === 'new_token') {
@@ -70,7 +70,7 @@ const LoginScreen = ({ navigation }) => {
                 'Authorization': 'Bearer ' + data.new_access,
               }
             }
-            FETCH(`${BASE_URL}/accounts/me`, new_options).then((data) => {
+            FETCH(`${BASE_URL}/accounts/me/`, new_options).then((data) => {
               actions({type: 'setState', payload: {...state, 
                 first_name: data.first_name,
                 last_name: data.last_name,

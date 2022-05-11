@@ -1,4 +1,5 @@
 import * as SecureStore from 'expo-secure-store';
+import { BASE_URL } from '../cofig'
 
 async function save(key, value) {
     await SecureStore.setItemAsync(key, value)
@@ -9,7 +10,7 @@ export const FETCH = async (url, options) => {
     const data = await response.json()
     if (data.code === 'token_not_valid' || data.code == "bad_authorization_header") {
         const refresh = await SecureStore.getItemAsync('refresh')
-        const url = 'http://147.175.150.96/api/accounts/token/refresh/'
+        const url = `${BASE_URL}/accounts/token/refresh/`
         const options = {
             method: "POST",
             headers: {

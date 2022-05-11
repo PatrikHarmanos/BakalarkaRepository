@@ -8,7 +8,8 @@ import {
     Title,
     Drawer,
     Text,
-    Switch
+    Switch,
+    Caption
 } from 'react-native-paper';
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -96,7 +97,7 @@ export function DrawerContent(props, route) {
                     <View style={styles.userInfoSection}>
                         <View style={{flexDirection:'row', marginTop: 15, borderBottomColor: '#f4f4f4', paddingLeft: 15, borderBottomWidth: 1, paddingBottom: 15}}>
                             <Avatar
-                                containerStyle={{backgroundColor: '#393485'}}
+                                containerStyle={{backgroundColor: '#393485', marginTop: 10}}
                                 size="medium"
                                 rounded
                                 icon={{ name: 'person' }}
@@ -105,6 +106,7 @@ export function DrawerContent(props, route) {
                             />
                             <View style={{marginLeft:15, marginTop: 5}}>
                                 <Title style={styles.title}>{state.first_name + ' ' + state.last_name}</Title>
+                                <Caption>{state.email}</Caption>
                             </View>
                         </View>
                     </View>

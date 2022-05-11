@@ -45,7 +45,6 @@ const NewOrderItemScreen = ({route, navigation}) => {
       const options = { method: 'GET' }
       FETCH(`${GOOGLE_PLACES_URL}?placeid=${pickup_place.place_id}&key=${GOOGLE_KEY}`, options).then((data) => {
         for (let i = 0; i < data.result.address_components.length; i++){
-          console.log(data);
           if (data.result.address_components[i].types[0] == "postal_code"){
             setPickupPlacePostalCode(data.result.address_components[i].short_name);
           }
@@ -58,14 +57,14 @@ const NewOrderItemScreen = ({route, navigation}) => {
       FETCH(`${GOOGLE_PLACES_URL}?placeid=${delivery_place.place_id}&key=${GOOGLE_KEY}`, options).then((data) => {
         // get postal code from json response
         // it has to be done in the loop, because the number of elements in the array can be different due to address number (sometimes there is no address number)
-        for (let i = 0; i < responseJson.result.address_components.length; i++){
-          if (responseJson.result.address_components[i].types[0] == "postal_code"){
-            setDeliveryPlacePostalCode(responseJson.result.address_components[i].short_name);
+        for (let i = 0; i < data.result.address_components.length; i++){
+          if (data.result.address_components[i].types[0] == "postal_code"){
+            setDeliveryPlacePostalCode(data.result.address_components[i].short_name);
           }
         }
         // get lat and long from json response
-        setDeliveryPlaceLat(responseJson.result.geometry.location.lat);
-        setDeliveryPlaceLong(responseJson.result.geometry.location.lng);
+        setDeliveryPlaceLat(data.result.geometry.location.lat);
+        setDeliveryPlaceLong(data.result.geometry.location.lng);
       })
                 
       // response can be length 3/4 depending if the address has also a number
@@ -203,7 +202,7 @@ const NewOrderItemScreen = ({route, navigation}) => {
                 useNativeAndroidPickerStyle={false}
                 style={pickerStyle}
                 onValueChange={(value) => setItemIsFragile(value)}
-                placeholder={{ label: "Vyberte moznost", value: null }}
+                placeholder={{ label: "Vyberte možnost", value: null }}
                 items={[
                     { label: 'Áno', value: 'true' },
                     { label: 'Nie', value: 'false' },

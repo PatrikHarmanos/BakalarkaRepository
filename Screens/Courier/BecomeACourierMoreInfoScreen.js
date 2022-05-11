@@ -78,6 +78,9 @@ const BecomeACourierMoreInfoScreen = ({navigation, route}) => {
         FETCH(`${BASE_URL}/couriers/`, options).then((data) => {
           if (data.message === 'logout_user') {
             navigation.navigate("Auth");
+          } else if (data.dl_expiration_date || data.id_expiration_date) {
+            alert('Dátum nemá správny formát. (RRRR-MM-DD)')
+            return
           } else if (data.message === 'new_token') {
             const new_options = {
               method: 'POST',

@@ -7,7 +7,7 @@ import {
 } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 
-const WatchCourierScreen = ({route, navigation}) => {
+const WatchCourierScreen = ({route}) => {
 
     const { token } = route.params;
     const mapRef = useRef();
@@ -22,12 +22,13 @@ const WatchCourierScreen = ({route, navigation}) => {
         ws.onmessage = ({data}) => {
             if (isMounted) {
                 let dataJson = JSON.parse(data)
+                console.log(dataJson)
                 setLatitude(dataJson.latitude)
                 setLongitude(dataJson.longitude)
             }
         }
         
-        return () => { isMounted = false }; 
+        return () => { isMounted = true }; 
     })
     
     return (

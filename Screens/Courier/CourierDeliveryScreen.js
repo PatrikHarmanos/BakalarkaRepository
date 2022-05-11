@@ -99,7 +99,8 @@ const CourierDeliveryScreen = ({route, navigation}) => {
                     body: JSON.stringify({ state: "assigned" })
                 }
 
-                FETCH(`${BASE_URL}deliveries/${safeID}/state`, options).then((data) => {
+                FETCH(`${BASE_URL}/deliveries/${safeID}/state/`, options).then((data) => {
+                    console.log(data)
                     if (data.message === 'logout_user') {
                         navigation.navigate("Auth");
                     } else if (data.message === 'new_token') {
@@ -111,7 +112,7 @@ const CourierDeliveryScreen = ({route, navigation}) => {
                         },
                         body: JSON.stringify({ state: "assigned" })
                     }
-                    FETCH(`${BASE_URL}deliveries/${safeID}/state`, new_options).then((data) => {
+                    FETCH(`${BASE_URL}/deliveries/${safeID}/state/`, new_options).then((data) => {
                         navigateNext()
                     })
                     } else {

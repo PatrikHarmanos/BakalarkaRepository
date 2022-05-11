@@ -87,7 +87,7 @@ const OrderCheckoutScreen = ({route, navigation}) => {
                     headers: { 'Authorization': 'Bearer ' + token },
                     body: formData
                 }
-                FETCH(`${BASE_URL}/deliveries/preview`, options).then((data) => {
+                FETCH(`${BASE_URL}/deliveries/preview/`, options).then((data) => {
                     if (data.message === 'logout_user') {
                         navigation.navigate("Auth");
                     } else if (data.message === 'new_token') {
@@ -96,7 +96,7 @@ const OrderCheckoutScreen = ({route, navigation}) => {
                             headers: { 'Authorization': 'Bearer ' + data.new_access },
                             body: formData
                         }
-                        FETCH(`${BASE_URL}/deliveries/preview`, new_options).then((data) => {
+                        FETCH(`${BASE_URL}/deliveries/preview/`, new_options).then((data) => {
                             setDistance(data.distance.text)
                             setFinalTime(data.duration.text)
                             setFinalPrice(data.price)
@@ -150,48 +150,34 @@ const OrderCheckoutScreen = ({route, navigation}) => {
         formData.append("delivery_place.latitude", deliveryPlaceLat);
         formData.append("delivery_place.longitude", deliveryPlaceLong);
 
-        try {
-            await SecureStore.getItemAsync('access').then((token) => {
-                if (token != null) {
-                    callAPI(
-                        'http://147.175.150.96/api/deliveries/',
-                        'POST',
-                        {
-                            'Authorization': 'Bearer ' + token,
-                        },
-                        formData
-                    ).then((data) => {
-                        if (data.code !== 'token_not_valid') {
-                            navigation.navigate("Orders");
-                        } else {
-                            SecureStore.getItemAsync('refresh').then((refreshToken) => {
-                                // if access token is invalid => call refresh token
-                                callRefreshToken(refreshToken).then((data) => {
-                                    // save new access and refresh token
-                                    save('access', data.access)
-                                    save('refresh', data.refresh)
-                    
-                                    callAPI(
-                                        'http://147.175.150.96/api/deliveries/',
-                                        'POST',
-                                        {
-                                            'Authorization': 'Bearer ' + data.access,
-                                        },
-                                        formData
-                                    ).then((data) => {
-                                        navigation.navigate("Orders");
-                                    })
-                                })
-                            })
-                        }
-                    })
-                } else {
-                    navigation.navigate("Auth");
+        await SecureStore.getItemAsync('access').then((token) => {
+            if (token != null) {
+                const options = {
+                    method: 'POST',
+                    headers: { 'Authorization': 'Bearer ' + token },
+                    body: formData
                 }
-            })
-        } catch(error) {
-            console.log(error);
-        }
+
+                FETCH(`${BASE_URL}/deliveries/`, options).then((data) => {
+                    if (data.message === 'logout_user') {
+                        navigation.navigate("Auth");
+                    } else if (data.message === 'new_token') {
+                    const new_options = {
+                        method: 'POST',
+                        headers: { 'Authorization': 'Bearer ' + data.new_access },
+                        body: formData
+                    }
+                    FETCH(`${BASE_URL}/deliveries/`, new_options).then((data) => {
+                        navigation.navigate("Orders")
+                    })
+                    } else {
+                        navigation.navigate("Orders")
+                    }
+                })
+            } else {
+                navigation.navigate("Auth");
+            }
+        })
     };
         
     return (

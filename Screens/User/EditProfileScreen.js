@@ -77,7 +77,7 @@ const EditProfileScreen = ({navigation}) => {
           body: JSON.stringify(dataToSend)
         }
 
-        FETCH(`${BASE_URL}/accounts/me`, options).then((data) => {
+        FETCH(`${BASE_URL}/accounts/me/`, options).then((data) => {
           if (data.message === 'logout_user') {
             navigation.navigate("Auth");
           } else if (data.message === 'new_token') {
@@ -89,7 +89,7 @@ const EditProfileScreen = ({navigation}) => {
               },
               body: JSON.stringify(dataToSend)
             }
-            FETCH(`${BASE_URL}/accounts/me`, new_options).then((data) => {
+            FETCH(`${BASE_URL}/accounts/me/`, new_options).then((data) => {
               actions({type: 'setState', payload: {...state, 
                 first_name: data.first_name,
                 last_name: data.last_name,

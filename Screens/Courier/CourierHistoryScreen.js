@@ -29,38 +29,44 @@ const CourierHistoryScreen = ({ route, navigation }) => {
   }
 
   const getDeliveries = async () => {
-    await SecureStore.getItemAsync("access").then((token) => {
-      if (token != null) {
-        const options = {
-          method: 'GET',
-          headers: {
-            'content-type': 'application/json',
-            'Authorization': 'Bearer ' + token
-          }
-        }
-
-        FETCH(`${BASE_URL}/deliveries/?courier=me`, options).then((data) => {
-          if (data.message === 'logout_user') {
-            navigation.navigate("Auth");
-          } else if (data.message === 'new_token') {
-            const new_options = {
-              method: 'GET',
-              headers: {
-                'content-type': 'application/json',
-                'Authorization': 'Bearer ' + data.new_access,
-              }
+    try {
+      await SecureStore.getItemAsync("access").then((token) => {
+        if (token != null) {
+          const options = {
+            method: 'GET',
+            headers: {
+              'content-type': 'application/json',
+              'Authorization': 'Bearer ' + token
             }
-            FETCH(`${BASE_URL}/deliveries/?courier=me`, new_options).then((data) => {
+          }
+  
+          FETCH(`${BASE_URL}/deliveries/?courier=me`, options).then((data) => {
+            if (data.message === 'logout_user') {
+              navigation.navigate("Auth");
+            } else if (data.message === 'new_token') {
+              const new_options = {
+                method: 'GET',
+                headers: {
+                  'content-type': 'application/json',
+                  'Authorization': 'Bearer ' + data.new_access,
+                }
+              }
+              FETCH(`${BASE_URL}/deliveries/?courier=me`, new_options).then((data) => {
+                setData(data);
+                setIsFetching(false); 
+              })
+            } else {
               setData(data);
               setIsFetching(false); 
-            })
-          } else {
-            setData(data);
-            setIsFetching(false); 
-          }
-        })
-      }
-    })
+            }
+          })
+        }
+      })
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (

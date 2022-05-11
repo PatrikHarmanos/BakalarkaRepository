@@ -69,8 +69,11 @@ const RegisterScreen = ({navigation}) => {
     }
 
     FETCH(`${BASE_URL}/accounts/`, options).then((data) => {
-      if (data.email[0] === 'account with this email already exists.') {
+      if (data.email && data.email[0] === 'account with this email already exists.') {
         alert("E-mailová adresa je obsadená.")
+        return
+      } else if (data.password && data.password[0] === 'This password is too short. It must contain at least 8 characters.') {
+        alert("Príliš slabé heslo.")
         return
       } else {
         alert("Registrácia bola úspešná. Prosím potvrďte vašu e-mailovú adresu.")

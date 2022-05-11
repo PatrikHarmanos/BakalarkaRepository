@@ -49,6 +49,7 @@ const CourierMainScreen = ({ route, navigation }) => {
             }
 
             FETCH(`${BASE_URL}/couriers/closest_deliveries/?lon=${location["coords"]["longitude"]}&lat=${location["coords"]["latitude"]}`, options).then((data) => {
+              console.log(data)
               if (data.message === 'logout_user') {
                 navigation.navigate("Auth");
               } else if (data.message === 'new_token') {
@@ -106,19 +107,19 @@ const CourierMainScreen = ({ route, navigation }) => {
         // it has to be done in thge loop, because the number of elements in the array can be different due to address number (sometimes there is no address number)
         for (
           let i = 0;
-          i < responseJson.result.address_components.length;
+          i < data.result.address_components.length;
           i++
         ) {
           if (
-            responseJson.result.address_components[i].types[0] == "postal_code"
+            data.result.address_components[i].types[0] == "postal_code"
           ) {
-            d = responseJson.result.address_components[i].short_name
+            d = data.result.address_components[i].short_name
           }
         }
   
         // get lat and long from json response
-        d1 = responseJson.result.geometry.location.lat;
-        d2 = responseJson.result.geometry.location.lng;
+        d1 = data.result.geometry.location.lat;
+        d2 = data.result.geometry.location.lng;
       })
     ]).then(() => {
       navigation.navigate("CourierDeliveryScreen", {

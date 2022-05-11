@@ -31,7 +31,6 @@ const ProfileScreen = ({navigation}) => {
             size="large"
             rounded
             title={state.first_name.charAt(0) + state.last_name.charAt(0)}
-            onPress={() => console.log("Works!")}
             activeOpacity={0.7}
           />
             <View style={{marginLeft: 20}}>
