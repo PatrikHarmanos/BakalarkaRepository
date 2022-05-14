@@ -5,7 +5,8 @@ import {
   View,
   Text,
   TouchableOpacity,
-  ScrollView
+  ScrollView,
+  Alert
 } from 'react-native';
 
 import * as SecureStore from 'expo-secure-store';
@@ -30,19 +31,19 @@ const EditProfileScreen = ({navigation}) => {
   
   const handleRegisterButton = async () => {
     if (!firstName) {
-      alert('Please fill First Name');
+      Alert.alert("Prosím zadajte meno")
       return;
     }
     if (!lastName) {
-      alert('Please fill Last Name');
+      Alert.alert("Prosím zadajte priezvisko")
       return;
     }
     if (!phoneNumber) {
-      alert('Please fill Number');
+      Alert.alert("Prosím zadajte telefónne číslo")
       return;
     }
     if (!email) {
-      alert('Please fill Email');
+      Alert.alert("Prosím zadajte e-mail")
       return;
     }
 
@@ -55,14 +56,16 @@ const EditProfileScreen = ({navigation}) => {
 
     if (password) {
       if (!repeatPassword) {
-        alert('Please fill password again');
+        Alert.alert("Prosím zadajte heslo")
         return;
       }
       if (password != repeatPassword) {
-        alert('Hesla sa nezhoduju');
+        Alert.alert("Heslá sa nezhodujú")
         return;
       }
     }
+
+    let end = { password: password}
 
     const dataToSend = Object.assign(start, end)
 
@@ -78,6 +81,7 @@ const EditProfileScreen = ({navigation}) => {
         }
 
         FETCH(`${BASE_URL}/accounts/me/`, options).then((data) => {
+          console.log(data)
           if (data.message === 'logout_user') {
             navigation.navigate("Auth");
           } else if (data.message === 'new_token') {
@@ -96,7 +100,8 @@ const EditProfileScreen = ({navigation}) => {
                 email: data.email,
                 phone_number: data.phone_number
               }});
-              navigation.navigate("Profile")
+              navigation.navigate("Profile", { screen: 'Môj profil'})
+              Alert.alert("Údaje boli úspešne zmenené")
             })
           } else {
             actions({type: 'setState', payload: {...state, 
@@ -105,7 +110,8 @@ const EditProfileScreen = ({navigation}) => {
               email: data.email,
               phone_number: data.phone_number
             }});
-            navigation.navigate("Profile")
+            navigation.navigate("Profile", { screen: 'Môj profil'})
+            Alert.alert("Údaje boli úspešne zmenené")
           }
         })
       } else {

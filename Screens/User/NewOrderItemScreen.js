@@ -4,7 +4,8 @@ import {
     Text,
     StyleSheet,
     TouchableOpacity,
-    TextInput
+    TextInput,
+    Alert
 } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -42,7 +43,7 @@ const NewOrderItemScreen = ({route, navigation}) => {
 
     useEffect(() => {
       // call google places API to get latitude and longtitude from place_id for pickup place
-      const options = { method: 'GET' }
+      const options = { method: 'GET', headers: { 'Content-Type': 'application/json' } }
       FETCH(`${GOOGLE_PLACES_URL}?placeid=${pickup_place.place_id}&key=${GOOGLE_KEY}`, options).then((data) => {
         for (let i = 0; i < data.result.address_components.length; i++){
           if (data.result.address_components[i].types[0] == "postal_code"){
@@ -98,27 +99,27 @@ const NewOrderItemScreen = ({route, navigation}) => {
     const handleButton = () => {
     
       if (!itemCategory) {
-        alert('Prosím vyberte kategóriu');
+        Alert.alert('Prosím vyberte kategóriu');
         return;
       }
   
       if (!itemDescription) {
-        alert('Prosím zadajte popis');
+        Alert.alert('Prosím zadajte popis');
         return;
       }
   
       if (!itemSize) {
-        alert('Prosím vyberte veľkosť');
+        Alert.alert('Prosím vyberte veľkosť');
         return;
       }
   
       if (!itemWeight) {
-        alert('Prosím vyberte hmotnosť');
+        Alert.alert('Prosím vyberte hmotnosť');
         return;
       }
 
       if (!itemIsFragile) {
-        alert('Prosím vyberte krehkosť zásielky');
+        Alert.alert('Prosím vyberte krehkosť zásielky');
         return;
       }
 
@@ -153,62 +154,61 @@ const NewOrderItemScreen = ({route, navigation}) => {
 
     return (
         <View style={styles.container}>
+          <ScrollView>
           <View style={styles.header}>
-            <ScrollView>
-              <Text style={[styles.text_header, {marginTop: 20 }]}>Kategória</Text>
-              <RNPickerSelect
-                useNativeAndroidPickerStyle={false}
-                style={pickerStyle}
-                onValueChange={(value) => setItemCategory(value)}
-                placeholder={{ label: "Vyberte kategóriu", value: null }}
-                items={[
-                    { label: 'List', value: 'List' },
-                    { label: 'Balík', value: 'Balik' },
-                    { label: 'Iné', value: 'Nadrozmerny objekt' },
-                ]}
-              />
-              <Text style={[styles.text_header, {marginTop: 20}]}>Popis</Text>
-              <View style={styles.action}>
-                <TextInput style={styles.textInput} onChangeText={(Description) => setItemDescription(Description)}
-                    placeholder="Zadajte popis zásielky"
-                /> 
-              </View>
-              <Text style={[styles.text_header, {marginTop: 20}]}>Veľkosť</Text>
-              <RNPickerSelect
-                useNativeAndroidPickerStyle={false}
-                style={pickerStyle}
-                onValueChange={(value) => setItemSize(value)}
-                placeholder={{ label: "Vyberte veľkosť", value: null }}
-                items={[
-                    { label: 'Malé (< 30 cm)', value: 'small' },
-                    { label: 'Stredné (< 1 m)', value: 'medium' },
-                    { label: 'Veľké (> 1 m)', value: 'large' },
-                ]}
-              />
-              <Text style={[styles.text_header, {marginTop: 20}]}>Hmotnosť</Text>
-              <RNPickerSelect
-                useNativeAndroidPickerStyle={false}
-                style={pickerStyle}
-                onValueChange={(value) => setItemWeight(value)}
-                placeholder={{ label: "Vyberte hmotnosť", value: null }}
-                items={[
-                    { label: 'Ľahké (< 200 g)', value: 'light' },
-                    { label: 'Stredne ťažké (< 1 kg)', value: 'medium' },
-                    { label: 'Ťažké (> 1 kg)', value: 'heavy' },
-                ]}
-              />
-              <Text style={[styles.text_header, {marginTop: 20}]}>Je zásielka krehká?</Text>
-              <RNPickerSelect
-                useNativeAndroidPickerStyle={false}
-                style={pickerStyle}
-                onValueChange={(value) => setItemIsFragile(value)}
-                placeholder={{ label: "Vyberte možnost", value: null }}
-                items={[
-                    { label: 'Áno', value: 'true' },
-                    { label: 'Nie', value: 'false' },
-                ]}
-              />
-            </ScrollView>
+            <Text style={[styles.text_header, {marginTop: 20 }]}>Kategória</Text>
+            <RNPickerSelect
+              useNativeAndroidPickerStyle={false}
+              style={pickerStyle}
+              onValueChange={(value) => setItemCategory(value)}
+              placeholder={{ label: "Vyberte kategóriu", value: null }}
+              items={[
+                  { label: 'List', value: 'List' },
+                  { label: 'Balík', value: 'Balik' },
+                  { label: 'Iné', value: 'Nadrozmerny objekt' },
+              ]}
+            />
+            <Text style={[styles.text_header, {marginTop: 20}]}>Popis</Text>
+            <View style={styles.action}>
+              <TextInput style={styles.textInput} onChangeText={(Description) => setItemDescription(Description)}
+                  placeholder="Zadajte popis zásielky"
+              /> 
+            </View>
+            <Text style={[styles.text_header, {marginTop: 20}]}>Veľkosť</Text>
+            <RNPickerSelect
+              useNativeAndroidPickerStyle={false}
+              style={pickerStyle}
+              onValueChange={(value) => setItemSize(value)}
+              placeholder={{ label: "Vyberte veľkosť", value: null }}
+              items={[
+                  { label: 'Malé (< 30 cm)', value: 'small' },
+                  { label: 'Stredné (< 1 m)', value: 'medium' },
+                  { label: 'Veľké (> 1 m)', value: 'large' },
+              ]}
+            />
+            <Text style={[styles.text_header, {marginTop: 20}]}>Hmotnosť</Text>
+            <RNPickerSelect
+              useNativeAndroidPickerStyle={false}
+              style={pickerStyle}
+              onValueChange={(value) => setItemWeight(value)}
+              placeholder={{ label: "Vyberte hmotnosť", value: null }}
+              items={[
+                  { label: 'Ľahké (< 200 g)', value: 'light' },
+                  { label: 'Stredne ťažké (< 1 kg)', value: 'medium' },
+                  { label: 'Ťažké (> 1 kg)', value: 'heavy' },
+              ]}
+            />
+            <Text style={[styles.text_header, {marginTop: 20}]}>Je zásielka krehká?</Text>
+            <RNPickerSelect
+              useNativeAndroidPickerStyle={false}
+              style={pickerStyle}
+              onValueChange={(value) => setItemIsFragile(value)}
+              placeholder={{ label: "Vyberte možnost", value: null }}
+              items={[
+                  { label: 'Áno', value: 'true' },
+                  { label: 'Nie', value: 'false' },
+              ]}
+            />
           </View>
           <View style={styles.footer}>
             <View style={styles.button}>
@@ -217,6 +217,7 @@ const NewOrderItemScreen = ({route, navigation}) => {
               </TouchableOpacity>
             </View>
           </View>
+          </ScrollView>
         </View>
     );
 };
@@ -239,6 +240,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     paddingHorizontal: 20,
     justifyContent: 'flex-end',
+    marginTop: 40,
     paddingBottom: 50
   },
   text_header: {

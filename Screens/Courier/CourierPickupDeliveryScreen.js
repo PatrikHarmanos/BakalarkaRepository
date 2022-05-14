@@ -10,6 +10,7 @@ import * as SecureStore from 'expo-secure-store';
 import { FETCH } from '../../Helpers/FetchHelper';
 import { BASE_URL } from '../../cofig';
 import * as Location from "expo-location";
+import { ScrollView } from 'react-native-gesture-handler';
 
 const CourierPickupDeliveryScreen = ({route, navigation}) => {
     const { 
@@ -67,7 +68,7 @@ const CourierPickupDeliveryScreen = ({route, navigation}) => {
                     }))
                 })
             }
-        }, 4000)
+        }, 1000)
         return () => clearInterval(interval)
     })
 
@@ -104,7 +105,7 @@ const CourierPickupDeliveryScreen = ({route, navigation}) => {
             if (token != null) {
                 const options = {
                     method: 'PATCH',
-                    headers: { 'Authorization': 'Bearer ' + token },
+                    headers: { 'content-type': 'application/json', 'Authorization': 'Bearer ' + token },
                     body: JSON.stringify({ state: "delivering" })
                 }
 
@@ -154,7 +155,7 @@ const CourierPickupDeliveryScreen = ({route, navigation}) => {
                 </View>
                 <View style={styles.button}>
                         <TouchableOpacity style={styles.signIn} onPress={handleButton}>
-                            <Text style={styles.textSign}>Zasielka bola vyzdvihnuta</Text>
+                            <Text style={styles.textSign}>Zásielka bola vyzdvihnutá</Text>
                         </TouchableOpacity>
                 </View>
             </View>
@@ -175,14 +176,13 @@ const styles = StyleSheet.create({
         flex: 2,
         backgroundColor: '#fff',
         paddingHorizontal: 20,
-        justifyContent: 'flex-end',
         paddingBottom: 20,
         borderTopLeftRadius: 30,
         borderTopRightRadius: 30,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'stretch',
-        justifyContent: 'space-evenly'
+        justifyContent: 'space-evenly',
     },
     button: {
         alignItems: 'center',

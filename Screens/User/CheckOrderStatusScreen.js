@@ -5,7 +5,8 @@ import {
   View,
   Text,
   KeyboardAvoidingView,
-  TouchableOpacity
+  TouchableOpacity,
+  Alert
 } from 'react-native';
 import { FETCH } from '../../Helpers/FetchHelper'
 import { BASE_URL } from "../../cofig";
@@ -17,7 +18,7 @@ const CheckOrderStatusScreen = ({navigation}) => {
   const handleSubmitButton = () => {
 
     if (!deliveryID) {
-      alert('Prosím zadajte číslo zásielky');
+      Alert.alert('Prosím zadajte číslo zásielky');
       return;
     }
 
@@ -28,7 +29,7 @@ const CheckOrderStatusScreen = ({navigation}) => {
 
     FETCH(`${BASE_URL}/deliveries/${deliveryID}/`, options).then((data) => {
       if (data.error) {
-        alert('Zadané ID zásielky je neplatné')
+        Alert.alert('Zadané ID zásielky je neplatné')
       } else {
         setData(data)
         navigation.navigate("OrderDetails", {value: data})

@@ -4,7 +4,8 @@ import {
     Text,
     StyleSheet,
     TouchableOpacity,
-    TextInput
+    TextInput,
+    Alert
 } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 
@@ -19,22 +20,22 @@ const NewOrderDetailsScreen = ({route, navigation}) => {
   const handleButton = () => {
 
     if (!receiverFirstName) {
-      alert('Prosím zadajte meno príjimateľa');
+      Alert.alert('Prosím zadajte meno príjimateľa');
       return;
     }
 
     if (!receiverLastName) {
-      alert('Prosím zadajte priezvisko príjimateľa');
+      Alert.alert('Prosím zadajte priezvisko príjimateľa');
       return;
     }
 
     if (!receiverNumber) {
-      alert('Prosím zadajte telefónne číslo');
+      Alert.alert('Prosím zadajte telefónne číslo');
       return;
     }
 
     if (!receiverEmail) {
-      alert('Prosím zadajte e-mail');
+      Alert.alert('Prosím zadajte e-mail');
       return;
     }
 
@@ -50,33 +51,32 @@ const NewOrderDetailsScreen = ({route, navigation}) => {
 
   return (
       <View style={styles.container}>
+        <ScrollView>
         <View style={styles.header}>
-          <ScrollView>
-            <Text style={[styles.text_header, {marginTop: 20}]}>Meno príjemcu</Text>
-            <View style={styles.action}>
-              <TextInput style={styles.textInput} onChangeText={(FirstName) => setReceiverFirstName(FirstName)}
-                  placeholder="Zadajte meno"
-              /> 
-            </View>
-            <Text style={[styles.text_header, {marginTop: 20}]}>Priezvisko príjemcu</Text>
-            <View style={styles.action}>
-              <TextInput style={styles.textInput} onChangeText={(LastName) => setReceiverLastName(LastName)}
-                  placeholder="Zadajte priezvisko"
-              /> 
-            </View>
-            <Text style={[styles.text_header, {marginTop: 20}]}>E-mail</Text>
-            <View style={styles.action}>
-              <TextInput style={styles.textInput} onChangeText={(Email) => setReceiverEmail(Email)}
-                  placeholder="Zadajte e-mail"
-              /> 
-            </View>
-            <Text style={[styles.text_header, {marginTop: 20}]}>Telefónne číslo</Text>
-            <View style={styles.action}>
-              <TextInput style={styles.textInput} onChangeText={(Number) => setReceiverNumber(Number)}
-                  placeholder="Zadajte telefónne číslo"
-              /> 
-            </View>
-          </ScrollView>
+          <Text style={[styles.text_header, {marginTop: 20}]}>Meno príjemcu</Text>
+          <View style={styles.action}>
+            <TextInput style={styles.textInput} onChangeText={(FirstName) => setReceiverFirstName(FirstName)}
+                placeholder="Zadajte meno"
+            /> 
+          </View>
+          <Text style={[styles.text_header, {marginTop: 20}]}>Priezvisko príjemcu</Text>
+          <View style={styles.action}>
+            <TextInput style={styles.textInput} onChangeText={(LastName) => setReceiverLastName(LastName)}
+                placeholder="Zadajte priezvisko"
+            /> 
+          </View>
+          <Text style={[styles.text_header, {marginTop: 20}]}>E-mail</Text>
+          <View style={styles.action}>
+            <TextInput style={styles.textInput} onChangeText={(Email) => setReceiverEmail(Email)}
+                placeholder="Zadajte e-mail"
+            /> 
+          </View>
+          <Text style={[styles.text_header, {marginTop: 20}]}>Telefónne číslo</Text>
+          <View style={styles.action}>
+            <TextInput style={styles.textInput} onChangeText={(Number) => setReceiverNumber(Number)}
+                placeholder="Zadajte telefónne číslo"
+            /> 
+          </View>
         </View>
         <View style={styles.footer}>
           <View style={styles.button}>
@@ -85,6 +85,7 @@ const NewOrderDetailsScreen = ({route, navigation}) => {
             </TouchableOpacity>
           </View>
         </View>
+        </ScrollView>
       </View>
   );
 };
@@ -107,7 +108,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         paddingHorizontal: 20,
         justifyContent: 'flex-end',
-        paddingBottom: 50
+        paddingBottom: 50,
+        marginTop: 60
       },
       text_header: {
         color: '#05375a',

@@ -11,7 +11,7 @@ import {
 const InfoScreen = ({navigation}) => {
     return (
       <View style={styles.container}>
-          
+          <Text style={styles.text}>Táto aplikácia bola vyvinutá ako súčasť bakalárskej práce žiaka Patrik Harmaňoš v roku 2022 na Fakulte Informatiky a Informačných Technológii STU v Bratislave.</Text>
       </View>
     );
 };
@@ -21,20 +21,11 @@ export default InfoScreen;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff'
-      },
-      header: {
-        flex: 2,
-        justifyContent: 'flex-end',
-        paddingHorizontal: 20,
-        paddingBottom: 50
-      },
-      footer: {
-        flex: 1,
         backgroundColor: '#fff',
-        borderTopLeftRadius: 30,
-        borderTopRightRadius: 30,
-        paddingHorizontal: 20,
-        paddingVertical: 30,
-      }
+        padding: 22
+    },
+    text: {
+      fontSize: 15,
+      fontWeight: 'bold'
+    }
 });

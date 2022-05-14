@@ -4,22 +4,26 @@ import {
     Text,
     StyleSheet,
     TouchableOpacity,
+    LogBox,
+    Alert
 } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 
 const NewOrderScreen = ({navigation}) => {
 
   const [pickupData, setPickupData] = useState('');
   const [deliveryData, setDeliveryData] = useState('');
+  LogBox.ignoreLogs(['VirtualizedLists should never be nested inside plain ScrollViews with the same orientation because it can break windowing and other functionality - use another VirtualizedList-backed container instead.']);
 
   const handleButton = () => {
     if (!pickupData){
-      alert("Prosím vyberte miesto vyzdvihnutia");
+      Alert.alert("Prosím vyberte miesto vyzdvihnutia");
       return;
     }
 
     if (!deliveryData) {
-      alert("Prosím vyberte miesto doručenia");
+      Alert.alert("Prosím vyberte miesto doručenia");
       return;
     }
 
@@ -28,43 +32,45 @@ const NewOrderScreen = ({navigation}) => {
 
     return (
         <View style={styles.container}>
-          <View style={styles.header}>
-              <Text style={[styles.text_header, {marginTop: 20}]}>Odkiaľ</Text>
-              <View style={styles.action}>
-                <GooglePlacesAutocomplete
-                  placeholder='Vyhľadajte miesto vyzdvihnutia'
-                  onPress={(data, details = null) => {
-                    setPickupData(data);
-                  }}
-                  query={{
-                    key: 'AIzaSyD3IdOaoOc8tVpnakDzh1BLImcS-iJxoVY',
-                    language: 'en',
-                    components: 'country:sk',
-                  }}
-                />
-              </View>
-              <Text style={[styles.text_header, {marginTop: 20}]}>Kde</Text>
-              <View style={styles.action}>
-                <GooglePlacesAutocomplete
-                  placeholder='Vyhľadajte miesto doručenia'
-                  onPress={(data, details = null) => {
-                    setDeliveryData(data);
-                  }}
-                  query={{
-                    key: 'AIzaSyD3IdOaoOc8tVpnakDzh1BLImcS-iJxoVY',
-                    language: 'en',
-                    components: 'country:sk',
-                  }}
-                />
-              </View>
-          </View>
-          <View style={styles.footer}>
-            <View style={styles.button}>
-              <TouchableOpacity  style={styles.signIn} onPress={handleButton}>
-                  <Text style={styles.textSign}>Pokračovať</Text>
-              </TouchableOpacity>
+          <ScrollView keyboardShouldPersistTaps='always' style={{ flex: 1}}>
+            <View style={styles.header}>
+                <Text style={[styles.text_header, {marginTop: 20}]}>Odkiaľ</Text>
+                <View style={styles.action}>
+                  <GooglePlacesAutocomplete
+                    placeholder='Vyhľadajte miesto vyzdvihnutia'
+                    onPress={(data, details = null) => {
+                      setPickupData(data);
+                    }}
+                    query={{
+                      key: 'AIzaSyD3IdOaoOc8tVpnakDzh1BLImcS-iJxoVY',
+                      language: 'en',
+                      components: 'country:sk',
+                    }}
+                  />
+                </View>
+                <Text style={[styles.text_header, {marginTop: 20}]}>Kde</Text>
+                <View style={styles.action}>
+                  <GooglePlacesAutocomplete
+                    placeholder='Vyhľadajte miesto doručenia'
+                    onPress={(data, details = null) => {
+                      setDeliveryData(data);
+                    }}
+                    query={{
+                      key: 'AIzaSyD3IdOaoOc8tVpnakDzh1BLImcS-iJxoVY',
+                      language: 'en',
+                      components: 'country:sk',
+                    }}
+                  />
+                </View>
             </View>
-          </View>
+            <View style={styles.footer}>
+              <View style={styles.button}>
+                <TouchableOpacity  style={styles.signIn} onPress={handleButton}>
+                    <Text style={styles.textSign}>Pokračovať</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </ScrollView>
         </View>
     );
 };
@@ -87,7 +93,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         paddingHorizontal: 20,
         justifyContent: 'flex-end',
-        paddingBottom: 50
+        paddingBottom: 50,
+        marginTop: 40
       },
       text_header: {
         color: '#05375a',

@@ -11,6 +11,7 @@ import { getPreciseDistance } from 'geolib';
 import * as SecureStore from 'expo-secure-store';
 import { FETCH } from '../../Helpers/FetchHelper'
 import { BASE_URL } from '../../cofig';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const CourierDeliveryScreen = ({route, navigation}) => {
     const { 

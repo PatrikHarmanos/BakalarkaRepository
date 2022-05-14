@@ -81,7 +81,7 @@ const CourierMainScreen = ({ route, navigation }) => {
 
   const handleButton = async (index) => {
     let p, p1, p2, d, d1, d2
-    const options = { method: 'GET' }
+    const options = { method: 'GET', headers: { 'Content-Type': 'application/json' } }
 
     Promise.all([
       // call google places API to get latitude and longtitude from place_id for pickup place

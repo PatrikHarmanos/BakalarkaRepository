@@ -6,7 +6,8 @@ import {
   Text,
   KeyboardAvoidingView,
   TouchableOpacity,
-  Linking
+  Linking,
+  Alert
 } from 'react-native'
 
 import * as SecureStore from 'expo-secure-store'
@@ -26,12 +27,12 @@ const LoginScreen = ({ navigation }) => {
 
   const handleSubmitButton = () => {
     if (!userEmail) {
-      alert('Prosím zadajte email');
+      Alert.alert('Prosím zadajte email');
       return;
     }
 
     if (!userPassword) {
-      alert('Prosím zadajte heslo');
+      Alert.alert('Prosím zadajte heslo');
       return;
     }
 
@@ -97,7 +98,7 @@ const LoginScreen = ({ navigation }) => {
         })
 
       } else {
-        alert('Nesprávny email alebo heslo. Skúste znovu.')
+        Alert.alert('Nesprávny email alebo heslo. Skúste znovu.')
       }
     })
 

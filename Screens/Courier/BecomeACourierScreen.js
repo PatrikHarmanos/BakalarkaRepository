@@ -4,7 +4,8 @@ import {
     StyleSheet,
     TouchableOpacity,
     ScrollView,
-    TextInput
+    TextInput,
+    Alert
   } from 'react-native'; 
 
 import {
@@ -20,19 +21,19 @@ const BecomeACourierScreen = ({navigation}) => {
 
   const handleButton = () => {
     if (!numberOP) {
-      alert('Prosím zadajte číslo OP');
+      Alert.alert('Prosím zadajte číslo OP');
       return;
     }
     if (!validOP) {
-      alert('Prosím zadajte dátum platnosti OP');
+      Alert.alert('Prosím zadajte dátum platnosti OP');
       return;
     }
     if (!numberVP) {
-      alert('Prosím zadajte číslo VP');
+      Alert.alert('Prosím zadajte číslo VP');
       return;
     }
     if (!validVP) {
-      alert('Prosím zadajte dátum platnosti VP');
+      Alert.alert('Prosím zadajte dátum platnosti VP');
       return;
     }
     navigation.navigate("BecomeACourierMoreInfo", {

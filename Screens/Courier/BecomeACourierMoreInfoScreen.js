@@ -4,7 +4,8 @@ import {
     ScrollView,
     StyleSheet,
     TouchableOpacity,
-    TextInput
+    TextInput,
+    Alert
   } from 'react-native'; 
 
 import {
@@ -39,19 +40,19 @@ const BecomeACourierMoreInfoScreen = ({navigation, route}) => {
 
   const handleButton = async () => {
     if (!address) {
-      alert('Prosím zadajte adresu');
+      Alert.alert('Prosím zadajte adresu');
       return;
     }
     if (!city) {
-      alert('Prosím zadajte mesto');
+      Alert.alert('Prosím zadajte mesto');
       return;
     }
     if (!psc) {
-      alert('Prosím zadajte PSČ');
+      Alert.alert('Prosím zadajte PSČ');
       return;
     }
     if (!vehicle) {
-      alert('Prosím vyberte vozidlo');
+      Alert.alert('Prosím vyberte vozidlo');
       return;
     }
 
@@ -88,7 +89,7 @@ const BecomeACourierMoreInfoScreen = ({navigation, route}) => {
           if (data.message === 'logout_user') {
             navigation.navigate("Auth");
           } else if (data.dl_expiration_date || data.id_expiration_date) {
-            alert('Dátum nemá správny formát. (RRRR-MM-DD)')
+            Alert.alert('Dátum nemá správny formát. (RRRR-MM-DD)')
             return
           } else if (data.message === 'new_token') {
             const new_options = {

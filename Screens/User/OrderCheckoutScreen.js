@@ -84,7 +84,7 @@ const OrderCheckoutScreen = ({route, navigation}) => {
             if (token != null) {
                 const options = {
                     method: 'POST',
-                    headers: { 'Authorization': 'Bearer ' + token },
+                    headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
                     body: formData
                 }
                 FETCH(`${BASE_URL}/deliveries/preview/`, options).then((data) => {
@@ -93,7 +93,7 @@ const OrderCheckoutScreen = ({route, navigation}) => {
                     } else if (data.message === 'new_token') {
                         const new_options = {
                             method: 'POST',
-                            headers: { 'Authorization': 'Bearer ' + data.new_access },
+                            headers: { 'Authorization': 'Bearer ' + data.new_access, 'Content-Type': 'application/json' },
                             body: formData
                         }
                         FETCH(`${BASE_URL}/deliveries/preview/`, new_options).then((data) => {
@@ -154,7 +154,7 @@ const OrderCheckoutScreen = ({route, navigation}) => {
             if (token != null) {
                 const options = {
                     method: 'POST',
-                    headers: { 'Authorization': 'Bearer ' + token },
+                    headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
                     body: formData
                 }
 
@@ -164,7 +164,7 @@ const OrderCheckoutScreen = ({route, navigation}) => {
                     } else if (data.message === 'new_token') {
                     const new_options = {
                         method: 'POST',
-                        headers: { 'Authorization': 'Bearer ' + data.new_access },
+                        headers: { 'Authorization': 'Bearer ' + data.new_access, 'Content-Type': 'application/json' },
                         body: formData
                     }
                     FETCH(`${BASE_URL}/deliveries/`, new_options).then((data) => {

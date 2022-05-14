@@ -5,7 +5,8 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  ScrollView
+  ScrollView,
+  Alert
 } from 'react-native';
 import { HelperText } from 'react-native-paper';
 import { FETCH } from '../../Helpers/FetchHelper'
@@ -34,23 +35,23 @@ const RegisterScreen = ({navigation}) => {
 
   const handleRegisterButton = () => {
     if (!userFirstName) {
-      alert('Please fill First Name');
+      Alert.alert("Prosím zadajte meno")
       return;
     }
     if (!userLastName) {
-      alert('Please fill Last Name');
+      Alert.alert("Prosím zadajte priezvisko")
       return;
     }
     if (!userNumber) {
-      alert('Please fill Number');
+      Alert.alert("Prosím zadajte telefónne číslo")
       return;
     }
     if (!userPassword) {
-      alert('Please fill Password');
+      Alert.alert("Prosím zadajte heslo")
       return;
     }
     if (!userEmail) {
-      alert('Please fill Email');
+      Alert.alert("Prosím zadajte e-mail")
       return;
     }
 
@@ -70,13 +71,13 @@ const RegisterScreen = ({navigation}) => {
 
     FETCH(`${BASE_URL}/accounts/`, options).then((data) => {
       if (data.email && data.email[0] === 'account with this email already exists.') {
-        alert("E-mailová adresa je obsadená.")
+        Alert.alert("E-mailová adresa je obsadená.")
         return
       } else if (data.password && data.password[0] === 'This password is too short. It must contain at least 8 characters.') {
-        alert("Príliš slabé heslo.")
+        Alert.alert("Príliš slabé heslo.")
         return
       } else {
-        alert("Registrácia bola úspešná. Prosím potvrďte vašu e-mailovú adresu.")
+        Alert.alert("Registrácia bola úspešná. Prosím potvrďte vašu e-mailovú adresu.")
         navigation.navigate("LoginScreen");
       }
     })

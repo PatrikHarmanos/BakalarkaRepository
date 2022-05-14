@@ -1,5 +1,7 @@
 import * as SecureStore from 'expo-secure-store';
 import { BASE_URL } from '../cofig'
+import React from 'react';
+import { FlatListProps, FlatList as NativeFlatList, View } from 'react-native';
 
 async function save(key, value) {
     await SecureStore.setItemAsync(key, value)
